@@ -1,0 +1,31 @@
+services:
+  backend-dev:
+    container_name: ${CONTAINER_NAME_PREFIX}_backend_dev
+    profiles:
+      - dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - app-network
+    ports:
+      - "${BACKEND_PORT:-4000}:8080"
+
+  backend-prod:
+    container_name: ${CONTAINER_NAME_PREFIX}_backend_prod
+    profiles:
+      - prod
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    networks:
+      - app-network
+    ports:
+      - "${BACKEND_PORT:-4000}:8080"
+
+networks:
+  app-network:
+    driver: bridge
+    name: ${CONTAINER_NAME_PREFIX}_network
