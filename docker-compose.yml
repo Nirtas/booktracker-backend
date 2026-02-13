@@ -1,4 +1,39 @@
 services:
+  db:
+    container_name: ${CONTAINER_NAME_PREFIX}_db
+    image: postgres:17.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database-init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - app-network
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  pgadmin:
+    container_name: ${CONTAINER_NAME_PREFIX}_pgadmin
+    image: dpage/pgadmin4:9.12
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_SETUP_SERVERS: "1"
+    volumes:
+      - ./pgadmin-config/servers.json:/pgadmin4/servers.json
+      - ./pgadmin-config/pgpass:/var/lib/pgadmin/pgpass
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - app-network
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+
   backend-dev:
     container_name: ${CONTAINER_NAME_PREFIX}_backend_dev
     profiles:
@@ -7,6 +42,14 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
       - app-network
     ports:
@@ -20,10 +63,22 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
       - app-network
     ports:
       - "${BACKEND_PORT:-4000}:8080"
+
+volumes:
+  postgres_data:
+  pgadmin_data:
 
 networks:
   app-network:
