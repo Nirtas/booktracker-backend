@@ -19,3 +19,10 @@ spring:
       mode: always
       schema-locations: file:./database-init/1-schema.sql
       data-locations: file:./database-init/2-schema-data.sql
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  web:
+    resources:
+      add-mappings: false
