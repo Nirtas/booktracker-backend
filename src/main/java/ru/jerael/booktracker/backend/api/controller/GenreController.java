@@ -11,6 +11,7 @@ import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenreByIdUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenresUseCase;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +22,8 @@ public class GenreController {
     private final GenreApiMapper genreApiMapper;
 
     @GetMapping
-    public List<GenreResponse> getAll() {
-        List<Genre> genres = getGenresUseCase.execute();
+    public Set<GenreResponse> getAll() {
+        Set<Genre> genres = getGenresUseCase.execute();
         return genreApiMapper.toResponses(genres);
     }
 

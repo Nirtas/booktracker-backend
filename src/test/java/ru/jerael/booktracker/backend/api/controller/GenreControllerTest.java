@@ -15,7 +15,7 @@ import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenreByIdUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenresUseCase;
-import java.util.List;
+import java.util.Set;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(GenreController.class)
@@ -33,16 +33,16 @@ class GenreControllerTest {
     private GetGenreByIdUseCase getGenreByIdUseCase;
 
     @Test
-    void getAll_ShouldReturnListOfGenres() {
+    void getAll_ShouldReturnSetOfGenres() {
         Genre genre = new Genre(1, "adventure");
         GenreResponse genreResponse = new GenreResponse(1, "adventure");
-        when(getGenresUseCase.execute()).thenReturn(List.of(genre));
+        when(getGenresUseCase.execute()).thenReturn(Set.of(genre));
 
         restTestClient.get().uri("/api/v1/genres")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<List<GenreResponse>>() {})
-                .isEqualTo(List.of(genreResponse));
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(new ParameterizedTypeReference<Set<GenreResponse>>() {})
+            .isEqualTo(Set.of(genreResponse));
     }
 
     @Test
@@ -51,9 +51,9 @@ class GenreControllerTest {
         when(getGenreByIdUseCase.execute(genreId)).thenThrow(NotFoundException.genreNotFound(genreId));
 
         restTestClient.get().uri("/api/v1/genres/" + genreId)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody()
-                .jsonPath("$.message").isEqualTo("Genre with id " + genreId + " was not found");
+            .exchange()
+            .expectStatus().isNotFound()
+            .expectBody()
+            .jsonPath("$.message").isEqualTo("Genre with id " + genreId + " was not found");
     }
 }

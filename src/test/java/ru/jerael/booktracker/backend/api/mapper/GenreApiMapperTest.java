@@ -3,7 +3,8 @@ package ru.jerael.booktracker.backend.api.mapper;
 import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.api.dto.genre.GenreResponse;
 import ru.jerael.booktracker.backend.domain.model.Genre;
-import java.util.List;
+import java.util.Set;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GenreApiMapperTest {
@@ -23,13 +24,12 @@ class GenreApiMapperTest {
     void toResponses() {
         Genre genre1 = new Genre(1, "adventure");
         Genre genre2 = new Genre(2, "action");
-        List<Genre> genres = List.of(genre1, genre2);
+        Set<Genre> genres = Set.of(genre1, genre2);
 
-        List<GenreResponse> genreResponses = genreApiMapper.toResponses(genres);
+        Set<GenreResponse> genreResponses = genreApiMapper.toResponses(genres);
 
-        assertEquals(1, genreResponses.get(0).id());
-        assertEquals("adventure", genreResponses.get(0).name());
-        assertEquals(2, genreResponses.get(1).id());
-        assertEquals("action", genreResponses.get(1).name());
+        assertEquals(2, genreResponses.size());
+        assertThat(genreResponses).extracting(GenreResponse::id).containsExactlyInAnyOrder(1, 2);
+        assertThat(genreResponses).extracting(GenreResponse::name).containsExactlyInAnyOrder("adventure", "action");
     }
 }
