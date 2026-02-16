@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository;
-import ru.jerael.booktracker.backend.data.mapper.GenreMapper;
+import ru.jerael.booktracker.backend.data.mapper.GenreDataMapper;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import java.util.LinkedHashSet;
@@ -17,16 +17,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GenreRepositoryImpl implements GenreRepository {
     private final JpaGenreRepository jpaGenreRepository;
-    private final GenreMapper genreMapper;
+    private final GenreDataMapper genreDataMapper;
 
     @Override
     public Set<Genre> getGenres() {
         List<GenreEntity> entities = jpaGenreRepository.findAllByOrderByIdAsc();
-        return entities.stream().map(genreMapper::toDomain).collect(Collectors.toCollection(LinkedHashSet::new));
+        return entities.stream().map(genreDataMapper::toDomain).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override
     public Optional<Genre> getGenreById(Integer id) {
-        return jpaGenreRepository.findById(id).map(genreMapper::toDomain);
+        return jpaGenreRepository.findById(id).map(genreDataMapper::toDomain);
     }
 }

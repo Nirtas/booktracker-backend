@@ -5,7 +5,7 @@ import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 
 @Component
-public class GenreMapper {
+public class GenreDataMapper {
     public Genre toDomain(GenreEntity entity) {
         return new Genre(entity.getId(), entity.getName());
     }

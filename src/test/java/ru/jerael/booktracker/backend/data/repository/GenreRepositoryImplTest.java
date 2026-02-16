@@ -6,7 +6,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository;
-import ru.jerael.booktracker.backend.data.mapper.GenreMapper;
+import ru.jerael.booktracker.backend.data.mapper.GenreDataMapper;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
-@Import({GenreRepositoryImpl.class, GenreMapper.class})
+@Import({GenreRepositoryImpl.class, GenreDataMapper.class})
 class GenreRepositoryImplTest {
 
     @Autowired

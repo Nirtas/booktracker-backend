@@ -7,11 +7,11 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Component
-public class BookMapper {
-    private final GenreMapper genreMapper;
+public class BookDataMapper {
+    private final GenreDataMapper genreDataMapper;
 
-    public BookMapper(GenreMapper genreMapper) {
-        this.genreMapper = genreMapper;
+    public BookDataMapper(GenreDataMapper genreDataMapper) {
+        this.genreDataMapper = genreDataMapper;
     }
 
     public Book toDomain(BookEntity entity) {
@@ -25,7 +25,7 @@ public class BookMapper {
             entity.getStatus(),
             entity.getCreatedAt(),
             entity.getGenres() == null ? Collections.emptySet() :
-                entity.getGenres().stream().map(genreMapper::toDomain).collect(Collectors.toSet())
+                entity.getGenres().stream().map(genreDataMapper::toDomain).collect(Collectors.toSet())
         );
     }
 
@@ -40,7 +40,7 @@ public class BookMapper {
         entity.setStatus(book.status());
         entity.setCreatedAt(book.createdAt());
         entity.setGenres(book.genres() == null ? Collections.emptySet() :
-            book.genres().stream().map(genreMapper::toEntity).collect(Collectors.toSet()));
+            book.genres().stream().map(genreDataMapper::toEntity).collect(Collectors.toSet()));
         return entity;
     }
 }
