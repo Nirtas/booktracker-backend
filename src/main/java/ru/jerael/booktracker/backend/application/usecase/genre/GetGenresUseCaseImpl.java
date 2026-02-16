@@ -3,7 +3,7 @@ package ru.jerael.booktracker.backend.application.usecase.genre;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenresUseCase;
-import java.util.List;
+import java.util.Set;
 
 public class GetGenresUseCaseImpl implements GetGenresUseCase {
     private final GenreRepository genreRepository;
@@ -13,7 +13,7 @@ public class GetGenresUseCaseImpl implements GetGenresUseCase {
     }
 
     @Override
-    public List<Genre> execute() {
+    public Set<Genre> execute() {
         return genreRepository.getGenres();
     }
 }

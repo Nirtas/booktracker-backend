@@ -10,6 +10,7 @@ import ru.jerael.booktracker.backend.data.mapper.GenreMapper;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,7 +33,7 @@ class GenreRepositoryImplTest {
         entity2.setName("action");
         jpaGenreRepository.saveAll(List.of(entity1, entity2));
 
-        List<Genre> result = genreRepository.getGenres();
+        Set<Genre> result = genreRepository.getGenres();
 
         assertEquals(2, result.size());
         assertThat(result).extracting(Genre::name).containsExactlyInAnyOrder("adventure", "action");

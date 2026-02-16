@@ -3,7 +3,8 @@ package ru.jerael.booktracker.backend.api.mapper;
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.api.dto.genre.GenreResponse;
 import ru.jerael.booktracker.backend.domain.model.Genre;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class GenreApiMapper {
@@ -11,7 +12,7 @@ public class GenreApiMapper {
         return new GenreResponse(genre.id(), genre.name());
     }
 
-    public List<GenreResponse> toResponses(List<Genre> genres) {
-        return genres.stream().map(this::toResponse).toList();
+    public Set<GenreResponse> toResponses(Set<Genre> genres) {
+        return genres.stream().map(this::toResponse).collect(Collectors.toSet());
     }
 }

@@ -9,6 +9,8 @@ import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -17,9 +19,9 @@ public class GenreRepositoryImpl implements GenreRepository {
     private final GenreMapper genreMapper;
 
     @Override
-    public List<Genre> getGenres() {
+    public Set<Genre> getGenres() {
         List<GenreEntity> entities = jpaGenreRepository.findAll();
-        return entities.stream().map(genreMapper::toDomain).toList();
+        return entities.stream().map(genreMapper::toDomain).collect(Collectors.toSet());
     }
 
     @Override
