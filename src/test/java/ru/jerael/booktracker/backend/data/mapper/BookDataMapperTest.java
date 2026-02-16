@@ -11,9 +11,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class BookMapperTest {
-    private final GenreMapper genreMapper = new GenreMapper();
-    private final BookMapper bookMapper = new BookMapper(genreMapper);
+class BookDataMapperTest {
+    private final GenreDataMapper genreDataMapper = new GenreDataMapper();
+    private final BookDataMapper bookDataMapper = new BookDataMapper(genreDataMapper);
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final String title = "title";
@@ -35,9 +35,9 @@ class BookMapperTest {
         entity.setCoverUrl(coverUrl);
         entity.setStatus(status);
         entity.setCreatedAt(createdAt);
-        entity.setGenres(genres.stream().map(genreMapper::toEntity).collect(Collectors.toSet()));
+        entity.setGenres(genres.stream().map(genreDataMapper::toEntity).collect(Collectors.toSet()));
 
-        Book result = bookMapper.toDomain(entity);
+        Book result = bookDataMapper.toDomain(entity);
 
         assertEquals(id, result.id());
         assertEquals(title, result.title());
@@ -45,7 +45,7 @@ class BookMapperTest {
 
     @Test
     void toEntity() {
-        BookEntity entity = bookMapper.toEntity(book);
+        BookEntity entity = bookDataMapper.toEntity(book);
 
         assertEquals(id, entity.getId());
         assertEquals(title, entity.getTitle());

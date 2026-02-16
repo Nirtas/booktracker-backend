@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
-import ru.jerael.booktracker.backend.data.mapper.BookMapper;
+import ru.jerael.booktracker.backend.data.mapper.BookDataMapper;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import java.util.List;
@@ -16,18 +16,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepository {
     private final JpaBookRepository jpaBookRepository;
-    private final BookMapper bookMapper;
+    private final BookDataMapper bookDataMapper;
 
     @Override
     @Transactional(readOnly = true)
     public List<Book> getBooks() {
         List<BookEntity> entities = jpaBookRepository.findAll();
-        return entities.stream().map(bookMapper::toDomain).toList();
+        return entities.stream().map(bookDataMapper::toDomain).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<Book> getBookById(UUID id) {
-        return jpaBookRepository.findById(id).map(bookMapper::toDomain);
+        return jpaBookRepository.findById(id).map(bookDataMapper::toDomain);
     }
 }

@@ -8,8 +8,8 @@ import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository;
-import ru.jerael.booktracker.backend.data.mapper.BookMapper;
-import ru.jerael.booktracker.backend.data.mapper.GenreMapper;
+import ru.jerael.booktracker.backend.data.mapper.BookDataMapper;
+import ru.jerael.booktracker.backend.data.mapper.GenreDataMapper;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
-@Import({BookRepositoryImpl.class, GenreRepositoryImpl.class, GenreMapper.class, BookMapper.class})
+@Import({BookRepositoryImpl.class, GenreRepositoryImpl.class, GenreDataMapper.class, BookDataMapper.class})
 class BookRepositoryImplTest {
 
     @Autowired
