@@ -2,8 +2,11 @@ package ru.jerael.booktracker.backend.data.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
+import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
+import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import java.util.Collections;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -41,6 +44,16 @@ public class BookDataMapper {
         entity.setCreatedAt(book.createdAt());
         entity.setGenres(book.genres() == null ? Collections.emptySet() :
             book.genres().stream().map(genreDataMapper::toEntity).collect(Collectors.toSet()));
+        return entity;
+    }
+
+    public BookEntity toEntity(BookCreation data, Set<GenreEntity> genres) {
+        if (data == null) return null;
+
+        BookEntity entity = new BookEntity();
+        entity.setTitle(data.title());
+        entity.setAuthor(data.author());
+        entity.setGenres(genres);
         return entity;
     }
 }
