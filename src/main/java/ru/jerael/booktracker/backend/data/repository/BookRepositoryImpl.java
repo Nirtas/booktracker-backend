@@ -7,6 +7,7 @@ import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.mapper.BookDataMapper;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
+import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import java.util.List;
 import java.util.Optional;
@@ -29,5 +30,17 @@ public class BookRepositoryImpl implements BookRepository {
     @Transactional(readOnly = true)
     public Optional<Book> getBookById(UUID id) {
         return jpaBookRepository.findById(id).map(bookDataMapper::toDomain);
+    }
+
+    @Override
+    public Book save(BookCreation data) {
+        //TODO: implement
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public Book update(Book book) {
+        //TODO: implement
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }
