@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
+import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
+import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository;
 import ru.jerael.booktracker.backend.data.mapper.BookDataMapper;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
@@ -14,11 +16,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepository {
     private final JpaBookRepository jpaBookRepository;
+    private final JpaGenreRepository jpaGenreRepository;
     private final BookDataMapper bookDataMapper;
 
     @Override
@@ -35,14 +39,22 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
+    @Transactional
     public Book create(BookCreation data, Set<Genre> genres) {
-        // TODO: implement
-        throw new UnsupportedOperationException("Not implemented yet");
+        Set<GenreEntity> genreEntities = genres.stream()
+            .map(genre -> jpaGenreRepository.getReferenceById(genre.id()))
+            .collect(Collectors.toSet());
+        BookEntity entity = bookDataMapper.toEntity(data, genreEntities);
+        BookEntity savedBook = jpaBookRepository.save(entity);
+        return bookDataMapper.toDomain(savedBook);
     }
 
     @Override
+    @Transactional
     public Book updateCoverUrl(UUID bookId, String url) {
-        // TODO: implement
-        throw new UnsupportedOperationException("Not implemented yet");
+        BookEntity entity = jpaBookRepository.findById(bookId).orElseThrow();
+        entity.setCoverUrl(url);
+        BookEntity updatedBook = jpaBookRepository.save(entity);
+        return bookDataMapper.toDomain(updatedBook);
     }
 }
