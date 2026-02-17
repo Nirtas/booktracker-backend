@@ -34,7 +34,7 @@ public class BookEntity {
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private BookStatus status;
+    private BookStatus status = BookStatus.WANT_TO_READ;
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
