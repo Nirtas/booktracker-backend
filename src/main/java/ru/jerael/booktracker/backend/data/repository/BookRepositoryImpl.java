@@ -8,6 +8,7 @@ import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository;
 import ru.jerael.booktracker.backend.data.mapper.BookDataMapper;
+import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
@@ -52,7 +53,7 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     @Transactional
     public Book updateCoverUrl(UUID bookId, String url) {
-        BookEntity entity = jpaBookRepository.findById(bookId).orElseThrow();
+        BookEntity entity = jpaBookRepository.findById(bookId).orElseThrow(() -> NotFoundException.bookNotFound(bookId));
         entity.setCoverUrl(url);
         BookEntity updatedBook = jpaBookRepository.save(entity);
         return bookDataMapper.toDomain(updatedBook);
