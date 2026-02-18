@@ -46,7 +46,7 @@ public class BookRepositoryImpl implements BookRepository {
             .map(genre -> jpaGenreRepository.getReferenceById(genre.id()))
             .collect(Collectors.toSet());
         BookEntity entity = bookDataMapper.toEntity(data, genreEntities);
-        BookEntity savedBook = jpaBookRepository.save(entity);
+        BookEntity savedBook = jpaBookRepository.saveAndFlush(entity);
         return bookDataMapper.toDomain(savedBook);
     }
 
