@@ -2,10 +2,13 @@ package ru.jerael.booktracker.backend.data.mapper;
 
 import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
+import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
+import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,7 +30,7 @@ class BookDataMapperTest {
     private final Book book = new Book(id, title, author, coverUrl, status, createdAt, genres);
 
     @Test
-    void toDomain() {
+    void entity_toDomain() {
         BookEntity entity = new BookEntity();
         entity.setId(id);
         entity.setTitle(title);
@@ -44,10 +47,22 @@ class BookDataMapperTest {
     }
 
     @Test
-    void toEntity() {
+    void domain_toEntity() {
         BookEntity entity = bookDataMapper.toEntity(book);
 
         assertEquals(id, entity.getId());
         assertEquals(title, entity.getTitle());
+    }
+
+    @Test
+    void creation_toEntity() {
+        BookCreation data = new BookCreation(title, author, Collections.emptySet());
+        Set<GenreEntity> entities = genres.stream().map(genreDataMapper::toEntity).collect(Collectors.toSet());
+
+        BookEntity entity = bookDataMapper.toEntity(data, entities);
+
+        assertEquals(title, entity.getTitle());
+        assertEquals(author, entity.getAuthor());
+        assertEquals(entities.size(), entity.getGenres().size());
     }
 }
