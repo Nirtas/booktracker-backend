@@ -5,6 +5,10 @@ spring:
     username: test
     password: test
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+
 app:
   storage:
     covers-path: "storage/covers"
