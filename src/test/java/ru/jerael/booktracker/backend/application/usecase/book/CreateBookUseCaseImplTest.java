@@ -1,0 +1,68 @@
+package ru.jerael.booktracker.backend.application.usecase.book;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
+import ru.jerael.booktracker.backend.domain.model.Genre;
+import ru.jerael.booktracker.backend.domain.model.book.Book;
+import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
+import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
+import ru.jerael.booktracker.backend.domain.repository.BookRepository;
+import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class CreateBookUseCaseImplTest {
+
+    @Mock
+    private BookRepository bookRepository;
+
+    @Mock
+    private GenreRepository genreRepository;
+
+    @InjectMocks
+    private CreateBookUseCaseImpl useCase;
+
+    @Test
+    void execute_WhenAllGenresFound_ShouldCreateBookWithAllGenres() {
+        UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+        String title = "title";
+        String author = "author";
+        BookStatus status = BookStatus.WANT_TO_READ;
+        Instant createdAt = Instant.ofEpochMilli(1771249699347L);
+        Genre genre1 = new Genre(1, "action");
+        Genre genre2 = new Genre(2, "adventure");
+        Set<Genre> genres = Set.of(genre1, genre2);
+        BookCreation data = new BookCreation(title, author, Set.of(1, 2));
+        Book book = new Book(id, title, author, null, status, createdAt, genres);
+        when(genreRepository.getGenreById(1)).thenReturn(Optional.of(genre1));
+        when(genreRepository.getGenreById(2)).thenReturn(Optional.of(genre2));
+        when(bookRepository.create(data, genres)).thenReturn(book);
+
+        Book result = useCase.execute(data);
+
+        assertNotNull(result);
+        assertEquals(book, result);
+        verify(bookRepository).create(data, genres);
+    }
+
+    @Test
+    void execute_WhenOneOrMoreGenresNotFound_ShouldThrowNotFoundException() {
+        String title = "title";
+        String author = "author";
+        BookCreation data = new BookCreation(title, author, Set.of(1, 2));
+        Genre genre1 = new Genre(1, "action");
+        when(genreRepository.getGenreById(2)).thenReturn(Optional.empty());
+        lenient().when(genreRepository.getGenreById(1)).thenReturn(Optional.of(genre1));
+
+        assertThrows(NotFoundException.class, () -> useCase.execute(data));
+    }
+}
