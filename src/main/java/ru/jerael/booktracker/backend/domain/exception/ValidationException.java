@@ -52,11 +52,11 @@ public class ValidationException extends AppException {
         );
     }
 
-    public static ValidationException unsupportedFileExtension(String fieldName, String extension) {
+    public static ValidationException unsupportedFileContentType(String contentType) {
         return new ValidationException(
-            "File extension ." + extension + " is not supported",
-            "UNSUPPORTED_FILE_EXTENSION",
-            fieldName
+            "File content type " + contentType + " is not supported",
+            "UNSUPPORTED_FILE_CONTENT_TYPE",
+            "contentType"
         );
     }
 }
