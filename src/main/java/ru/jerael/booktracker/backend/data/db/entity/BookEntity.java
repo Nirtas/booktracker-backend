@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.jerael.booktracker.backend.data.db.DbConstants;
+import ru.jerael.booktracker.backend.domain.constants.BookRules;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
 import java.util.HashSet;
@@ -23,10 +24,10 @@ public class BookEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "title", length = 500, nullable = false)
+    @Column(name = "title", length = BookRules.TITLE_MAX_LENGTH, nullable = false)
     private String title;
 
-    @Column(name = "author", length = 500, nullable = false)
+    @Column(name = "author", length = BookRules.AUTHOR_MAX_LENGTH, nullable = false)
     private String author;
 
     @Column(name = "cover_url")
