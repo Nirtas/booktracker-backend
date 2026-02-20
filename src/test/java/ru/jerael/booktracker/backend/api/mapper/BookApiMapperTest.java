@@ -1,9 +1,11 @@
 package ru.jerael.booktracker.backend.api.mapper;
 
 import org.junit.jupiter.api.Test;
+import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
+import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
 import java.util.List;
@@ -53,5 +55,16 @@ class BookApiMapperTest {
         assertEquals(title, bookResponses.get(0).title());
         assertEquals(id2, bookResponses.get(1).id());
         assertEquals("asd", bookResponses.get(1).title());
+    }
+
+    @Test
+    void toDomain() {
+        BookCreationRequest request = new BookCreationRequest(" title ", " author ", Set.of(1, 2));
+
+        BookCreation data = bookApiMapper.toDomain(request);
+
+        assertEquals(request.title().trim(), data.title());
+        assertEquals(request.author().trim(), data.author());
+        assertTrue(data.genreIds().containsAll(request.genreIds()));
     }
 }

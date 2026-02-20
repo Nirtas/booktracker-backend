@@ -1,7 +1,3 @@
-DROP TABLE IF EXISTS public.book_genres CASCADE;
-DROP TABLE IF EXISTS public.books CASCADE;
-DROP TABLE IF EXISTS public.genres CASCADE;
-
 CREATE TABLE IF NOT EXISTS public.books
 (
     book_id uuid NOT NULL,

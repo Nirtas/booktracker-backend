@@ -1,8 +1,10 @@
 package ru.jerael.booktracker.backend.api.mapper;
 
 import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
+import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import java.util.List;
 
 @Component
@@ -27,5 +29,13 @@ public class BookApiMapper {
 
     public List<BookResponse> toResponses(List<Book> books) {
         return books.stream().map(this::toResponse).toList();
+    }
+
+    public BookCreation toDomain(BookCreationRequest request) {
+        return new BookCreation(
+            request.title().trim(),
+            request.author().trim(),
+            request.genreIds()
+        );
     }
 }

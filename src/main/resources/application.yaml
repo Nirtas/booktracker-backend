@@ -27,6 +27,10 @@ spring:
     resources:
       add-mappings: false
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+
 app:
   storage:
     covers-path: "storage/covers"
