@@ -16,7 +16,6 @@ public class UploadCoverApiMapper {
             InputStream inputStream = new BufferedInputStream(file.getInputStream());
             return new UploadCover(
                 bookId,
-                file.getOriginalFilename(),
                 file.getContentType(),
                 inputStream
             );

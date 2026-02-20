@@ -29,7 +29,6 @@ class UploadCoverApiMapperTest {
         UploadCover data = uploadCoverApiMapper.toDomain(id, mockMultipartFile);
 
         assertEquals(id, data.bookId());
-        assertEquals(fileName, data.fileName());
         assertEquals(contentType, data.contentType());
         assertThat(data.content().readAllBytes()).isEqualTo(content);
     }

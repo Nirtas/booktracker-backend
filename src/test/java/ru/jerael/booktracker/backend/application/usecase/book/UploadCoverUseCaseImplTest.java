@@ -43,7 +43,7 @@ class UploadCoverUseCaseImplTest {
 
     @Test
     void execute_WhenBookDoesNotExists_ShouldThrowNotFoundException() {
-        UploadCover data = new UploadCover(id, "cover.jpg", "image/jpeg", content);
+        UploadCover data = new UploadCover(id, "image/jpeg", content);
         when(bookRepository.getBookById(id)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> useCase.execute(data));
@@ -53,7 +53,7 @@ class UploadCoverUseCaseImplTest {
 
     @Test
     void execute_WhenContentTypeIsNotAllowed_ShouldThrowValidationException() {
-        UploadCover data = new UploadCover(id, "cover.jpg", "application/json", content);
+        UploadCover data = new UploadCover(id, "application/json", content);
         when(bookRepository.getBookById(id)).thenReturn(Optional.of(book));
 
         assertThrows(ValidationException.class, () -> useCase.execute(data));
@@ -63,7 +63,7 @@ class UploadCoverUseCaseImplTest {
 
     @Test
     void execute_WhenDataIsValid_ShouldSaveCoverAndUpdateUrl() {
-        UploadCover data = new UploadCover(id, "cover.jpg", "image/jpeg", content);
+        UploadCover data = new UploadCover(id, "image/jpeg", content);
         String path = "covers/cover.jpg";
         Book updatedBook = new Book(id, title, author, path, status, createdAt, Collections.emptySet());
         when(bookRepository.getBookById(id)).thenReturn(Optional.of(book));
