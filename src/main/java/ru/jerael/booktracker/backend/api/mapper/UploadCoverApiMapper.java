@@ -12,6 +12,8 @@ import java.util.UUID;
 @Component
 public class UploadCoverApiMapper {
     public UploadCover toDomain(UUID bookId, MultipartFile file) {
+        if (bookId == null || file == null) return null;
+
         try {
             InputStream inputStream = new BufferedInputStream(file.getInputStream());
             return new UploadCover(

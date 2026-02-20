@@ -16,6 +16,8 @@ public class BookApiMapper {
     }
 
     public BookResponse toResponse(Book book) {
+        if (book == null) return null;
+
         return new BookResponse(
             book.id(),
             book.title(),
@@ -28,10 +30,14 @@ public class BookApiMapper {
     }
 
     public List<BookResponse> toResponses(List<Book> books) {
+        if (books == null) return List.of();
+
         return books.stream().map(this::toResponse).toList();
     }
 
     public BookCreation toDomain(BookCreationRequest request) {
+        if (request == null) return null;
+
         return new BookCreation(
             request.title().trim(),
             request.author().trim(),
