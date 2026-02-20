@@ -67,14 +67,14 @@ class UploadCoverUseCaseImplTest {
         String path = "covers/cover.jpg";
         Book updatedBook = new Book(id, title, author, path, status, createdAt, Collections.emptySet());
         when(bookRepository.getBookById(id)).thenReturn(Optional.of(book));
-        when(bookCoverStorage.save(id, "jpg", content)).thenReturn(path);
+        when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(path);
         when(bookRepository.updateCoverUrl(id, path)).thenReturn(updatedBook);
 
         Book result = useCase.execute(data);
 
         assertNotNull(result);
         assertEquals(path, result.coverUrl());
-        verify(bookCoverStorage).save(id, "jpg", content);
+        verify(bookCoverStorage).save(id, "image/jpeg", content);
         verify(bookRepository).updateCoverUrl(id, path);
     }
 }
