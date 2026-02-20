@@ -5,22 +5,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.client.RestTestClient;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.api.handler.GlobalExceptionHandler;
 import ru.jerael.booktracker.backend.api.mapper.BookApiMapper;
 import ru.jerael.booktracker.backend.api.mapper.GenreApiMapper;
+import ru.jerael.booktracker.backend.api.mapper.UploadCoverApiMapper;
+import ru.jerael.booktracker.backend.api.validator.FileValidator;
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
+import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
+import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.book.GetBookByIdUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.book.GetBooksUseCase;
+import ru.jerael.booktracker.backend.domain.usecase.book.UploadCoverUseCase;
+import tools.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +42,10 @@ import static org.mockito.Mockito.when;
 class BookControllerTest {
 
     @Autowired
-    private RestTestClient restTestClient;
+    private MockMvcTester mockMvcTester;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private GetBooksUseCase getBooksUseCase;
@@ -38,23 +53,41 @@ class BookControllerTest {
     @MockitoBean
     private GetBookByIdUseCase getBookByIdUseCase;
 
+    @MockitoBean
+    private CreateBookUseCase createBookUseCase;
+
+    @MockitoBean
+    private UploadCoverUseCase uploadCoverUseCase;
+
+    @MockitoBean
+    private FileValidator fileValidator;
+
+    @MockitoBean
+    private BookApiMapper bookApiMapper;
+
+    @MockitoBean
+    private UploadCoverApiMapper uploadCoverApiMapper;
+
+    private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+    private final String title = "title";
+    private final String author = "author";
+    private final BookStatus status = BookStatus.READING;
+    private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
+
     @Test
-    void getAll_ShouldReturnSetOfBooks() {
-        UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
-        String title = "title";
-        String author = "author";
-        BookStatus status = BookStatus.READING;
-        Instant createdAt = Instant.ofEpochMilli(1771249699347L);
+    void getAll_ShouldReturnListOfBookResponses() {
         Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
         BookResponse bookResponse = new BookResponse(id, title, author, null, status.getValue(),
             createdAt.toEpochMilli(), Collections.emptySet());
         when(getBooksUseCase.execute()).thenReturn(List.of(book));
+        when(bookApiMapper.toResponses(List.of(book))).thenReturn(List.of(bookResponse));
 
-        restTestClient.get().uri("/api/v1/books")
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody(new ParameterizedTypeReference<List<BookResponse>>() {})
-            .isEqualTo(List.of(bookResponse));
+        assertThat(mockMvcTester.get().uri("/api/v1/books"))
+            .hasStatus(HttpStatus.OK)
+            .bodyJson()
+            .extractingPath("$")
+            .convertTo(BookResponse[].class)
+            .satisfies(responses -> assertThat(responses).containsExactly(bookResponse));
 
         verify(getBooksUseCase).execute();
     }
@@ -64,12 +97,68 @@ class BookControllerTest {
         UUID id = UUID.fromString("31d3f5e3-7faf-4678-a3cf-4657d8875a82");
         when(getBookByIdUseCase.execute(id)).thenThrow(NotFoundException.bookNotFound(id));
 
-        restTestClient.get().uri("/api/v1/books/" + id)
-            .exchange()
-            .expectStatus().isNotFound()
-            .expectBody()
-            .jsonPath("$.message").isEqualTo("Book with id " + id + " was not found");
+        assertThat(mockMvcTester.get().uri("/api/v1/books/" + id))
+            .hasStatus(HttpStatus.NOT_FOUND)
+            .bodyJson()
+            .extractingPath("$.message")
+            .isEqualTo("Book with id " + id + " was not found");
 
         verify(getBookByIdUseCase).execute(id);
+    }
+
+    @Test
+    void create_ShouldCreateBook() {
+        BookCreationRequest request = new BookCreationRequest(title, author, Set.of(1, 2));
+        BookCreation data = new BookCreation(title, author, Set.of(1, 2));
+        Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
+        BookResponse bookResponse =
+            new BookResponse(id, title, author, null, status.getValue(), createdAt.toEpochMilli(),
+                Collections.emptySet());
+        when(bookApiMapper.toDomain(request)).thenReturn(data);
+        when(createBookUseCase.execute(data)).thenReturn(book);
+        when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);
+
+        assertThat(
+            mockMvcTester.post().uri("/api/v1/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .hasStatus(HttpStatus.CREATED)
+            .bodyJson()
+            .convertTo(BookResponse.class)
+            .satisfies(response -> {
+                    assertThat(response.id()).isEqualTo(bookResponse.id());
+                    assertThat(response.title()).isEqualTo(bookResponse.title());
+                    assertThat(response.author()).isEqualTo(bookResponse.author());
+                }
+            );
+    }
+
+    @Test
+    void uploadCover_ShouldUploadCover() {
+        String coverUrl = "covers/cover.jpg";
+        MockMultipartFile mockMultipartFile = new MockMultipartFile(
+            "cover",
+            "image.jpg",
+            MediaType.IMAGE_JPEG_VALUE,
+            "content".getBytes()
+        );
+        UploadCover data = new UploadCover(id, "cover.jpg", MediaType.IMAGE_JPEG_VALUE, null);
+        Book book = new Book(id, title, author, coverUrl, status, createdAt, null);
+        BookResponse bookResponse =
+            new BookResponse(id, title, author, coverUrl, status.getValue(), createdAt.toEpochMilli(), null);
+        when(uploadCoverApiMapper.toDomain(id, mockMultipartFile)).thenReturn(data);
+        when(uploadCoverUseCase.execute(data)).thenReturn(book);
+        when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);
+
+        assertThat(
+            mockMvcTester.patch().uri("/api/v1/books/" + id + "/cover")
+                .multipart()
+                .file(mockMultipartFile)
+        )
+            .hasStatus(HttpStatus.OK)
+            .bodyJson()
+            .convertTo(BookResponse.class)
+            .satisfies(response -> assertThat(response.coverUrl()).isEqualTo(bookResponse.coverUrl()));
     }
 }
