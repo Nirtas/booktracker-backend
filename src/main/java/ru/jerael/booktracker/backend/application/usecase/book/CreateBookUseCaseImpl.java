@@ -22,11 +22,14 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
     @Override
     @Transactional
     public Book execute(BookCreation data) {
-        // TODO: add genreRepository.findAllById() and replace this
-        Set<Genre> genres = data.genreIds().stream()
-            .map(id ->
-                genreRepository.getGenreById(id).orElseThrow(() -> NotFoundException.genreNotFound(id))
-            ).collect(Collectors.toSet());
+        Set<Genre> genres = genreRepository.findAllById(data.genreIds());
+        if (genres.size() != data.genreIds().size()) {
+            Set<Integer> foundIds = genres.stream().map(Genre::id).collect(Collectors.toSet());
+            Set<Integer> missingIds = data.genreIds().stream()
+                .filter(id -> !foundIds.contains(id))
+                .collect(Collectors.toSet());
+            throw NotFoundException.genresNotFound(missingIds);
+        }
         return bookRepository.create(data, genres);
     }
 }

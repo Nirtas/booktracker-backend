@@ -13,7 +13,6 @@ import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,16 +40,17 @@ class CreateBookUseCaseImplTest {
         Genre genre1 = new Genre(1, "action");
         Genre genre2 = new Genre(2, "adventure");
         Set<Genre> genres = Set.of(genre1, genre2);
-        BookCreation data = new BookCreation(title, author, Set.of(1, 2));
+        Set<Integer> genreIds = Set.of(1, 2);
+        BookCreation data = new BookCreation(title, author, genreIds);
         Book book = new Book(id, title, author, null, status, createdAt, genres);
-        when(genreRepository.getGenreById(1)).thenReturn(Optional.of(genre1));
-        when(genreRepository.getGenreById(2)).thenReturn(Optional.of(genre2));
+        when(genreRepository.findAllById(genreIds)).thenReturn(genres);
         when(bookRepository.create(data, genres)).thenReturn(book);
 
         Book result = useCase.execute(data);
 
         assertNotNull(result);
         assertEquals(book, result);
+        verify(genreRepository).findAllById(genreIds);
         verify(bookRepository).create(data, genres);
     }
 
@@ -58,11 +58,12 @@ class CreateBookUseCaseImplTest {
     void execute_WhenOneOrMoreGenresNotFound_ShouldThrowNotFoundException() {
         String title = "title";
         String author = "author";
-        BookCreation data = new BookCreation(title, author, Set.of(1, 2));
+        Set<Integer> genreIds = Set.of(1, 2);
+        BookCreation data = new BookCreation(title, author, genreIds);
         Genre genre1 = new Genre(1, "action");
-        when(genreRepository.getGenreById(2)).thenReturn(Optional.empty());
-        lenient().when(genreRepository.getGenreById(1)).thenReturn(Optional.of(genre1));
+        when(genreRepository.findAllById(genreIds)).thenReturn(Set.of(genre1));
 
         assertThrows(NotFoundException.class, () -> useCase.execute(data));
+        verify(bookRepository, never()).create(any(), any());
     }
 }
