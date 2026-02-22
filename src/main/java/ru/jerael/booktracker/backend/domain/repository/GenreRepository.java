@@ -8,4 +8,6 @@ public interface GenreRepository {
     Set<Genre> getGenres();
 
     Optional<Genre> getGenreById(Integer id);
+
+    Set<Genre> findAllById(Set<Integer> ids);
 }

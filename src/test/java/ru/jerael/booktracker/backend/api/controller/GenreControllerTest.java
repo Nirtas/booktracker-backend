@@ -54,6 +54,6 @@ class GenreControllerTest {
             .exchange()
             .expectStatus().isNotFound()
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Genre with id " + genreId + " was not found");
+            .jsonPath("$.message").isEqualTo("Genre not found with id: " + genreId);
     }
 }

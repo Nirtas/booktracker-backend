@@ -4,5 +4,5 @@ import java.io.InputStream;
 import java.util.UUID;
 
 public interface BookCoverStorage {
-    String save(UUID bookId, String extension, InputStream content);
+    String save(UUID bookId, String contentType, InputStream content);
 }

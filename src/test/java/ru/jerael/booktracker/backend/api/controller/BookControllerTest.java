@@ -143,7 +143,7 @@ class BookControllerTest {
             MediaType.IMAGE_JPEG_VALUE,
             "content".getBytes()
         );
-        UploadCover data = new UploadCover(id, "cover.jpg", MediaType.IMAGE_JPEG_VALUE, null);
+        UploadCover data = new UploadCover(id, MediaType.IMAGE_JPEG_VALUE, null);
         Book book = new Book(id, title, author, coverUrl, status, createdAt, null);
         BookResponse bookResponse =
             new BookResponse(id, title, author, coverUrl, status.getValue(), createdAt.toEpochMilli(), null);

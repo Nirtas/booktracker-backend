@@ -29,4 +29,9 @@ public class GenreRepositoryImpl implements GenreRepository {
     public Optional<Genre> getGenreById(Integer id) {
         return jpaGenreRepository.findById(id).map(genreDataMapper::toDomain);
     }
+
+    @Override
+    public Set<Genre> findAllById(Set<Integer> ids) {
+        return jpaGenreRepository.findAllById(ids).stream().map(genreDataMapper::toDomain).collect(Collectors.toSet());
+    }
 }

@@ -64,7 +64,7 @@ class BookCoverStorageImplTest {
 
     @Test
     void save_ShouldSaveCover() throws IOException {
-        String savedFileName = bookCoverStorage.save(id, extension, inputStream);
+        String savedFileName = bookCoverStorage.save(id, "image/jpeg", inputStream);
 
         assertEquals(String.format("%s.%s", id, extension), savedFileName);
 
@@ -79,7 +79,7 @@ class BookCoverStorageImplTest {
         String newContent = "new content";
         InputStream newInputStream = new ByteArrayInputStream(newContent.getBytes());
 
-        String savedFileName = bookCoverStorage.save(id, extension, newInputStream);
+        String savedFileName = bookCoverStorage.save(id, "image/jpeg", newInputStream);
 
         assertEquals(String.format("%s.%s", id, extension), savedFileName);
 

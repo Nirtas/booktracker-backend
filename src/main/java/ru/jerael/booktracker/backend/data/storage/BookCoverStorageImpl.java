@@ -3,6 +3,7 @@ package ru.jerael.booktracker.backend.data.storage;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.domain.constants.BookRules;
 import ru.jerael.booktracker.backend.domain.exception.InternalException;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.io.IOException;
@@ -33,8 +34,9 @@ public class BookCoverStorageImpl implements BookCoverStorage {
     }
 
     @Override
-    public String save(UUID bookId, String extension, InputStream content) {
+    public String save(UUID bookId, String contentType, InputStream content) {
         try {
+            String extension = BookRules.MIME_TO_EXTENSION.get(contentType);
             String fileName = String.format("%s.%s", bookId, extension);
             Path destination = coversPath.resolve(fileName);
             Files.copy(content, destination, StandardCopyOption.REPLACE_EXISTING);

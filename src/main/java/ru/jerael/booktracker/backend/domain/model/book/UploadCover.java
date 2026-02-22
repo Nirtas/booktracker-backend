@@ -5,7 +5,6 @@ import java.util.UUID;
 
 public record UploadCover(
     UUID bookId,
-    String fileName,
     String contentType,
     InputStream content
 ) {}

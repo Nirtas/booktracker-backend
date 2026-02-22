@@ -25,8 +25,7 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
         if (!BookRules.ALLOWED_IMAGE_MIME_TYPES.contains(data.contentType())) {
             throw ValidationException.unsupportedFileContentType(data.contentType());
         }
-        String extension = BookRules.MIME_TO_EXTENSION.get(data.contentType());
-        String path = bookCoverStorage.save(data.bookId(), extension, data.content());
+        String path = bookCoverStorage.save(data.bookId(), data.contentType(), data.content());
         return bookRepository.updateCoverUrl(data.bookId(), path);
     }
 }
