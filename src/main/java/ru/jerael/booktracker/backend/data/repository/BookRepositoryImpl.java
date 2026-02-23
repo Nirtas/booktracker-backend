@@ -2,7 +2,6 @@ package ru.jerael.booktracker.backend.data.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.mapper.BookDataMapper;
@@ -19,14 +18,12 @@ public class BookRepositoryImpl implements BookRepository {
     private final BookDataMapper bookDataMapper;
 
     @Override
-    @Transactional(readOnly = true)
     public List<Book> findAll() {
         List<BookEntity> entities = jpaBookRepository.findAll();
         return entities.stream().map(bookDataMapper::toDomain).toList();
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<Book> findById(UUID id) {
         return jpaBookRepository.findById(id).map(bookDataMapper::toDomain);
     }
