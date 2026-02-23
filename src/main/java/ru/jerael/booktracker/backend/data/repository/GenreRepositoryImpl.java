@@ -21,7 +21,7 @@ public class GenreRepositoryImpl implements GenreRepository {
 
     @Override
     public Set<Genre> findAll() {
-        List<GenreEntity> entities = jpaGenreRepository.findAllByOrderByIdAsc();
+        List<GenreEntity> entities = jpaGenreRepository.findAllByOrderByNameAsc();
         return entities.stream().map(genreDataMapper::toDomain).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
