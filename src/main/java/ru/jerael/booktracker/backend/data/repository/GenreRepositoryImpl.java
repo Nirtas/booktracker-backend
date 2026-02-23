@@ -20,13 +20,13 @@ public class GenreRepositoryImpl implements GenreRepository {
     private final GenreDataMapper genreDataMapper;
 
     @Override
-    public Set<Genre> getGenres() {
+    public Set<Genre> findAll() {
         List<GenreEntity> entities = jpaGenreRepository.findAllByOrderByIdAsc();
         return entities.stream().map(genreDataMapper::toDomain).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override
-    public Optional<Genre> getGenreById(Integer id) {
+    public Optional<Genre> findById(Integer id) {
         return jpaGenreRepository.findById(id).map(genreDataMapper::toDomain);
     }
 

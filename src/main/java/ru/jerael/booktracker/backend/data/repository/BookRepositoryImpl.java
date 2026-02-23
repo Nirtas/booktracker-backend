@@ -20,14 +20,14 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Book> getBooks() {
+    public List<Book> findAll() {
         List<BookEntity> entities = jpaBookRepository.findAll();
         return entities.stream().map(bookDataMapper::toDomain).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Book> getBookById(UUID id) {
+    public Optional<Book> findById(UUID id) {
         return jpaBookRepository.findById(id).map(bookDataMapper::toDomain);
     }
 

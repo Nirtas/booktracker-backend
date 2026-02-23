@@ -27,18 +27,18 @@ class GetGenreByIdUseCaseImplTest {
     void execute_WhenGenreExists_ShouldReturnGenre() {
         Integer genreId = 1;
         Genre genre = new Genre(genreId, "adventure");
-        when(genreRepository.getGenreById(genreId)).thenReturn(Optional.of(genre));
+        when(genreRepository.findById(genreId)).thenReturn(Optional.of(genre));
 
         Genre result = useCase.execute(genreId);
 
         assertEquals(genre, result);
-        verify(genreRepository).getGenreById(genreId);
+        verify(genreRepository).findById(genreId);
     }
 
     @Test
     void execute_WhenGenreDoesNotExists_ShouldThrowNotFoundException() {
         Integer genreId = 5555;
-        when(genreRepository.getGenreById(genreId)).thenReturn(Optional.empty());
+        when(genreRepository.findById(genreId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> useCase.execute(genreId));
     }

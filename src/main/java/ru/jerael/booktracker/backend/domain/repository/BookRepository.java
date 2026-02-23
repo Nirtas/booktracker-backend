@@ -6,9 +6,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BookRepository {
-    List<Book> getBooks();
+    List<Book> findAll();
 
-    Optional<Book> getBookById(UUID id);
+    Optional<Book> findById(UUID id);
 
     Book save(Book book);
 }

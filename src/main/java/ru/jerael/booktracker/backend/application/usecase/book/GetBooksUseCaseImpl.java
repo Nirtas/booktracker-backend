@@ -14,6 +14,6 @@ public class GetBooksUseCaseImpl implements GetBooksUseCase {
 
     @Override
     public List<Book> execute() {
-        return bookRepository.getBooks();
+        return bookRepository.findAll();
     }
 }

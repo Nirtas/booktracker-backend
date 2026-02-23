@@ -58,7 +58,7 @@ class BookRepositoryImplTest {
         UUID id1 = entities.get(0).getId();
         UUID id2 = entities.get(1).getId();
 
-        List<Book> result = bookRepository.getBooks();
+        List<Book> result = bookRepository.findAll();
 
         assertEquals(2, result.size());
         assertThat(result).extracting(Book::id).containsExactlyInAnyOrder(id1, id2);
@@ -80,7 +80,7 @@ class BookRepositoryImplTest {
         BookEntity savedBook = jpaBookRepository.save(book1);
         UUID id = savedBook.getId();
 
-        Optional<Book> result = bookRepository.getBookById(id);
+        Optional<Book> result = bookRepository.findById(id);
 
         assertTrue(result.isPresent());
         assertEquals(id, result.get().id());

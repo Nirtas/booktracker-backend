@@ -15,6 +15,6 @@ public class GetBookByIdUseCaseImpl implements GetBookByIdUseCase {
 
     @Override
     public Book execute(UUID id) {
-        return bookRepository.getBookById(id).orElseThrow(() -> NotFoundException.bookNotFound(id));
+        return bookRepository.findById(id).orElseThrow(() -> NotFoundException.bookNotFound(id));
     }
 }
