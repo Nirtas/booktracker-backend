@@ -33,7 +33,7 @@ class GenreRepositoryImplTest {
         entity2.setName("action");
         jpaGenreRepository.saveAll(List.of(entity1, entity2));
 
-        Set<Genre> result = genreRepository.getGenres();
+        Set<Genre> result = genreRepository.findAll();
 
         assertEquals(2, result.size());
         assertThat(result).extracting(Genre::name).containsExactlyInAnyOrder("adventure", "action");
@@ -45,7 +45,7 @@ class GenreRepositoryImplTest {
         entity.setName("adventure");
         GenreEntity savedEntity = jpaGenreRepository.save(entity);
 
-        Optional<Genre> result = genreRepository.getGenreById(savedEntity.getId());
+        Optional<Genre> result = genreRepository.findById(savedEntity.getId());
 
         assertTrue(result.isPresent());
         assertEquals("adventure", result.get().name());

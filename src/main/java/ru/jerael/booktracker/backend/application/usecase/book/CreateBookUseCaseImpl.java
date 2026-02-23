@@ -7,9 +7,11 @@ import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
+import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
+import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,15 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
                 .collect(Collectors.toSet());
             throw NotFoundException.genresNotFound(missingIds);
         }
-        return bookRepository.create(data, genres);
+        Book newBook = new Book(
+            null,
+            data.title(),
+            data.author(),
+            null,
+            BookStatus.WANT_TO_READ,
+            Instant.now(),
+            genres
+        );
+        return bookRepository.save(newBook);
     }
 }

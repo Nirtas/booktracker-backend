@@ -39,18 +39,18 @@ class GetBookByIdUseCaseImplTest {
         Genre genre2 = new Genre(2, "adventure");
         Set<Genre> genres = Set.of(genre1, genre2);
         Book book = new Book(id, title, author, null, status, createdAt, genres);
-        when(bookRepository.getBookById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
 
         Book result = useCase.execute(id);
 
         assertEquals(book, result);
-        verify(bookRepository).getBookById(id);
+        verify(bookRepository).findById(id);
     }
 
     @Test
     void execute_WhenBookDoesNotExists_ShouldThrowNotFoundException() {
         UUID id = UUID.fromString("12345678-1234-1234-1234-123456789012");
-        when(bookRepository.getBookById(id)).thenReturn(Optional.empty());
+        when(bookRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> useCase.execute(id));
     }

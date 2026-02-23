@@ -14,6 +14,6 @@ public class GetGenresUseCaseImpl implements GetGenresUseCase {
 
     @Override
     public Set<Genre> execute() {
-        return genreRepository.getGenres();
+        return genreRepository.findAll();
     }
 }

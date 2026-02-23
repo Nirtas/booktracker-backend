@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface JpaGenreRepository extends JpaRepository<GenreEntity, Integer> {
-    List<GenreEntity> findAllByOrderByIdAsc();
+    List<GenreEntity> findAllByOrderByNameAsc();
 }

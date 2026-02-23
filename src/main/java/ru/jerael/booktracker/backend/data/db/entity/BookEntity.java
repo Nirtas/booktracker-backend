@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import ru.jerael.booktracker.backend.data.db.DbConstants;
 import ru.jerael.booktracker.backend.domain.constants.BookRules;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
@@ -38,7 +37,6 @@ public class BookEntity {
     private BookStatus status = BookStatus.WANT_TO_READ;
 
     @Column(name = "created_at", updatable = false)
-    @CreationTimestamp
     private Instant createdAt;
 
     @ManyToMany(fetch = FetchType.LAZY)

@@ -2,6 +2,7 @@ package ru.jerael.booktracker.backend.application.usecase.book;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -44,7 +45,7 @@ class UploadCoverUseCaseImplTest {
     @Test
     void execute_WhenBookDoesNotExists_ShouldThrowNotFoundException() {
         UploadCover data = new UploadCover(id, "image/jpeg", content);
-        when(bookRepository.getBookById(id)).thenReturn(Optional.empty());
+        when(bookRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> useCase.execute(data));
 
@@ -54,7 +55,7 @@ class UploadCoverUseCaseImplTest {
     @Test
     void execute_WhenContentTypeIsNotAllowed_ShouldThrowValidationException() {
         UploadCover data = new UploadCover(id, "application/json", content);
-        when(bookRepository.getBookById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
 
         assertThrows(ValidationException.class, () -> useCase.execute(data));
 
@@ -65,16 +66,23 @@ class UploadCoverUseCaseImplTest {
     void execute_WhenDataIsValid_ShouldSaveCoverAndUpdateUrl() {
         UploadCover data = new UploadCover(id, "image/jpeg", content);
         String path = "covers/cover.jpg";
-        Book updatedBook = new Book(id, title, author, path, status, createdAt, Collections.emptySet());
-        when(bookRepository.getBookById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
         when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(path);
-        when(bookRepository.updateCoverUrl(id, path)).thenReturn(updatedBook);
+        when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         Book result = useCase.execute(data);
 
         assertNotNull(result);
+        assertEquals(id, result.id());
         assertEquals(path, result.coverUrl());
+
+        ArgumentCaptor<Book> bookArgumentCaptor = ArgumentCaptor.forClass(Book.class);
+        verify(bookRepository).save(bookArgumentCaptor.capture());
+
+        Book capturedBook = bookArgumentCaptor.getValue();
+        assertEquals(path, capturedBook.coverUrl());
+
         verify(bookCoverStorage).save(id, "image/jpeg", content);
-        verify(bookRepository).updateCoverUrl(id, path);
+        verify(bookRepository).save(any());
     }
 }

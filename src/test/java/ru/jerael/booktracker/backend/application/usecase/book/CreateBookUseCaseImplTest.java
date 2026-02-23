@@ -2,6 +2,7 @@ package ru.jerael.booktracker.backend.application.usecase.book;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -9,7 +10,6 @@ import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
-import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import java.time.Instant;
@@ -33,25 +33,45 @@ class CreateBookUseCaseImplTest {
     @Test
     void execute_WhenAllGenresFound_ShouldCreateBookWithAllGenres() {
         UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+
         String title = "title";
         String author = "author";
-        BookStatus status = BookStatus.WANT_TO_READ;
-        Instant createdAt = Instant.ofEpochMilli(1771249699347L);
+        Set<Integer> genreIds = Set.of(1, 2);
+        BookCreation data = new BookCreation(title, author, genreIds);
+
         Genre genre1 = new Genre(1, "action");
         Genre genre2 = new Genre(2, "adventure");
         Set<Genre> genres = Set.of(genre1, genre2);
-        Set<Integer> genreIds = Set.of(1, 2);
-        BookCreation data = new BookCreation(title, author, genreIds);
-        Book book = new Book(id, title, author, null, status, createdAt, genres);
+
         when(genreRepository.findAllById(genreIds)).thenReturn(genres);
-        when(bookRepository.create(data, genres)).thenReturn(book);
+        when(bookRepository.save(any())).thenAnswer(invocationOnMock -> {
+            Book book = invocationOnMock.getArgument(0);
+            return new Book(
+                id,
+                book.title(),
+                book.author(),
+                book.coverUrl(),
+                book.status(),
+                book.createdAt(),
+                book.genres()
+            );
+        });
 
         Book result = useCase.execute(data);
 
         assertNotNull(result);
-        assertEquals(book, result);
+        assertEquals(id, result.id());
+        assertNotNull(result.createdAt());
+        assertEquals(genres, result.genres());
+
         verify(genreRepository).findAllById(genreIds);
-        verify(bookRepository).create(data, genres);
+
+        ArgumentCaptor<Book> bookArgumentCaptor = ArgumentCaptor.forClass(Book.class);
+        verify(bookRepository).save(bookArgumentCaptor.capture());
+
+        Book capturedBook = bookArgumentCaptor.getValue();
+        assertNull(capturedBook.id());
+        assertTrue(capturedBook.createdAt().isBefore(Instant.now().plusSeconds(2)));
     }
 
     @Test
@@ -60,10 +80,11 @@ class CreateBookUseCaseImplTest {
         String author = "author";
         Set<Integer> genreIds = Set.of(1, 2);
         BookCreation data = new BookCreation(title, author, genreIds);
+
         Genre genre1 = new Genre(1, "action");
         when(genreRepository.findAllById(genreIds)).thenReturn(Set.of(genre1));
 
         assertThrows(NotFoundException.class, () -> useCase.execute(data));
-        verify(bookRepository, never()).create(any(), any());
+        verify(bookRepository, never()).save(any());
     }
 }

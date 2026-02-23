@@ -5,9 +5,9 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface GenreRepository {
-    Set<Genre> getGenres();
+    Set<Genre> findAll();
 
-    Optional<Genre> getGenreById(Integer id);
+    Optional<Genre> findById(Integer id);
 
     Set<Genre> findAllById(Set<Integer> ids);
 }
