@@ -10,10 +10,8 @@ import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository;
 import ru.jerael.booktracker.backend.data.mapper.BookDataMapper;
 import ru.jerael.booktracker.backend.data.mapper.GenreDataMapper;
-import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
-import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
 import java.util.*;
@@ -90,60 +88,40 @@ class BookRepositoryImplTest {
     }
 
     @Test
-    void create_ShouldCreateBookWithExistingGenres() {
+    void save_WhenIdIsNull_ShouldInsertNewBook() {
         GenreEntity genre1 = new GenreEntity();
         genre1.setName("action");
         GenreEntity genre2 = new GenreEntity();
         genre2.setName("adventure");
         List<GenreEntity> genreEntities = jpaGenreRepository.saveAll(Set.of(genre1, genre2));
 
-        Set<Integer> genreIds = genreEntities.stream().map(GenreEntity::getId).collect(Collectors.toSet());
         Set<Genre> genres = genreEntities.stream()
             .map(entity -> new Genre(entity.getId(), entity.getName()))
             .collect(Collectors.toSet());
 
         String title = "title";
         String author = "author";
-        BookCreation data = new BookCreation(title, author, genreIds);
+        Book book = new Book(
+            null,
+            title,
+            author,
+            null,
+            BookStatus.WANT_TO_READ,
+            Instant.now(),
+            genres
+        );
 
-        Book createdBook = bookRepository.create(data, genres);
+        Book createdBook = bookRepository.save(book);
+
         assertNotNull(createdBook.id());
         assertEquals(title, createdBook.title());
         assertEquals(author, createdBook.author());
-        assertNull(createdBook.coverUrl());
-        assertEquals(BookStatus.WANT_TO_READ, createdBook.status());
-        assertNotNull(createdBook.createdAt());
         assertEquals(2, createdBook.genres().size());
-        assertThat(createdBook.genres()).extracting(Genre::id).containsExactlyInAnyOrder(genre1.getId(), genre2.getId());
-
-        Optional<Book> result = bookRepository.getBookById(createdBook.id());
-        assertTrue(result.isPresent());
-        assertEquals(2, createdBook.genres().size());
+        assertTrue(jpaBookRepository.existsById(createdBook.id()));
     }
 
     @Test
-    void create_ShouldCreateBookWithoutGenres() {
-        String title = "title";
-        String author = "author";
-        BookCreation data = new BookCreation(title, author, Collections.emptySet());
-        Set<Genre> genres = Collections.emptySet();
-
-        Book createdBook = bookRepository.create(data, genres);
-        assertNotNull(createdBook.id());
-        assertEquals(title, createdBook.title());
-        assertEquals(author, createdBook.author());
-        assertNull(createdBook.coverUrl());
-        assertEquals(BookStatus.WANT_TO_READ, createdBook.status());
-        assertNotNull(createdBook.createdAt());
-        assertTrue(createdBook.genres().isEmpty());
-
-        Optional<Book> result = bookRepository.getBookById(createdBook.id());
-        assertTrue(result.isPresent());
-        assertTrue(result.get().genres().isEmpty());
-    }
-
-    @Test
-    void updateCoverUrl_ShouldUpdateExistingBookCover() {
+    void save_WhenIdIsPresent_ShouldUpdateExistingBook() {
         BookEntity bookEntity = new BookEntity();
         bookEntity.setTitle("title");
         bookEntity.setAuthor("author");
@@ -155,46 +133,23 @@ class BookRepositoryImplTest {
         BookEntity savedBook = jpaBookRepository.save(bookEntity);
         UUID id = savedBook.getId();
 
-        String newCoverUrl = "new_cover.jpg";
+        Book book = new Book(
+            id,
+            "new title",
+            "new author",
+            "new_cover.jpg",
+            savedBook.getStatus(),
+            savedBook.getCreatedAt(),
+            Collections.emptySet()
+        );
 
-        Book updatedBook = bookRepository.updateCoverUrl(id, newCoverUrl);
+        Book updatedBook = bookRepository.save(book);
+
         assertEquals(id, updatedBook.id());
-        assertEquals(newCoverUrl, updatedBook.coverUrl());
+        assertEquals("new_cover.jpg", updatedBook.coverUrl());
 
-        Optional<Book> result = bookRepository.getBookById(id);
-        assertTrue(result.isPresent());
-        assertEquals(newCoverUrl, result.get().coverUrl());
-    }
-
-    @Test
-    void updateCoverUrl_ShouldSetCoverUrlToNull() {
-        BookEntity bookEntity = new BookEntity();
-        bookEntity.setTitle("title");
-        bookEntity.setAuthor("author");
-        bookEntity.setCoverUrl("old_cover.jpg");
-        bookEntity.setStatus(BookStatus.READING);
-        bookEntity.setCreatedAt(Instant.ofEpochMilli(1771249699347L));
-        bookEntity.setGenres(Collections.emptySet());
-
-        BookEntity savedBook = jpaBookRepository.save(bookEntity);
-        UUID id = savedBook.getId();
-
-        Book updatedBook = bookRepository.updateCoverUrl(id, null);
-        assertEquals(id, updatedBook.id());
-        assertNull(updatedBook.coverUrl());
-
-        Optional<Book> result = bookRepository.getBookById(id);
-        assertTrue(result.isPresent());
-        assertNull(result.get().coverUrl());
-    }
-
-    @Test
-    void updateCoverUrl_WhenBookDoesNotExists_ShouldThrowNotFoundException() {
-        UUID id = UUID.fromString("139a383e-9de1-4378-9479-64949da3d982");
-        String url = "test.jpg";
-
-        assertThrows(NotFoundException.class, () -> bookRepository.updateCoverUrl(id, url));
-
-        assertThat(bookRepository.getBooks().isEmpty());
+        BookEntity entity = jpaBookRepository.findById(id).orElseThrow();
+        assertEquals("new title", entity.getTitle());
+        assertEquals("new author", entity.getAuthor());
     }
 }

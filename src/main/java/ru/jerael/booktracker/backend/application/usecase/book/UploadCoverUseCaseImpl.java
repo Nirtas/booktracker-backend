@@ -21,11 +21,21 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
     @Override
     @Transactional
     public Book execute(UploadCover data) {
-        bookRepository.getBookById(data.bookId()).orElseThrow(() -> NotFoundException.bookNotFound(data.bookId()));
+        Book book =
+            bookRepository.getBookById(data.bookId()).orElseThrow(() -> NotFoundException.bookNotFound(data.bookId()));
         if (!BookRules.ALLOWED_IMAGE_MIME_TYPES.contains(data.contentType())) {
             throw ValidationException.unsupportedFileContentType(data.contentType());
         }
-        String path = bookCoverStorage.save(data.bookId(), data.contentType(), data.content());
-        return bookRepository.updateCoverUrl(data.bookId(), path);
+        String newCoverUrl = bookCoverStorage.save(data.bookId(), data.contentType(), data.content());
+        Book updatedBook = new Book(
+            book.id(),
+            book.title(),
+            book.author(),
+            newCoverUrl,
+            book.status(),
+            book.createdAt(),
+            book.genres()
+        );
+        return bookRepository.save(updatedBook);
     }
 }
