@@ -1,4 +1,4 @@
-package ru.jerael.booktracker.backend.api.handler;
+package ru.jerael.booktracker.backend.api.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.jerael.booktracker.backend.api.dto.ErrorResponse;
+import ru.jerael.booktracker.backend.api.exception.code.ApiErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.AppException;
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 
@@ -28,13 +29,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode().name(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ErrorResponse> handleAppException(AppException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode().name(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
         HttpRequestMethodNotSupportedException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
-            "METHOD_NOT_ALLOWED",
+            ApiErrorCode.METHOD_NOT_ALLOWED.name(),
             "Method " + ex.getMethod() + " is not supported for this endpoint"
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
@@ -52,7 +53,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         String name = ex.getName();
         ErrorResponse errorResponse = new ErrorResponse(
-            "INVALID_ARGUMENT_TYPE",
+            ApiErrorCode.INVALID_ARGUMENT_TYPE.name(),
             "Invalid argument type: " + name
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -61,7 +62,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
-            "FILE_SIZE_EXCEEDED",
+            ApiErrorCode.FILE_SIZE_EXCEEDED.name(),
             "File size exceeds the limit of " + maxFileSize
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -71,7 +72,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMissingServletRequestPartException(
         MissingServletRequestPartException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
-            "INVALID_MULTIPART_REQUEST",
+            ApiErrorCode.INVALID_MULTIPART_REQUEST.name(),
             ex.getMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -80,7 +81,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MultipartException.class)
     public ResponseEntity<ErrorResponse> handleMultipartException(MultipartException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
-            "INVALID_MULTIPART_REQUEST",
+            ApiErrorCode.INVALID_MULTIPART_REQUEST.name(),
             ex.getMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -90,7 +91,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         // TODO: add details in ErrorResponse
         ErrorResponse errorResponse = new ErrorResponse(
-            "INVALID_REQUEST_BODY",
+            ApiErrorCode.INVALID_REQUEST_BODY.name(),
             "Validation failed"
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -99,7 +100,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
-            "MALFORMED_REQUEST",
+            ApiErrorCode.MALFORMED_REQUEST.name(),
             "Invalid data types"
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -108,7 +109,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
-            "ENDPOINT_NOT_FOUND",
+            ApiErrorCode.ENDPOINT_NOT_FOUND.name(),
             "The requested endpoint " + ex.getRequestURL() + " does not exist"
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
@@ -118,7 +119,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
         logger.error("Unhandled exception occurred", ex);
         ErrorResponse errorResponse = new ErrorResponse(
-            "INTERNAL_SERVER_ERROR",
+            ApiErrorCode.INTERNAL_SERVER_ERROR.name(),
             "An internal server error occurred"
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);

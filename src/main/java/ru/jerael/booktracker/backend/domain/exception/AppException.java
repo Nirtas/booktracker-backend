@@ -1,14 +1,16 @@
 package ru.jerael.booktracker.backend.domain.exception;
 
-public abstract class AppException extends RuntimeException {
-    private final String errorCode;
+import ru.jerael.booktracker.backend.domain.exception.code.ErrorCode;
 
-    public AppException(String errorCode, String message) {
+public abstract class AppException extends RuntimeException {
+    private final ErrorCode errorCode;
+
+    public AppException(ErrorCode errorCode, String message) {
         super(message);
         this.errorCode = errorCode;
     }
 
-    public String getErrorCode() {
+    public ErrorCode getErrorCode() {
         return errorCode;
     }
 }

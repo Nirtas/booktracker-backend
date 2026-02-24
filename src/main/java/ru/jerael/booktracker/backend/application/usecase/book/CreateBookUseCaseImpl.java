@@ -3,7 +3,7 @@ package ru.jerael.booktracker.backend.application.usecase.book;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
+import ru.jerael.booktracker.backend.domain.exception.factory.GenreExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
@@ -30,7 +30,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
             Set<Integer> missingIds = data.genreIds().stream()
                 .filter(id -> !foundIds.contains(id))
                 .collect(Collectors.toSet());
-            throw NotFoundException.genresNotFound(missingIds);
+            throw GenreExceptionFactory.notFound(missingIds);
         }
         Book newBook = new Book(
             null,

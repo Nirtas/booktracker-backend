@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import ru.jerael.booktracker.backend.data.exception.factory.StorageExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.InternalException;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import java.io.IOException;
@@ -36,7 +37,7 @@ class UploadCoverApiMapperTest {
     @Test
     void toDomain_WhenIOExceptionOccurs_ShouldThrowStorageError() throws IOException {
         MultipartFile file = mock(MultipartFile.class);
-        when(file.getInputStream()).thenThrow(InternalException.storageError("details", null));
+        when(file.getInputStream()).thenThrow(StorageExceptionFactory.error("details", null));
 
         assertThrows(InternalException.class, () -> uploadCoverApiMapper.toDomain(id, file));
     }

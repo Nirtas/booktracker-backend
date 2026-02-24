@@ -2,7 +2,7 @@ package ru.jerael.booktracker.backend.api.mapper;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import ru.jerael.booktracker.backend.domain.exception.InternalException;
+import ru.jerael.booktracker.backend.data.exception.factory.StorageExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class UploadCoverApiMapper {
                 inputStream
             );
         } catch (IOException e) {
-            throw InternalException.storageError(e.getMessage(), e);
+            throw StorageExceptionFactory.error(e.getMessage(), e);
         }
     }
 }

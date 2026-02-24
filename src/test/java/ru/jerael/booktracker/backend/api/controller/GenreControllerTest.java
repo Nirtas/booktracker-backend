@@ -9,9 +9,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import ru.jerael.booktracker.backend.api.dto.genre.GenreResponse;
-import ru.jerael.booktracker.backend.api.handler.GlobalExceptionHandler;
+import ru.jerael.booktracker.backend.api.exception.GlobalExceptionHandler;
 import ru.jerael.booktracker.backend.api.mapper.GenreApiMapper;
-import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
+import ru.jerael.booktracker.backend.domain.exception.factory.GenreExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenreByIdUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenresUseCase;
@@ -48,7 +48,7 @@ class GenreControllerTest {
     @Test
     void getById_WhenExceptionThrown_ShouldReturnNotFound() {
         Integer genreId = 5555;
-        when(getGenreByIdUseCase.execute(genreId)).thenThrow(NotFoundException.genreNotFound(genreId));
+        when(getGenreByIdUseCase.execute(genreId)).thenThrow(GenreExceptionFactory.notFound(genreId));
 
         restTestClient.get().uri("/api/v1/genres/" + genreId)
             .exchange()

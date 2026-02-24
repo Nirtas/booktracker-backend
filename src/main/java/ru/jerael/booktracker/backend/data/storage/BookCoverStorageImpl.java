@@ -3,8 +3,8 @@ package ru.jerael.booktracker.backend.data.storage;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.data.exception.factory.StorageExceptionFactory;
 import ru.jerael.booktracker.backend.domain.constants.BookRules;
-import ru.jerael.booktracker.backend.domain.exception.InternalException;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,7 @@ public class BookCoverStorageImpl implements BookCoverStorage {
                 Files.createDirectories(coversPath);
             }
         } catch (IOException e) {
-            throw InternalException.storageError(e.getLocalizedMessage(), e);
+            throw StorageExceptionFactory.error(e.getLocalizedMessage(), e);
         }
     }
 
@@ -42,7 +42,7 @@ public class BookCoverStorageImpl implements BookCoverStorage {
             Files.copy(content, destination, StandardCopyOption.REPLACE_EXISTING);
             return fileName;
         } catch (IOException e) {
-            throw InternalException.storageError(e.getLocalizedMessage(), e);
+            throw StorageExceptionFactory.error(e.getLocalizedMessage(), e);
         }
     }
 }
