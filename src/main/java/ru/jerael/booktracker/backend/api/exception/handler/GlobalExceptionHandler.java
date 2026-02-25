@@ -157,7 +157,7 @@ public class GlobalExceptionHandler {
             HttpStatus.BAD_REQUEST,
             "Request body validation failed",
             "Constraint violation",
-            ApiErrorCode.INVALID_REQUEST_BODY
+            CommonErrorCode.VALIDATION_ERROR
         );
 
         List<FieldErrorDetail> errors = new ArrayList<>();

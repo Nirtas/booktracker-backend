@@ -203,7 +203,7 @@ class GlobalExceptionHandlerTest {
         var json = assertThat(response).bodyJson();
         json.extractingPath("$.detail").isEqualTo("Request body validation failed");
         json.extractingPath("$.title").isEqualTo("Constraint violation");
-        json.extractingPath("$.code").isEqualTo(ApiErrorCode.INVALID_REQUEST_BODY.name());
+        json.extractingPath("$.code").isEqualTo(CommonErrorCode.VALIDATION_ERROR.name());
         json.extractingPath("$.errors[0].field").isEqualTo("name");
         json.extractingPath("$.errors[0].code").isEqualTo("NOT_BLANK");
     }
