@@ -10,14 +10,14 @@ import java.util.UUID;
 public class BookExceptionFactory {
     public static NotFoundException notFound(UUID id) {
         return new NotFoundException(
-            BookErrorCode.NOT_FOUND,
+            BookErrorCode.BOOK_NOT_FOUND,
             "Book with id " + id + " was not found"
         );
     }
 
     public static ValidationException invalidStatus(String status) {
         return new ValidationException(
-            BookErrorCode.INVALID_STATUS,
+            BookErrorCode.INVALID_BOOK_STATUS,
             "Unknown book status: " + status,
             "status",
             Map.of("supported", BookStatus.values())

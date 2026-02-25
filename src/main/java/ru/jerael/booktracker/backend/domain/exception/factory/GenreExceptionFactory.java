@@ -7,14 +7,14 @@ import java.util.Set;
 public class GenreExceptionFactory {
     public static NotFoundException notFound(Integer id) {
         return new NotFoundException(
-            GenreErrorCode.NOT_FOUND,
+            GenreErrorCode.GENRE_NOT_FOUND,
             "Genre not found with id: " + id
         );
     }
 
     public static NotFoundException notFound(Set<Integer> ids) {
         return new NotFoundException(
-            GenreErrorCode.NOT_FOUND,
+            GenreErrorCode.GENRE_NOT_FOUND,
             "Genres not found with ids: " + ids
         );
     }

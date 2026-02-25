@@ -104,7 +104,7 @@ class GlobalExceptionHandlerTest {
         var json = assertThat(response).bodyJson();
         json.extractingPath("$.detail").isEqualTo("Book with id " + id + " was not found");
         json.extractingPath("$.title").isEqualTo("Resource not found");
-        json.extractingPath("$.code").isEqualTo(BookErrorCode.NOT_FOUND.name());
+        json.extractingPath("$.code").isEqualTo(BookErrorCode.BOOK_NOT_FOUND.name());
     }
 
     @Test
