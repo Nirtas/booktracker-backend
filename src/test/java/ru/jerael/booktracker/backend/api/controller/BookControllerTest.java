@@ -12,7 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
-import ru.jerael.booktracker.backend.api.exception.GlobalExceptionHandler;
+import ru.jerael.booktracker.backend.api.exception.handler.GlobalExceptionHandler;
 import ru.jerael.booktracker.backend.api.mapper.BookApiMapper;
 import ru.jerael.booktracker.backend.api.mapper.GenreApiMapper;
 import ru.jerael.booktracker.backend.api.mapper.UploadCoverApiMapper;
@@ -100,7 +100,7 @@ class BookControllerTest {
         assertThat(mockMvcTester.get().uri("/api/v1/books/" + id))
             .hasStatus(HttpStatus.NOT_FOUND)
             .bodyJson()
-            .extractingPath("$.message")
+            .extractingPath("$.detail")
             .isEqualTo("Book with id " + id + " was not found");
 
         verify(getBookByIdUseCase).execute(id);

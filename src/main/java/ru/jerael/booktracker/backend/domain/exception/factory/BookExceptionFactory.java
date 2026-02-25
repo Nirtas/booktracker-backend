@@ -3,6 +3,8 @@ package ru.jerael.booktracker.backend.domain.exception.factory;
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.code.BookErrorCode;
+import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
+import java.util.Map;
 import java.util.UUID;
 
 public class BookExceptionFactory {
@@ -17,7 +19,8 @@ public class BookExceptionFactory {
         return new ValidationException(
             BookErrorCode.INVALID_STATUS,
             "Unknown book status: " + status,
-            "status"
+            "status",
+            Map.of("supported", BookStatus.values())
         );
     }
 }

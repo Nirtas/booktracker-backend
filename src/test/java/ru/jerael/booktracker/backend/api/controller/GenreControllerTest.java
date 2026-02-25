@@ -9,7 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import ru.jerael.booktracker.backend.api.dto.genre.GenreResponse;
-import ru.jerael.booktracker.backend.api.exception.GlobalExceptionHandler;
+import ru.jerael.booktracker.backend.api.exception.handler.GlobalExceptionHandler;
 import ru.jerael.booktracker.backend.api.mapper.GenreApiMapper;
 import ru.jerael.booktracker.backend.domain.exception.factory.GenreExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.Genre;
@@ -54,6 +54,6 @@ class GenreControllerTest {
             .exchange()
             .expectStatus().isNotFound()
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Genre not found with id: " + genreId);
+            .jsonPath("$.detail").isEqualTo("Genre not found with id: " + genreId);
     }
 }
