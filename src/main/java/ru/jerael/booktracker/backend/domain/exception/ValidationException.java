@@ -1,46 +1,23 @@
 package ru.jerael.booktracker.backend.domain.exception;
 
+import ru.jerael.booktracker.backend.domain.exception.code.ErrorCode;
+import java.util.Map;
+
 public class ValidationException extends AppException {
-    private final String fieldName;
+    private final String field;
+    private final Map<String, Object> params;
 
-    public ValidationException(String errorCode, String message, String fieldName) {
+    public ValidationException(ErrorCode errorCode, String message, String field, Map<String, Object> params) {
         super(errorCode, message);
-        this.fieldName = fieldName;
+        this.field = field;
+        this.params = params;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public String getField() {
+        return field;
     }
 
-    public static ValidationException invalidBookStatus(String status) {
-        return new ValidationException(
-            "INVALID_BOOK_STATUS",
-            "Unknown book status: " + status,
-            "status"
-        );
-    }
-
-    public static ValidationException emptyFileName(String fieldName) {
-        return new ValidationException(
-            "EMPTY_FILE_NAME",
-            "File name cannot be empty",
-            fieldName
-        );
-    }
-
-    public static ValidationException emptyFileContent(String fieldName) {
-        return new ValidationException(
-            "EMPTY_FILE_CONTENT",
-            "File content cannot be empty",
-            fieldName
-        );
-    }
-
-    public static ValidationException unsupportedFileContentType(String contentType) {
-        return new ValidationException(
-            "UNSUPPORTED_FILE_CONTENT_TYPE",
-            "File content type " + contentType + " is not supported",
-            "contentType"
-        );
+    public Map<String, Object> getParams() {
+        return params;
     }
 }

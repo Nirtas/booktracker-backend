@@ -1,6 +1,6 @@
 package ru.jerael.booktracker.backend.domain.model.book;
 
-import ru.jerael.booktracker.backend.domain.exception.ValidationException;
+import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
 
 public enum BookStatus {
     WANT_TO_READ("want_to_read"),
@@ -24,6 +24,6 @@ public enum BookStatus {
                 return status;
             }
         }
-        throw ValidationException.invalidBookStatus(value);
+        throw BookExceptionFactory.invalidStatus(value);
     }
 }

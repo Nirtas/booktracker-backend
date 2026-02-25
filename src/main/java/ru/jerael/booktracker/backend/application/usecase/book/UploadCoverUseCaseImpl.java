@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jerael.booktracker.backend.domain.constants.BookRules;
-import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
-import ru.jerael.booktracker.backend.domain.exception.ValidationException;
+import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
+import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
@@ -22,9 +22,9 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
     @Transactional
     public Book execute(UploadCover data) {
         Book book =
-            bookRepository.findById(data.bookId()).orElseThrow(() -> NotFoundException.bookNotFound(data.bookId()));
+            bookRepository.findById(data.bookId()).orElseThrow(() -> BookExceptionFactory.notFound(data.bookId()));
         if (!BookRules.ALLOWED_IMAGE_MIME_TYPES.contains(data.contentType())) {
-            throw ValidationException.unsupportedFileContentType(data.contentType());
+            throw FileValidationExceptionFactory.unsupportedFileContentType(data.contentType(), "cover");
         }
         String newCoverUrl = bookCoverStorage.save(data.bookId(), data.contentType(), data.content());
         Book updatedBook = new Book(

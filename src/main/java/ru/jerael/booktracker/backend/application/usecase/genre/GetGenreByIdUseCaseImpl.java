@@ -2,7 +2,7 @@ package ru.jerael.booktracker.backend.application.usecase.genre;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
+import ru.jerael.booktracker.backend.domain.exception.factory.GenreExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenreByIdUseCase;
@@ -14,6 +14,6 @@ public class GetGenreByIdUseCaseImpl implements GetGenreByIdUseCase {
 
     @Override
     public Genre execute(Integer id) {
-        return genreRepository.findById(id).orElseThrow(() -> NotFoundException.genreNotFound(id));
+        return genreRepository.findById(id).orElseThrow(() -> GenreExceptionFactory.notFound(id));
     }
 }

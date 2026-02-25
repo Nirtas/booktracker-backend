@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
+import ru.jerael.booktracker.backend.domain.exception.code.ErrorCode;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileValidatorTest {
@@ -23,36 +24,36 @@ class FileValidatorTest {
 
     @Test
     void validate_WhenFileIsNull_ShouldThrowValidationException() {
-        String errorCode =
+        ErrorCode errorCode =
             assertThrows(ValidationException.class, () -> fileValidator.validate(null, fieldName)).getErrorCode();
 
-        assertEquals("EMPTY_FILE_CONTENT", errorCode);
+        assertEquals("EMPTY_FILE_CONTENT", errorCode.name());
     }
 
     @Test
     void validate_WhenFileIsEmpty_ShouldThrowValidationException() {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("cover", fileName, contentType, new byte[0]);
-        String errorCode = assertThrows(ValidationException.class,
+        ErrorCode errorCode = assertThrows(ValidationException.class,
             () -> fileValidator.validate(mockMultipartFile, fieldName)).getErrorCode();
 
-        assertEquals("EMPTY_FILE_CONTENT", errorCode);
+        assertEquals("EMPTY_FILE_CONTENT", errorCode.name());
     }
 
     @Test
     void validate_WhenFileNameIsNull_ShouldThrowValidationException() {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("cover", null, contentType, content);
-        String errorCode = assertThrows(ValidationException.class,
+        ErrorCode errorCode = assertThrows(ValidationException.class,
             () -> fileValidator.validate(mockMultipartFile, fieldName)).getErrorCode();
 
-        assertEquals("EMPTY_FILE_NAME", errorCode);
+        assertEquals("EMPTY_FILE_NAME", errorCode.name());
     }
 
     @Test
     void validate_WhenFileNameIsBlank_ShouldThrowValidationException() {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("cover", "   ", contentType, content);
-        String errorCode = assertThrows(ValidationException.class,
+        ErrorCode errorCode = assertThrows(ValidationException.class,
             () -> fileValidator.validate(mockMultipartFile, fieldName)).getErrorCode();
 
-        assertEquals("EMPTY_FILE_NAME", errorCode);
+        assertEquals("EMPTY_FILE_NAME", errorCode.name());
     }
 }

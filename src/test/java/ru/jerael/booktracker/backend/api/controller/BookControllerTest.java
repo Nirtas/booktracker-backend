@@ -2,7 +2,6 @@ package ru.jerael.booktracker.backend.api.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -12,12 +11,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
-import ru.jerael.booktracker.backend.api.handler.GlobalExceptionHandler;
+import ru.jerael.booktracker.backend.api.exception.handler.GlobalExceptionHandler;
 import ru.jerael.booktracker.backend.api.mapper.BookApiMapper;
 import ru.jerael.booktracker.backend.api.mapper.GenreApiMapper;
 import ru.jerael.booktracker.backend.api.mapper.UploadCoverApiMapper;
 import ru.jerael.booktracker.backend.api.validator.FileValidator;
-import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
+import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
@@ -38,7 +37,6 @@ import static org.mockito.Mockito.when;
 
 @WebMvcTest(BookController.class)
 @Import({GlobalExceptionHandler.class, BookApiMapper.class, GenreApiMapper.class})
-@AutoConfigureRestTestClient
 class BookControllerTest {
 
     @Autowired
@@ -95,12 +93,12 @@ class BookControllerTest {
     @Test
     void getById_WhenExceptionThrown_ShouldReturnNotFound() {
         UUID id = UUID.fromString("31d3f5e3-7faf-4678-a3cf-4657d8875a82");
-        when(getBookByIdUseCase.execute(id)).thenThrow(NotFoundException.bookNotFound(id));
+        when(getBookByIdUseCase.execute(id)).thenThrow(BookExceptionFactory.notFound(id));
 
         assertThat(mockMvcTester.get().uri("/api/v1/books/" + id))
             .hasStatus(HttpStatus.NOT_FOUND)
             .bodyJson()
-            .extractingPath("$.message")
+            .extractingPath("$.detail")
             .isEqualTo("Book with id " + id + " was not found");
 
         verify(getBookByIdUseCase).execute(id);
