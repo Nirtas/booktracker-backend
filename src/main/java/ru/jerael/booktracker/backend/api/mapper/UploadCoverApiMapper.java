@@ -2,11 +2,12 @@ package ru.jerael.booktracker.backend.api.mapper;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import ru.jerael.booktracker.backend.data.exception.factory.StorageExceptionFactory;
+import ru.jerael.booktracker.backend.api.exception.factory.FileApiExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -22,7 +23,8 @@ public class UploadCoverApiMapper {
                 inputStream
             );
         } catch (IOException e) {
-            throw StorageExceptionFactory.error(e.getMessage(), e);
+            String fileName = Objects.requireNonNull(file.getOriginalFilename(), "unknown file name");
+            throw FileApiExceptionFactory.readError(fileName, e);
         }
     }
 }
