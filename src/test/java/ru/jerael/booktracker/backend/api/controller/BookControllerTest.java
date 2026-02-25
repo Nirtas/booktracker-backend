@@ -2,7 +2,6 @@ package ru.jerael.booktracker.backend.api.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -38,7 +37,6 @@ import static org.mockito.Mockito.when;
 
 @WebMvcTest(BookController.class)
 @Import({GlobalExceptionHandler.class, BookApiMapper.class, GenreApiMapper.class})
-@AutoConfigureRestTestClient
 class BookControllerTest {
 
     @Autowired

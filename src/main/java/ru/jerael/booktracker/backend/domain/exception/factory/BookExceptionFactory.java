@@ -10,7 +10,7 @@ import java.util.UUID;
 public class BookExceptionFactory {
     public static NotFoundException notFound(UUID id) {
         return new NotFoundException(
-            BookErrorCode.BOOK_NOT_FOUND,
+            BookErrorCode.NOT_FOUND,
             "Book with id " + id + " was not found"
         );
     }
