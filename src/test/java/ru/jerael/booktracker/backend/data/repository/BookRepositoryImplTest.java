@@ -13,6 +13,9 @@ import ru.jerael.booktracker.backend.data.mapper.GenreDataMapper;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
+import ru.jerael.booktracker.backend.domain.model.pagination.SortDirection;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,7 +36,7 @@ class BookRepositoryImplTest {
     private JpaGenreRepository jpaGenreRepository;
 
     @Test
-    void getBooks_ShouldReturnAllBooks() {
+    void findAll_ShouldReturnAllBooks() {
         GenreEntity genre1 = new GenreEntity();
         genre1.setName("action");
         GenreEntity genre2 = new GenreEntity();
@@ -58,14 +61,20 @@ class BookRepositoryImplTest {
         UUID id1 = entities.get(0).getId();
         UUID id2 = entities.get(1).getId();
 
-        List<Book> result = bookRepository.findAll();
+        PageQuery query = new PageQuery(0, 10, "createdAt", SortDirection.DESC);
 
-        assertEquals(2, result.size());
-        assertThat(result).extracting(Book::id).containsExactlyInAnyOrder(id1, id2);
+        PageResult<Book> result = bookRepository.findAll(query);
+
+        assertEquals(2, result.content().size());
+        assertEquals(10, result.size());
+        assertEquals(0, result.number());
+        assertEquals(2, result.totalElements());
+        assertEquals(1, result.totalPages());
+        assertThat(result.content()).extracting(Book::id).containsExactlyInAnyOrder(id1, id2);
     }
 
     @Test
-    void getBookById_WhenExists_ShouldReturnBook() {
+    void findById_WhenExists_ShouldReturnBook() {
         GenreEntity entity = new GenreEntity();
         entity.setName("action");
         GenreEntity savedGenre = jpaGenreRepository.save(entity);

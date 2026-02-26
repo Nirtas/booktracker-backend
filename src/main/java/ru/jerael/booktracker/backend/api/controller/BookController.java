@@ -2,6 +2,8 @@ package ru.jerael.booktracker.backend.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,11 +15,13 @@ import ru.jerael.booktracker.backend.api.validator.FileValidator;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
+import ru.jerael.booktracker.backend.domain.model.pagination.SortDirection;
 import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.book.GetBookByIdUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.book.GetBooksUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.book.UploadCoverUseCase;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,9 +37,27 @@ public class BookController {
     private final UploadCoverApiMapper uploadCoverApiMapper;
 
     @GetMapping
-    public List<BookResponse> getAll() {
-        List<Book> books = getBooksUseCase.execute();
-        return bookApiMapper.toResponses(books);
+    public PagedModel<BookResponse> getAll(Pageable pageable) {
+        Sort.Order order = pageable.getSort().stream().findFirst().orElse(null);
+        String sortBy = order != null ? order.getProperty() : "createdAt";
+        SortDirection direction = order != null && order.isAscending()
+            ? SortDirection.ASC
+            : SortDirection.DESC;
+
+        PageQuery query = new PageQuery(
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            sortBy,
+            direction
+        );
+        PageResult<Book> books = getBooksUseCase.execute(query);
+        PageResult<BookResponse> bookResponses = books.map(bookApiMapper::toResponse);
+        Page<BookResponse> page = new PageImpl<>(
+            bookResponses.content(),
+            PageRequest.of(bookResponses.number(), bookResponses.size()),
+            bookResponses.totalElements()
+        );
+        return new PagedModel<>(page);
     }
 
     @GetMapping("/{id}")
