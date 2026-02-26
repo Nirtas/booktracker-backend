@@ -2,10 +2,7 @@ package ru.jerael.booktracker.backend.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +17,7 @@ import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
+import ru.jerael.booktracker.backend.domain.model.pagination.SortDirection;
 import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.book.GetBookByIdUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.book.GetBooksUseCase;
@@ -40,9 +38,17 @@ public class BookController {
 
     @GetMapping
     public PagedModel<BookResponse> getAll(Pageable pageable) {
+        Sort.Order order = pageable.getSort().stream().findFirst().orElse(null);
+        String sortBy = order != null ? order.getProperty() : "createdAt";
+        SortDirection direction = order != null && order.isAscending()
+            ? SortDirection.ASC
+            : SortDirection.DESC;
+
         PageQuery query = new PageQuery(
             pageable.getPageNumber(),
-            pageable.getPageSize()
+            pageable.getPageSize(),
+            sortBy,
+            direction
         );
         PageResult<Book> books = getBooksUseCase.execute(query);
         PageResult<BookResponse> bookResponses = books.map(bookApiMapper::toResponse);
