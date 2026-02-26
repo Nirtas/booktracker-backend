@@ -45,4 +45,14 @@ public class BookCoverStorageImpl implements BookCoverStorage {
             throw StorageExceptionFactory.error(e.getLocalizedMessage(), e);
         }
     }
+
+    @Override
+    public void delete(String path) {
+        try {
+            Path destination = coversPath.resolve(path);
+            Files.deleteIfExists(destination);
+        } catch (IOException e) {
+            throw StorageExceptionFactory.error(e.getMessage(), e);
+        }
+    }
 }
