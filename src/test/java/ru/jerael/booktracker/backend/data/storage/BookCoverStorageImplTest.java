@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import ru.jerael.booktracker.backend.domain.exception.InternalException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,8 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.UUID;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class BookCoverStorageImplTest {
@@ -87,5 +87,34 @@ class BookCoverStorageImplTest {
         assertTrue(Files.exists(expected));
         assertTrue(Files.isRegularFile(expected));
         assertEquals(newContent, Files.readString(expected));
+    }
+
+    @Test
+    void delete_ShouldDeleteCover() {
+        String newContent = "new content";
+        InputStream newInputStream = new ByteArrayInputStream(newContent.getBytes());
+
+        String savedFileName = bookCoverStorage.save(id, "image/jpeg", newInputStream);
+
+        Path path = coversPath.resolve(savedFileName);
+        assertTrue(Files.exists(path));
+
+        bookCoverStorage.delete(savedFileName);
+
+        assertFalse(Files.exists(path));
+    }
+
+    @Test
+    void delete_WhenFileDoesNotExist_ShouldNotThrowException() {
+        assertDoesNotThrow(() -> bookCoverStorage.delete("cover.jpg"));
+    }
+
+    @Test
+    void delete_WhenIOExceptionOccurs_ShouldThrowStorageException() throws IOException {
+        String directory = "directory";
+        Files.createDirectory(coversPath.resolve(directory));
+        Files.createFile(coversPath.resolve(directory).resolve("cover.jpg"));
+
+        assertThrows(InternalException.class, () -> bookCoverStorage.delete(directory));
     }
 }
