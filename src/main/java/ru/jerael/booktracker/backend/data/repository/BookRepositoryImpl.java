@@ -1,13 +1,17 @@
 package ru.jerael.booktracker.backend.data.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.mapper.BookDataMapper;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,9 +22,16 @@ public class BookRepositoryImpl implements BookRepository {
     private final BookDataMapper bookDataMapper;
 
     @Override
-    public List<Book> findAll() {
-        List<BookEntity> entities = jpaBookRepository.findAll();
-        return entities.stream().map(bookDataMapper::toDomain).toList();
+    public PageResult<Book> findAll(PageQuery query) {
+        Pageable pageable = PageRequest.of(query.page(), query.size());
+        Page<BookEntity> entities = jpaBookRepository.findAll(pageable);
+        return new PageResult<>(
+            entities.getContent().stream().map(bookDataMapper::toDomain).toList(),
+            entities.getSize(),
+            entities.getNumber(),
+            entities.getTotalElements(),
+            entities.getTotalPages()
+        );
     }
 
     @Override

@@ -1,12 +1,13 @@
 package ru.jerael.booktracker.backend.domain.repository;
 
 import ru.jerael.booktracker.backend.domain.model.book.Book;
-import java.util.List;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface BookRepository {
-    List<Book> findAll();
+    PageResult<Book> findAll(PageQuery query);
 
     Optional<Book> findById(UUID id);
 
