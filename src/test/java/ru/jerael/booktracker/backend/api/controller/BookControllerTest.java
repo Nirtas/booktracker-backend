@@ -21,6 +21,8 @@ import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.book.GetBookByIdUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.book.GetBooksUseCase;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,17 +80,24 @@ class BookControllerTest {
         Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
         BookResponse bookResponse = new BookResponse(id, title, author, null, status.getValue(),
             createdAt.toEpochMilli(), Collections.emptySet());
-        when(getBooksUseCase.execute()).thenReturn(List.of(book));
-        when(bookApiMapper.toResponses(List.of(book))).thenReturn(List.of(bookResponse));
+        PageResult<Book> pageResult = new PageResult<>(List.of(book), 10, 0, 1, 1);
+        when(getBooksUseCase.execute(any(PageQuery.class))).thenReturn(pageResult);
+        when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);
 
-        assertThat(mockMvcTester.get().uri("/api/v1/books"))
+        var response = mockMvcTester.get().uri("/api/v1/books?page=0&size=10").exchange();
+
+        assertThat(response)
             .hasStatus(HttpStatus.OK)
             .bodyJson()
-            .extractingPath("$")
+            .extractingPath("$.content")
             .convertTo(BookResponse[].class)
             .satisfies(responses -> assertThat(responses).containsExactly(bookResponse));
 
-        verify(getBooksUseCase).execute();
+        assertThat(response)
+            .bodyJson()
+            .extractingPath("$.page.totalElements").isEqualTo(1);
+
+        verify(getBooksUseCase).execute(any(PageQuery.class));
     }
 
     @Test
