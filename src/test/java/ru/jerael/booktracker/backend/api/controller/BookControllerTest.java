@@ -23,10 +23,7 @@ import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
-import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.book.GetBookByIdUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.book.GetBooksUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.book.UploadCoverUseCase;
+import ru.jerael.booktracker.backend.domain.usecase.book.*;
 import tools.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.Collections;
@@ -59,6 +56,9 @@ class BookControllerTest {
 
     @MockitoBean
     private UploadCoverUseCase uploadCoverUseCase;
+
+    @MockitoBean
+    private DeleteCoverUseCase deleteCoverUseCase;
 
     @MockitoBean
     private FileValidator fileValidator;
@@ -168,5 +168,13 @@ class BookControllerTest {
             .bodyJson()
             .convertTo(BookResponse.class)
             .satisfies(response -> assertThat(response.coverUrl()).isEqualTo(bookResponse.coverUrl()));
+    }
+
+    @Test
+    void deleteCover_ShouldReturnNoContent() {
+        var response = mockMvcTester.delete().uri("/api/v1/books/" + id + "/cover");
+
+        assertThat(response).hasStatus(HttpStatus.NO_CONTENT);
+        verify(deleteCoverUseCase).execute(id);
     }
 }
