@@ -18,10 +18,7 @@ import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import ru.jerael.booktracker.backend.domain.model.pagination.SortDirection;
-import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.book.GetBookByIdUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.book.GetBooksUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.book.UploadCoverUseCase;
+import ru.jerael.booktracker.backend.domain.usecase.book.*;
 import java.util.UUID;
 
 @RestController
@@ -32,6 +29,8 @@ public class BookController {
     private final GetBookByIdUseCase getBookByIdUseCase;
     private final CreateBookUseCase createBookUseCase;
     private final UploadCoverUseCase uploadCoverUseCase;
+    private final DeleteCoverUseCase deleteCoverUseCase;
+
     private final FileValidator fileValidator;
     private final BookApiMapper bookApiMapper;
     private final UploadCoverApiMapper uploadCoverApiMapper;
@@ -80,5 +79,11 @@ public class BookController {
         UploadCover data = uploadCoverApiMapper.toDomain(id, file);
         Book book = uploadCoverUseCase.execute(data);
         return bookApiMapper.toResponse(book);
+    }
+
+    @DeleteMapping("/{id}/cover")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCover(@PathVariable UUID id) {
+        deleteCoverUseCase.execute(id);
     }
 }
