@@ -161,4 +161,41 @@ class BookRepositoryImplTest {
         assertEquals("new title", entity.getTitle());
         assertEquals("new author", entity.getAuthor());
     }
+
+    @Test
+    void deleteById_ShouldDeleteBookById() {
+        GenreEntity genre1 = new GenreEntity();
+        genre1.setName("action");
+        GenreEntity genre2 = new GenreEntity();
+        genre2.setName("adventure");
+        List<GenreEntity> genreEntities = jpaGenreRepository.saveAll(Set.of(genre1, genre2));
+
+        Set<Genre> genres = genreEntities.stream()
+            .map(entity -> new Genre(entity.getId(), entity.getName()))
+            .collect(Collectors.toSet());
+
+        String title = "title";
+        String author = "author";
+        Book book = new Book(
+            null,
+            title,
+            author,
+            null,
+            BookStatus.WANT_TO_READ,
+            Instant.now(),
+            genres
+        );
+
+        Book createdBook = bookRepository.save(book);
+
+        assertNotNull(createdBook.id());
+        assertEquals(title, createdBook.title());
+        assertEquals(author, createdBook.author());
+        assertEquals(2, createdBook.genres().size());
+        assertTrue(jpaBookRepository.existsById(createdBook.id()));
+
+        bookRepository.deleteById(createdBook.id());
+
+        assertEquals(Optional.empty(), jpaBookRepository.findById(createdBook.id()));
+    }
 }

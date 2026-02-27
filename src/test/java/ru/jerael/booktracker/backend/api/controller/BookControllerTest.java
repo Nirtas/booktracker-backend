@@ -61,6 +61,9 @@ class BookControllerTest {
     private DeleteCoverUseCase deleteCoverUseCase;
 
     @MockitoBean
+    private DeleteBookUseCase deleteBookUseCase;
+
+    @MockitoBean
     private FileValidator fileValidator;
 
     @MockitoBean
@@ -112,6 +115,14 @@ class BookControllerTest {
             .isEqualTo("Book with id " + id + " was not found");
 
         verify(getBookByIdUseCase).execute(id);
+    }
+
+    @Test
+    void deleteBook_ShouldReturnNoContent() {
+        var response = mockMvcTester.delete().uri("/api/v1/books/" + id);
+
+        assertThat(response).hasStatus(HttpStatus.NO_CONTENT);
+        verify(deleteBookUseCase).execute(id);
     }
 
     @Test
