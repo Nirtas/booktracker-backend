@@ -30,6 +30,7 @@ public class BookController {
     private final CreateBookUseCase createBookUseCase;
     private final UploadCoverUseCase uploadCoverUseCase;
     private final DeleteCoverUseCase deleteCoverUseCase;
+    private final DeleteBookUseCase deleteBookUseCase;
 
     private final FileValidator fileValidator;
     private final BookApiMapper bookApiMapper;
@@ -63,6 +64,12 @@ public class BookController {
     public BookResponse getById(@PathVariable UUID id) {
         Book book = getBookByIdUseCase.execute(id);
         return bookApiMapper.toResponse(book);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBook(@PathVariable UUID id) {
+        deleteBookUseCase.execute(id);
     }
 
     @PostMapping

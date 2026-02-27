@@ -54,4 +54,9 @@ public class BookRepositoryImpl implements BookRepository {
         BookEntity savedEntity = jpaBookRepository.save(entity);
         return bookDataMapper.toDomain(savedEntity);
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaBookRepository.deleteById(id);
+    }
 }

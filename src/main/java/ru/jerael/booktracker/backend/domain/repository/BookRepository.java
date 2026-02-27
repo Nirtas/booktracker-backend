@@ -12,4 +12,6 @@ public interface BookRepository {
     Optional<Book> findById(UUID id);
 
     Book save(Book book);
+
+    void deleteById(UUID id);
 }
