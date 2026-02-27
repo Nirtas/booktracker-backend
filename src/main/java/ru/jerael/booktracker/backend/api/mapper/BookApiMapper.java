@@ -27,7 +27,7 @@ public class BookApiMapper {
             book.author(),
             book.coverUrl(),
             book.status().getValue(),
-            book.createdAt().toEpochMilli(),
+            book.createdAt(),
             genreApiMapper.toResponses(book.genres())
         );
     }

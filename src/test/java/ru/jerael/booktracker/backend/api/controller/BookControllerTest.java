@@ -82,8 +82,8 @@ class BookControllerTest {
     @Test
     void getAll_ShouldReturnListOfBookResponses() {
         Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
-        BookResponse bookResponse = new BookResponse(id, title, author, null, status.getValue(),
-            createdAt.toEpochMilli(), Collections.emptySet());
+        BookResponse bookResponse =
+            new BookResponse(id, title, author, null, status.getValue(), createdAt, Collections.emptySet());
         PageResult<Book> pageResult = new PageResult<>(List.of(book), 10, 0, 1, 1);
         when(getBooksUseCase.execute(any(PageQuery.class))).thenReturn(pageResult);
         when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);
@@ -137,8 +137,7 @@ class BookControllerTest {
         BookDetailsUpdate data = new BookDetailsUpdate("new title", null, BookStatus.READING, null);
         Book book = new Book(id, "new title", author, null, BookStatus.READING, createdAt, Collections.emptySet());
         BookResponse bookResponse =
-            new BookResponse(id, "new title", author, null, "reading", createdAt.toEpochMilli(),
-                Collections.emptySet());
+            new BookResponse(id, "new title", author, null, "reading", createdAt, Collections.emptySet());
         when(bookApiMapper.toDomain(request)).thenReturn(data);
         when(updateBookDetailsUseCase.execute(id, data)).thenReturn(book);
         when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);
@@ -164,8 +163,7 @@ class BookControllerTest {
         BookCreation data = new BookCreation(title, author, Set.of(1, 2));
         Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
         BookResponse bookResponse =
-            new BookResponse(id, title, author, null, status.getValue(), createdAt.toEpochMilli(),
-                Collections.emptySet());
+            new BookResponse(id, title, author, null, status.getValue(), createdAt, Collections.emptySet());
         when(bookApiMapper.toDomain(request)).thenReturn(data);
         when(createBookUseCase.execute(data)).thenReturn(book);
         when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);
@@ -198,7 +196,7 @@ class BookControllerTest {
         UploadCover data = new UploadCover(id, MediaType.IMAGE_JPEG_VALUE, null);
         Book book = new Book(id, title, author, coverUrl, status, createdAt, null);
         BookResponse bookResponse =
-            new BookResponse(id, title, author, coverUrl, status.getValue(), createdAt.toEpochMilli(), null);
+            new BookResponse(id, title, author, coverUrl, status.getValue(), createdAt, null);
         when(uploadCoverApiMapper.toDomain(id, mockMultipartFile)).thenReturn(data);
         when(uploadCoverUseCase.execute(data)).thenReturn(book);
         when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);
