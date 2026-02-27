@@ -40,7 +40,7 @@ class BookApiMapperTest {
         assertEquals(author, bookResponse.author());
         assertEquals(coverUrl, bookResponse.coverUrl());
         assertEquals(status.getValue(), bookResponse.status());
-        assertEquals(createdAt.toEpochMilli(), bookResponse.createdAt());
+        assertEquals(createdAt, bookResponse.createdAt());
         assertTrue(bookResponse.genres().containsAll(genreApiMapper.toResponses(genres)));
     }
 
