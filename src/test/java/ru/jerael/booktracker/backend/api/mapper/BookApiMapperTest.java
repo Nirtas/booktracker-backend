@@ -2,10 +2,12 @@ package ru.jerael.booktracker.backend.api.mapper;
 
 import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
+import ru.jerael.booktracker.backend.api.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
+import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
 import java.util.List;
@@ -58,13 +60,29 @@ class BookApiMapperTest {
     }
 
     @Test
-    void toDomain() {
+    void toDomain_BookCreation() {
         BookCreationRequest request = new BookCreationRequest(" title ", " author ", Set.of(1, 2));
 
         BookCreation data = bookApiMapper.toDomain(request);
 
         assertEquals(request.title().trim(), data.title());
         assertEquals(request.author().trim(), data.author());
+        assertTrue(data.genreIds().containsAll(request.genreIds()));
+    }
+
+    @Test
+    void toDomain_BookDetailsUpdate() {
+        BookDetailsUpdateRequest request = new BookDetailsUpdateRequest(
+            " title ",
+            " author ",
+            "reading",
+            Set.of(1, 2)
+        );
+
+        BookDetailsUpdate data = bookApiMapper.toDomain(request);
+
+        assertEquals(request.title(), data.title());
+        assertEquals(request.author(), data.author());
         assertTrue(data.genreIds().containsAll(request.genreIds()));
     }
 }

@@ -8,12 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
+import ru.jerael.booktracker.backend.api.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.api.mapper.BookApiMapper;
 import ru.jerael.booktracker.backend.api.mapper.UploadCoverApiMapper;
 import ru.jerael.booktracker.backend.api.validator.FileValidator;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
+import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
@@ -31,6 +33,7 @@ public class BookController {
     private final UploadCoverUseCase uploadCoverUseCase;
     private final DeleteCoverUseCase deleteCoverUseCase;
     private final DeleteBookUseCase deleteBookUseCase;
+    private final UpdateBookDetailsUseCase updateBookDetailsUseCase;
 
     private final FileValidator fileValidator;
     private final BookApiMapper bookApiMapper;
@@ -70,6 +73,13 @@ public class BookController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBook(@PathVariable UUID id) {
         deleteBookUseCase.execute(id);
+    }
+
+    @PatchMapping("/{id}")
+    public BookResponse updateDetails(@PathVariable UUID id, @Valid @RequestBody BookDetailsUpdateRequest request) {
+        BookDetailsUpdate data = bookApiMapper.toDomain(request);
+        Book book = updateBookDetailsUseCase.execute(id, data);
+        return bookApiMapper.toResponse(book);
     }
 
     @PostMapping

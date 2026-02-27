@@ -2,9 +2,12 @@ package ru.jerael.booktracker.backend.api.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
+import ru.jerael.booktracker.backend.api.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
+import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
+import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.util.List;
 
 @Component
@@ -41,6 +44,17 @@ public class BookApiMapper {
         return new BookCreation(
             request.title().trim(),
             request.author().trim(),
+            request.genreIds()
+        );
+    }
+
+    public BookDetailsUpdate toDomain(BookDetailsUpdateRequest request) {
+        if (request == null) return null;
+
+        return new BookDetailsUpdate(
+            request.title(),
+            request.author(),
+            BookStatus.fromString(request.status()),
             request.genreIds()
         );
     }

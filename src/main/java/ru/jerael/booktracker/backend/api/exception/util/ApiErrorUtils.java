@@ -9,7 +9,7 @@ import java.util.Set;
 
 @UtilityClass
 public class ApiErrorUtils {
-    private static final Set<String> EXCLUDED_ATTRIBUTES = Set.of("message", "groups", "payload");
+    private static final Set<String> EXCLUDED_ATTRIBUTES = Set.of("message", "groups", "payload", "flags");
 
     public static String toSnakeCase(String str) {
         if (str == null) return "UNKNOWN";
