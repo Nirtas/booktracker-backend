@@ -1,6 +1,8 @@
 package ru.jerael.booktracker.backend.application.usecase.book;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jerael.booktracker.backend.domain.constants.BookRules;
@@ -15,6 +17,7 @@ import ru.jerael.booktracker.backend.domain.usecase.book.UploadCoverUseCase;
 @Service
 @RequiredArgsConstructor
 public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
+    private static final Logger log = LoggerFactory.getLogger(UploadCoverUseCaseImpl.class);
     private final BookRepository bookRepository;
     private final BookCoverStorage bookCoverStorage;
 
@@ -26,6 +29,7 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
         if (!BookRules.ALLOWED_IMAGE_MIME_TYPES.contains(data.contentType())) {
             throw FileValidationExceptionFactory.unsupportedFileContentType(data.contentType(), "cover");
         }
+        String oldCoverUrl = book.coverUrl();
         String newCoverUrl = bookCoverStorage.save(data.bookId(), data.contentType(), data.content());
         Book updatedBook = new Book(
             book.id(),
@@ -36,6 +40,14 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
             book.createdAt(),
             book.genres()
         );
-        return bookRepository.save(updatedBook);
+        Book savedBook = bookRepository.save(updatedBook);
+        if (oldCoverUrl != null && !oldCoverUrl.equals(newCoverUrl)) {
+            try {
+                bookCoverStorage.delete(oldCoverUrl);
+            } catch (Exception e) {
+                log.error("Failed to delete old cover: {}", oldCoverUrl, e);
+            }
+        }
+        return savedBook;
     }
 }
