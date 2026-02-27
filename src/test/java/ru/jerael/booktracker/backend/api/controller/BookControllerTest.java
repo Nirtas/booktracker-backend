@@ -10,6 +10,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
+import ru.jerael.booktracker.backend.api.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.api.exception.handler.GlobalExceptionHandler;
 import ru.jerael.booktracker.backend.api.mapper.BookApiMapper;
@@ -17,10 +18,7 @@ import ru.jerael.booktracker.backend.api.mapper.GenreApiMapper;
 import ru.jerael.booktracker.backend.api.mapper.UploadCoverApiMapper;
 import ru.jerael.booktracker.backend.api.validator.FileValidator;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
-import ru.jerael.booktracker.backend.domain.model.book.Book;
-import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
-import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
-import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.book.*;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import ru.jerael.booktracker.backend.domain.usecase.book.*;
@@ -62,6 +60,9 @@ class BookControllerTest {
 
     @MockitoBean
     private DeleteBookUseCase deleteBookUseCase;
+
+    @MockitoBean
+    private UpdateBookDetailsUseCase updateBookDetailsUseCase;
 
     @MockitoBean
     private FileValidator fileValidator;
@@ -123,6 +124,38 @@ class BookControllerTest {
 
         assertThat(response).hasStatus(HttpStatus.NO_CONTENT);
         verify(deleteBookUseCase).execute(id);
+    }
+
+    @Test
+    void updateDetails_ShouldReturnUpdatedBook() {
+        BookDetailsUpdateRequest request = new BookDetailsUpdateRequest(
+            "new title",
+            null,
+            "reading",
+            null
+        );
+        BookDetailsUpdate data = new BookDetailsUpdate("new title", null, BookStatus.READING, null);
+        Book book = new Book(id, "new title", author, null, BookStatus.READING, createdAt, Collections.emptySet());
+        BookResponse bookResponse =
+            new BookResponse(id, "new title", author, null, "reading", createdAt.toEpochMilli(),
+                Collections.emptySet());
+        when(bookApiMapper.toDomain(request)).thenReturn(data);
+        when(updateBookDetailsUseCase.execute(id, data)).thenReturn(book);
+        when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);
+
+        assertThat(
+            mockMvcTester.patch().uri("/api/v1/books/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .hasStatus(HttpStatus.OK)
+            .bodyJson()
+            .convertTo(BookResponse.class)
+            .satisfies(response -> {
+                assertThat(response.title()).isEqualTo(request.title());
+                assertThat(response.author()).isEqualTo(author);
+                assertThat(response.status()).isEqualTo(book.status().getValue());
+            });
     }
 
     @Test
