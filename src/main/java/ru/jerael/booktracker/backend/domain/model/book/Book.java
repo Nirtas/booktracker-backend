@@ -10,7 +10,7 @@ public record Book(
     UUID id,
     String title,
     String author,
-    @Nullable String coverUrl,
+    @Nullable String coverFileName,
     BookStatus status,
     Instant createdAt,
     Set<Genre> genres

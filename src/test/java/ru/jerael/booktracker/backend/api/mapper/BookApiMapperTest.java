@@ -23,13 +23,13 @@ class BookApiMapperTest {
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final String title = "title";
     private final String author = "author";
-    private final String coverUrl = null;
+    private final String coverFileName = "cover.jpg";
     private final BookStatus status = BookStatus.READING;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
     private final Genre genre1 = new Genre(1, "action");
     private final Genre genre2 = new Genre(2, "adventure");
     private final Set<Genre> genres = Set.of(genre1, genre2);
-    private final Book book = new Book(id, title, author, coverUrl, status, createdAt, genres);
+    private final Book book = new Book(id, title, author, coverFileName, status, createdAt, genres);
 
     @Test
     void toResponse() {
@@ -38,7 +38,7 @@ class BookApiMapperTest {
         assertEquals(id, bookResponse.id());
         assertEquals(title, bookResponse.title());
         assertEquals(author, bookResponse.author());
-        assertEquals(coverUrl, bookResponse.coverUrl());
+        assertEquals(coverFileName, bookResponse.coverUrl()); // TODO: full url
         assertEquals(status.getValue(), bookResponse.status());
         assertEquals(createdAt, bookResponse.createdAt());
         assertTrue(bookResponse.genres().containsAll(genreApiMapper.toResponses(genres)));
@@ -47,7 +47,7 @@ class BookApiMapperTest {
     @Test
     void toResponses() {
         UUID id2 = UUID.fromString("31d3f5e3-7faf-4678-a3cf-4657d8875a82");
-        Book book2 = new Book(id2, "asd", author, coverUrl, status, createdAt, genres);
+        Book book2 = new Book(id2, "asd", author, coverFileName, status, createdAt, genres);
         List<Book> books = List.of(book, book2);
 
         List<BookResponse> bookResponses = bookApiMapper.toResponses(books);

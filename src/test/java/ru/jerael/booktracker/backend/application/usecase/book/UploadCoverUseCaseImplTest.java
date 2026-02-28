@@ -63,24 +63,24 @@ class UploadCoverUseCaseImplTest {
     }
 
     @Test
-    void execute_WhenDataIsValidAndOldCoverDoesNotExists_ShouldSaveCoverAndUpdateUrl() {
+    void execute_WhenDataIsValidAndOldCoverDoesNotExists_ShouldSaveCoverAndUpdateFileName() {
         UploadCover data = new UploadCover(id, "image/jpeg", content);
-        String path = "covers/cover.jpg";
+        String coverFileName = "cover.jpg";
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-        when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(path);
+        when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(coverFileName);
         when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         Book result = useCase.execute(data);
 
         assertNotNull(result);
         assertEquals(id, result.id());
-        assertEquals(path, result.coverUrl());
+        assertEquals(coverFileName, result.coverFileName());
 
         ArgumentCaptor<Book> bookArgumentCaptor = ArgumentCaptor.forClass(Book.class);
         verify(bookRepository).save(bookArgumentCaptor.capture());
 
         Book capturedBook = bookArgumentCaptor.getValue();
-        assertEquals(path, capturedBook.coverUrl());
+        assertEquals(coverFileName, capturedBook.coverFileName());
 
         verify(bookCoverStorage).save(id, "image/jpeg", content);
         verify(bookRepository).save(any());
@@ -89,32 +89,32 @@ class UploadCoverUseCaseImplTest {
 
     @Test
     void execute_WhenOldCoverExists_ShouldDeleteOldCover() {
-        String oldCover = "old_cover.jpg";
-        String newCover = "new_cover.jpg";
-        Book book = new Book(id, title, author, oldCover, status, createdAt, Collections.emptySet());
+        String oldCoverFileName = "old_cover.jpg";
+        String newCoverFileName = "new_cover.jpg";
+        Book book = new Book(id, title, author, oldCoverFileName, status, createdAt, Collections.emptySet());
         UploadCover data = new UploadCover(id, "image/jpeg", content);
 
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-        when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(newCover);
+        when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(newCoverFileName);
         when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         Book result = useCase.execute(data);
 
-        assertEquals(newCover, result.coverUrl());
-        verify(bookCoverStorage).delete(oldCover);
+        assertEquals(newCoverFileName, result.coverFileName());
+        verify(bookCoverStorage).delete(oldCoverFileName);
     }
 
     @Test
     void execute_WhenDeleteOldCoverFails_ShouldReturnUpdatedBook() {
-        String oldCover = "old_cover.jpg";
-        String newCover = "new_cover.jpg";
-        Book book = new Book(id, title, author, oldCover, status, createdAt, Collections.emptySet());
+        String oldCoverFileName = "old_cover.jpg";
+        String newCoverFileName = "new_cover.jpg";
+        Book book = new Book(id, title, author, oldCoverFileName, status, createdAt, Collections.emptySet());
         UploadCover data = new UploadCover(id, "image/jpeg", content);
 
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-        when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(newCover);
+        when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(newCoverFileName);
         when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
-        doThrow(new RuntimeException("Error")).when(bookCoverStorage).delete(oldCover);
+        doThrow(new RuntimeException("Error")).when(bookCoverStorage).delete(oldCoverFileName);
 
         assertDoesNotThrow(() -> useCase.execute(data));
 

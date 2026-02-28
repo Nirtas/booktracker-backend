@@ -24,7 +24,7 @@ public class BookDataMapper {
             entity.getId(),
             entity.getTitle(),
             entity.getAuthor(),
-            entity.getCoverUrl(),
+            entity.getCoverFileName(),
             entity.getStatus(),
             entity.getCreatedAt(),
             entity.getGenres() == null ? Collections.emptySet() :
@@ -39,7 +39,7 @@ public class BookDataMapper {
         entity.setId(book.id());
         entity.setTitle(book.title());
         entity.setAuthor(book.author());
-        entity.setCoverUrl(book.coverUrl());
+        entity.setCoverFileName(book.coverFileName());
         entity.setStatus(book.status());
         entity.setCreatedAt(book.createdAt());
         entity.setGenres(book.genres() == null ? Collections.emptySet() :

@@ -46,14 +46,14 @@ class DeleteBookUseCaseImplTest {
 
     @Test
     void execute_WhenBookHasCover_ShouldDeleteBookAndCover() {
-        String coverUrl = "cover.jpg";
-        Book book = new Book(id, title, author, coverUrl, status, createdAt, Collections.emptySet());
+        String coverFileName = "cover.jpg";
+        Book book = new Book(id, title, author, coverFileName, status, createdAt, Collections.emptySet());
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
 
         useCase.execute(id);
 
         verify(bookRepository).deleteById(id);
-        verify(bookCoverStorage).delete(coverUrl);
+        verify(bookCoverStorage).delete(coverFileName);
     }
 
     @Test

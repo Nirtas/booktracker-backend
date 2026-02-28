@@ -29,8 +29,8 @@ public class BookEntity {
     @Column(name = "author", length = BookRules.AUTHOR_MAX_LENGTH, nullable = false)
     private String author;
 
-    @Column(name = "cover_url")
-    private String coverUrl;
+    @Column(name = "cover_file_name")
+    private String coverFileName;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)

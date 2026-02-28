@@ -20,7 +20,7 @@ public class DeleteCoverUseCaseImpl implements DeleteCoverUseCase {
     @Transactional
     public void execute(UUID bookId) {
         Book book = bookRepository.findById(bookId).orElseThrow(() -> BookExceptionFactory.notFound(bookId));
-        if (book.coverUrl() == null) return;
+        if (book.coverFileName() == null) return;
 
         Book updatedBook = new Book(
             book.id(),
@@ -32,6 +32,6 @@ public class DeleteCoverUseCaseImpl implements DeleteCoverUseCase {
             book.genres()
         );
         bookRepository.save(updatedBook);
-        bookCoverStorage.delete(book.coverUrl());
+        bookCoverStorage.delete(book.coverFileName());
     }
 }
