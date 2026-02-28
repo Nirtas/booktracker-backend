@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 02__load-genres-data
+      author: Jerael
+      comment: insert seed data into genres table
+      preconditions:
+        - onFail: MARK_RAN
+          tableIsEmpty:
+            tableName: genres
+      changes:
+        - loadData:
+            tableName: genres
+            file: ../data/genres.csv
+            relativeToChangelogFile: true
+            columns:
+              - column:
+                  header: name
+                  name: genre_name
+                  type: STRING

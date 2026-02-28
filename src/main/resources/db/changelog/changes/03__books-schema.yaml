@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 03__create-books-table
+      author: Jerael
+      comment: create books table
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: books
+      changes:
+        - createTable:
+            tableName: books
+            columns:
+              - column:
+                  name: book_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: author
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cover_url
+                  type: text
+              - column:
+                  name: status
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: books
+            columnNames: book_id
+            constraintName: pk_books

@@ -5,6 +5,9 @@ spring:
     username: test
     password: test
 
+  liquibase:
+    change-log: classpath:/db/changelog/test-changelog-master.yaml
+
   servlet:
     multipart:
       max-file-size: 10MB

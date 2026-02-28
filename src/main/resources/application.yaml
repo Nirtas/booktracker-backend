@@ -8,20 +8,15 @@ spring:
     password: ${POSTGRES_PASSWORD:replace-it-please}
     driver-class-name: org.postgresql.Driver
 
+  liquibase:
+    change-log: classpath:/db/changelog/changelog-master.yaml
+
   jpa:
-    hibernate:
-      ddl-auto: none
     show-sql: true
     open-in-view: false
     properties:
       hibernate:
         default_batch_fetch_size: 50
-
-  sql:
-    init:
-      mode: always
-      schema-locations: file:./database-init/1-schema.sql
-      data-locations: file:./database-init/2-schema-data.sql
 
   mvc:
     throw-exception-if-no-handler-found: true

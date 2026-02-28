@@ -9,7 +9,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database-init:/docker-entrypoint-initdb.d:ro
     networks:
       - app-network
     ports:
