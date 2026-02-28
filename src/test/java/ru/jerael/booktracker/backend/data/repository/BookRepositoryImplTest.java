@@ -134,7 +134,7 @@ class BookRepositoryImplTest {
         BookEntity bookEntity = new BookEntity();
         bookEntity.setTitle("title");
         bookEntity.setAuthor("author");
-        bookEntity.setCoverUrl("old_cover.jpg");
+        bookEntity.setCoverFileName("old_cover.jpg");
         bookEntity.setStatus(BookStatus.READING);
         bookEntity.setCreatedAt(Instant.ofEpochMilli(1771249699347L));
         bookEntity.setGenres(Collections.emptySet());
@@ -155,7 +155,7 @@ class BookRepositoryImplTest {
         Book updatedBook = bookRepository.save(book);
 
         assertEquals(id, updatedBook.id());
-        assertEquals("new_cover.jpg", updatedBook.coverUrl());
+        assertEquals("new_cover.jpg", updatedBook.coverFileName());
 
         BookEntity entity = jpaBookRepository.findById(id).orElseThrow();
         assertEquals("new title", entity.getTitle());

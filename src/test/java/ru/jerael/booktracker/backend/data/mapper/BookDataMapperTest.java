@@ -21,13 +21,13 @@ class BookDataMapperTest {
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final String title = "title";
     private final String author = "author";
-    private final String coverUrl = null;
+    private final String coverFileName = null;
     private final BookStatus status = BookStatus.READING;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
     private final Genre genre1 = new Genre(1, "action");
     private final Genre genre2 = new Genre(2, "adventure");
     private final Set<Genre> genres = Set.of(genre1, genre2);
-    private final Book book = new Book(id, title, author, coverUrl, status, createdAt, genres);
+    private final Book book = new Book(id, title, author, coverFileName, status, createdAt, genres);
 
     @Test
     void entity_toDomain() {
@@ -35,7 +35,7 @@ class BookDataMapperTest {
         entity.setId(id);
         entity.setTitle(title);
         entity.setAuthor(author);
-        entity.setCoverUrl(coverUrl);
+        entity.setCoverFileName(coverFileName);
         entity.setStatus(status);
         entity.setCreatedAt(createdAt);
         entity.setGenres(genres.stream().map(genreDataMapper::toEntity).collect(Collectors.toSet()));

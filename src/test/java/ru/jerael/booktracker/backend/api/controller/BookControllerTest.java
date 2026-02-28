@@ -186,7 +186,7 @@ class BookControllerTest {
 
     @Test
     void uploadCover_ShouldUploadCover() {
-        String coverUrl = "covers/cover.jpg";
+        String coverFileName = "cover.jpg";
         MockMultipartFile mockMultipartFile = new MockMultipartFile(
             "cover",
             "image.jpg",
@@ -194,9 +194,9 @@ class BookControllerTest {
             "content".getBytes()
         );
         UploadCover data = new UploadCover(id, MediaType.IMAGE_JPEG_VALUE, null);
-        Book book = new Book(id, title, author, coverUrl, status, createdAt, null);
+        Book book = new Book(id, title, author, coverFileName, status, createdAt, null);
         BookResponse bookResponse =
-            new BookResponse(id, title, author, coverUrl, status.getValue(), createdAt, null);
+            new BookResponse(id, title, author, coverFileName, status.getValue(), createdAt, null);
         when(uploadCoverApiMapper.toDomain(id, mockMultipartFile)).thenReturn(data);
         when(uploadCoverUseCase.execute(data)).thenReturn(book);
         when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);

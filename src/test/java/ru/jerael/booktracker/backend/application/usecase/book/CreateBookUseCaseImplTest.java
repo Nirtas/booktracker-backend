@@ -50,7 +50,7 @@ class CreateBookUseCaseImplTest {
                 id,
                 book.title(),
                 book.author(),
-                book.coverUrl(),
+                book.coverFileName(),
                 book.status(),
                 book.createdAt(),
                 book.genres()

@@ -46,14 +46,14 @@ class DeleteCoverUseCaseImplTest {
 
     @Test
     void execute_WhenCoverExists_ShouldDeleteFromStorageAndSaveBookWithNullCover() {
-        String coverUrl = "cover.jpg";
-        Book book = new Book(id, title, author, coverUrl, status, createdAt, Collections.emptySet());
+        String coverFileName = "cover.jpg";
+        Book book = new Book(id, title, author, coverFileName, status, createdAt, Collections.emptySet());
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
 
         useCase.execute(id);
 
         Book updatedBook = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
-        verify(bookCoverStorage).delete(coverUrl);
+        verify(bookCoverStorage).delete(coverFileName);
         verify(bookRepository).save(updatedBook);
     }
 
