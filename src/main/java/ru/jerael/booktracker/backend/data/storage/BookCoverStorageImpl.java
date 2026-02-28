@@ -47,9 +47,9 @@ public class BookCoverStorageImpl implements BookCoverStorage {
     }
 
     @Override
-    public void delete(String path) {
+    public void delete(String fileName) {
         try {
-            Path destination = coversPath.resolve(path);
+            Path destination = coversPath.resolve(fileName);
             Files.deleteIfExists(destination);
         } catch (IOException e) {
             throw StorageExceptionFactory.error(e.getMessage(), e);

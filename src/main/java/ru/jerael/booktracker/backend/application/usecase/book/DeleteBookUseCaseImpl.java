@@ -20,10 +20,10 @@ public class DeleteBookUseCaseImpl implements DeleteBookUseCase {
     @Transactional
     public void execute(UUID id) {
         Book book = bookRepository.findById(id).orElseThrow(() -> BookExceptionFactory.notFound(id));
-        String coverUrl = book.coverUrl();
+        String coverFileName = book.coverFileName();
         bookRepository.deleteById(id);
-        if (coverUrl != null) {
-            bookCoverStorage.delete(coverUrl);
+        if (coverFileName != null) {
+            bookCoverStorage.delete(coverFileName);
         }
     }
 }

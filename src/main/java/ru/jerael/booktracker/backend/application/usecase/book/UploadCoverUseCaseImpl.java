@@ -29,23 +29,23 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
         if (!BookRules.ALLOWED_IMAGE_MIME_TYPES.contains(data.contentType())) {
             throw FileValidationExceptionFactory.unsupportedFileContentType(data.contentType(), "cover");
         }
-        String oldCoverUrl = book.coverUrl();
-        String newCoverUrl = bookCoverStorage.save(data.bookId(), data.contentType(), data.content());
+        String oldCoverFileName = book.coverFileName();
+        String newCoverFileName = bookCoverStorage.save(data.bookId(), data.contentType(), data.content());
         Book updatedBook = new Book(
             book.id(),
             book.title(),
             book.author(),
-            newCoverUrl,
+            newCoverFileName,
             book.status(),
             book.createdAt(),
             book.genres()
         );
         Book savedBook = bookRepository.save(updatedBook);
-        if (oldCoverUrl != null && !oldCoverUrl.equals(newCoverUrl)) {
+        if (oldCoverFileName != null && !oldCoverFileName.equals(newCoverFileName)) {
             try {
-                bookCoverStorage.delete(oldCoverUrl);
+                bookCoverStorage.delete(oldCoverFileName);
             } catch (Exception e) {
-                log.error("Failed to delete old cover: {}", oldCoverUrl, e);
+                log.error("Failed to delete old cover: {}", oldCoverFileName, e);
             }
         }
         return savedBook;

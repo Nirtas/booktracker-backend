@@ -42,7 +42,7 @@ public class UpdateBookDetailsUseCaseImpl implements UpdateBookDetailsUseCase {
             book.id(),
             data.title() != null ? data.title().trim() : book.title(),
             data.author() != null ? data.author().trim() : book.author(),
-            book.coverUrl(),
+            book.coverFileName(),
             data.status() != null ? data.status() : book.status(),
             book.createdAt(),
             updatedGenres

@@ -25,7 +25,7 @@ public class BookApiMapper {
             book.id(),
             book.title(),
             book.author(),
-            book.coverUrl(),
+            book.coverFileName(), // TODO: generate a full url
             book.status().getValue(),
             book.createdAt(),
             genreApiMapper.toResponses(book.genres())
