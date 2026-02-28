@@ -15,6 +15,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Component
+@Deprecated
 public class BookCoverStorageImpl implements BookCoverStorage {
     private final Path coversPath;
 
