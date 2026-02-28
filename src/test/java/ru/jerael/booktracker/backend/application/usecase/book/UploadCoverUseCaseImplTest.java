@@ -68,7 +68,7 @@ class UploadCoverUseCaseImplTest {
         UploadCover data = new UploadCover("image/jpeg", content, contentSize);
         String coverFileName = "cover.jpg";
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-        when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(coverFileName);
+        when(bookCoverStorage.save(id, data)).thenReturn(coverFileName);
         when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         Book result = useCase.execute(id, data);
@@ -83,7 +83,7 @@ class UploadCoverUseCaseImplTest {
         Book capturedBook = bookArgumentCaptor.getValue();
         assertEquals(coverFileName, capturedBook.coverFileName());
 
-        verify(bookCoverStorage).save(id, "image/jpeg", content);
+        verify(bookCoverStorage).save(id, data);
         verify(bookRepository).save(any());
         verify(bookCoverStorage, never()).delete(any());
     }
@@ -96,7 +96,7 @@ class UploadCoverUseCaseImplTest {
         UploadCover data = new UploadCover("image/jpeg", content, contentSize);
 
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-        when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(newCoverFileName);
+        when(bookCoverStorage.save(id, data)).thenReturn(newCoverFileName);
         when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         Book result = useCase.execute(id, data);
@@ -113,7 +113,7 @@ class UploadCoverUseCaseImplTest {
         UploadCover data = new UploadCover("image/jpeg", content, contentSize);
 
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-        when(bookCoverStorage.save(id, "image/jpeg", content)).thenReturn(newCoverFileName);
+        when(bookCoverStorage.save(id, data)).thenReturn(newCoverFileName);
         when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
         doThrow(new RuntimeException("Error")).when(bookCoverStorage).delete(oldCoverFileName);
 

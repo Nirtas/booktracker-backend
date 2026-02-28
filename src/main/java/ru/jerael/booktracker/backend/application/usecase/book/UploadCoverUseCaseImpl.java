@@ -31,7 +31,7 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
             throw FileValidationExceptionFactory.unsupportedFileContentType(data.contentType(), "cover");
         }
         String oldCoverFileName = book.coverFileName();
-        String newCoverFileName = bookCoverStorage.save(bookId, data.contentType(), data.content());
+        String newCoverFileName = bookCoverStorage.save(bookId, data);
         Book updatedBook = new Book(
             book.id(),
             book.title(),

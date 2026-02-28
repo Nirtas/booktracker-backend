@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import ru.jerael.booktracker.backend.domain.exception.InternalException;
+import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +40,7 @@ class BookCoverStorageImplTest {
     private final String extension = "jpg";
     private final String content = "content";
     private final InputStream inputStream = new ByteArrayInputStream(content.getBytes());
+    private final long inputStreamSize = content.getBytes().length;
 
     @AfterAll
     static void clean() throws IOException {
@@ -64,7 +66,8 @@ class BookCoverStorageImplTest {
 
     @Test
     void save_ShouldSaveCover() throws IOException {
-        String savedFileName = bookCoverStorage.save(id, "image/jpeg", inputStream);
+        UploadCover data = new UploadCover("image/jpeg", inputStream, inputStreamSize);
+        String savedFileName = bookCoverStorage.save(id, data);
 
         assertEquals(String.format("%s.%s", id, extension), savedFileName);
 
@@ -78,8 +81,9 @@ class BookCoverStorageImplTest {
     void save_ShouldReplaceExistingCover() throws IOException {
         String newContent = "new content";
         InputStream newInputStream = new ByteArrayInputStream(newContent.getBytes());
+        UploadCover data = new UploadCover("image/jpeg", newInputStream, newContent.getBytes().length);
 
-        String savedFileName = bookCoverStorage.save(id, "image/jpeg", newInputStream);
+        String savedFileName = bookCoverStorage.save(id, data);
 
         assertEquals(String.format("%s.%s", id, extension), savedFileName);
 
@@ -93,8 +97,9 @@ class BookCoverStorageImplTest {
     void delete_ShouldDeleteCover() {
         String newContent = "new content";
         InputStream newInputStream = new ByteArrayInputStream(newContent.getBytes());
+        UploadCover data = new UploadCover("image/jpeg", newInputStream, newContent.getBytes().length);
 
-        String savedFileName = bookCoverStorage.save(id, "image/jpeg", newInputStream);
+        String savedFileName = bookCoverStorage.save(id, data);
 
         Path path = coversPath.resolve(savedFileName);
         assertTrue(Files.exists(path));
