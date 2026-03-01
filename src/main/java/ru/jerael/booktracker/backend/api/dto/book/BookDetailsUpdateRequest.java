@@ -3,7 +3,7 @@ package ru.jerael.booktracker.backend.api.dto.book;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import ru.jerael.booktracker.backend.domain.constants.BookRules;
+import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import java.util.Set;
 
 public record BookDetailsUpdateRequest(

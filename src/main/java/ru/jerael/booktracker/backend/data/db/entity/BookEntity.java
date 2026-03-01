@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.jerael.booktracker.backend.data.db.DbConstants;
-import ru.jerael.booktracker.backend.domain.constants.BookRules;
+import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
 import java.util.HashSet;

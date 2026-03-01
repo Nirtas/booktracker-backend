@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.jerael.booktracker.backend.data.db.DbConstants;
-import ru.jerael.booktracker.backend.domain.constants.GenreRules;
+import ru.jerael.booktracker.backend.domain.constant.GenreRules;
 
 @Entity
 @Table(name = DbConstants.TABLE_GENRES)

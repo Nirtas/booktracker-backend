@@ -1,4 +1,4 @@
-package ru.jerael.booktracker.backend.domain.constants;
+package ru.jerael.booktracker.backend.domain.constant;
 
 import java.util.Map;
 import java.util.Set;

@@ -1,6 +1,6 @@
 package ru.jerael.booktracker.backend.domain.exception.factory;
 
-import ru.jerael.booktracker.backend.domain.constants.BookRules;
+import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.code.FileValidationErrorCode;
 import java.util.Map;
