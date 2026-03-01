@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.jerael.booktracker.backend.data.db.DbConstants;
+import ru.jerael.booktracker.backend.data.db.constant.Tables;
 import ru.jerael.booktracker.backend.domain.constant.GenreRules;
 
 @Entity
-@Table(name = DbConstants.TABLE_GENRES)
+@Table(name = Tables.GENRES)
 @Getter
 @Setter
 @NoArgsConstructor
