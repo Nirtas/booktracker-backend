@@ -29,10 +29,6 @@ spring:
     multipart:
       max-file-size: 10MB
 
-app:
-  storage:
-    covers-path: "storage/covers"
-
 minio:
   url: http://${MINIO_HOST:localhost}:9000
   user: ${MINIO_ROOT_USER:minio}
