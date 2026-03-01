@@ -1,6 +1,6 @@
 package ru.jerael.booktracker.backend.domain.exception.factory;
 
-import ru.jerael.booktracker.backend.domain.constant.BookRules;
+import ru.jerael.booktracker.backend.domain.constant.ImageRules;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.code.FileValidationErrorCode;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class FileValidationExceptionFactory {
             FileValidationErrorCode.UNSUPPORTED_FILE_CONTENT_TYPE,
             "File content type " + contentType + " is not supported",
             field,
-            Map.of("allowed", BookRules.ALLOWED_IMAGE_MIME_TYPES)
+            Map.of("allowed", ImageRules.ALLOWED_MIME_TYPES)
         );
     }
 }

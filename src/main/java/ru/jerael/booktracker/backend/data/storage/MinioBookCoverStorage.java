@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.data.exception.factory.StorageExceptionFactory;
 import ru.jerael.booktracker.backend.data.storage.config.MinioProperties;
-import ru.jerael.booktracker.backend.domain.constant.BookRules;
+import ru.jerael.booktracker.backend.domain.constant.ImageRules;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.io.InputStream;
@@ -47,7 +47,7 @@ public class MinioBookCoverStorage implements BookCoverStorage {
     @Override
     public String save(UUID bookId, UploadCover data) {
         try (InputStream content = data.content()) {
-            String extension = BookRules.MIME_TO_EXTENSION.get(data.contentType());
+            String extension = ImageRules.MIME_TO_EXTENSION.get(data.contentType());
             String fileName = String.format("%s.%s", bookId, extension);
             minioClient.putObject(
                 PutObjectArgs.builder()
