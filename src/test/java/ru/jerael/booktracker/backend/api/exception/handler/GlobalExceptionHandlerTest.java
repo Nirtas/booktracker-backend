@@ -4,19 +4,21 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import ru.jerael.booktracker.backend.api.config.ApiProperties;
 import ru.jerael.booktracker.backend.api.exception.code.ApiErrorCode;
 import ru.jerael.booktracker.backend.api.exception.factory.FileApiExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.AppException;
@@ -26,6 +28,7 @@ import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFacto
 import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @WebMvcTest(GlobalExceptionHandlerTest.TestController.class)
 @Import(GlobalExceptionHandlerTest.TestController.class)
@@ -34,8 +37,8 @@ class GlobalExceptionHandlerTest {
     @Autowired
     private MockMvcTester mockMvcTester;
 
-    @Value("${spring.servlet.multipart.max-file-size}")
-    private String maxFileSize;
+    @MockitoBean
+    private ApiProperties apiProperties;
 
     private static final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
 
@@ -165,7 +168,12 @@ class GlobalExceptionHandlerTest {
             MediaType.IMAGE_JPEG_VALUE,
             "content".getBytes()
         );
+        DataSize limit = DataSize.ofMegabytes(10);
+        when(apiProperties.getMaxFileSize()).thenReturn(limit);
+        String maxFileSize = "10MB";
+
         var response = mockMvcTester.post().uri("/test/max-upload-size-exceeded").multipart().file(file);
+
         assertThat(response).hasStatus(HttpStatus.BAD_REQUEST);
         var json = assertThat(response).bodyJson();
         json.extractingPath("$.detail").isEqualTo("File size exceeds the limit of " + maxFileSize);

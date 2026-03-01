@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.client.RestTestClient;
+import ru.jerael.booktracker.backend.api.config.ApiProperties;
 import ru.jerael.booktracker.backend.api.dto.genre.GenreResponse;
 import ru.jerael.booktracker.backend.api.exception.handler.GlobalExceptionHandler;
 import ru.jerael.booktracker.backend.api.mapper.GenreApiMapper;
@@ -25,6 +26,9 @@ class GenreControllerTest {
 
     @Autowired
     private RestTestClient restTestClient;
+
+    @MockitoBean
+    private ApiProperties apiProperties;
 
     @MockitoBean
     private GetGenresUseCase getGenresUseCase;
