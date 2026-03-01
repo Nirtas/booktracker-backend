@@ -1,6 +1,7 @@
 package ru.jerael.booktracker.backend.data.storage;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import java.util.Comparator;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Deprecated
+@Disabled
 @SpringBootTest
 class BookCoverStorageImplTest {
 

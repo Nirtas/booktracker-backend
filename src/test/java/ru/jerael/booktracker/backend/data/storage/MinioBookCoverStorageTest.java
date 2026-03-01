@@ -1,0 +1,122 @@
+package ru.jerael.booktracker.backend.data.storage;
+
+import io.minio.BucketExistsArgs;
+import io.minio.GetObjectArgs;
+import io.minio.MinioClient;
+import io.minio.StatObjectArgs;
+import io.minio.errors.ErrorResponseException;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
+import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+import static org.junit.jupiter.api.Assertions.*;
+
+@Testcontainers
+@SpringBootTest
+class MinioBookCoverStorageTest {
+
+    private static final String USER = "testuser";
+    private static final String PASSWORD = "testpassword";
+    private static final String COVERS_BUCKET = "covers";
+
+    @Container
+    private static final GenericContainer<?> minioContainer =
+        new GenericContainer<>(DockerImageName.parse("minio/minio:RELEASE.2025-09-07T16-13-09Z"))
+            .withEnv("MINIO_ROOT_USER", USER)
+            .withEnv("MINIO_ROOT_PASSWORD", PASSWORD)
+            .withCommand("server /data")
+            .withExposedPorts(9000);
+
+    @Autowired
+    private MinioBookCoverStorage bookCoverStorage;
+
+    @Autowired
+    private MinioClient minioClient;
+
+    @DynamicPropertySource
+    private static void configureMinioProperties(DynamicPropertyRegistry registry) {
+        registry.add("minio.url",
+            () -> "http://" + minioContainer.getHost() + ":" + minioContainer.getMappedPort(9000));
+    }
+
+    private final UUID id = UUID.fromString("3a60a981-acad-4b0b-b9d0-a6d24ffb6b94");
+    private final String content = "content";
+
+    @Test
+    void init_ShouldCreateBucketOnInitialization() throws Exception {
+        boolean exists = minioClient.bucketExists(
+            BucketExistsArgs.builder()
+                .bucket(COVERS_BUCKET)
+                .build()
+        );
+        assertTrue(exists);
+    }
+
+    @Test
+    void save_ShouldSaveCover() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream(content.getBytes());
+        long inputStreamSize = content.getBytes().length;
+        UploadCover data = new UploadCover("image/jpeg", inputStream, inputStreamSize);
+
+        String savedFileName = bookCoverStorage.save(id, data);
+
+        assertEquals(id + ".jpg", savedFileName);
+        try (InputStream stream = minioClient.getObject(
+            GetObjectArgs.builder()
+                .bucket(COVERS_BUCKET)
+                .object(savedFileName)
+                .build()
+        )) {
+            String streamContent = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            assertEquals(content, streamContent);
+        }
+    }
+
+    @Test
+    void delete_ShouldDeleteCover() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream(content.getBytes());
+        long inputStreamSize = content.getBytes().length;
+        UploadCover data = new UploadCover("image/jpeg", inputStream, inputStreamSize);
+        String savedFileName = bookCoverStorage.save(id, data);
+        minioClient.statObject(
+            StatObjectArgs.builder()
+                .bucket(COVERS_BUCKET)
+                .object(savedFileName)
+                .build()
+        );
+
+        bookCoverStorage.delete(savedFileName);
+
+        String code = assertThrows(
+            ErrorResponseException.class,
+            () -> minioClient.statObject(
+                StatObjectArgs.builder()
+                    .bucket(COVERS_BUCKET)
+                    .object(savedFileName)
+                    .build()
+            )
+        ).errorResponse().code();
+        assertEquals("NoSuchKey", code);
+    }
+
+    @Test
+    void getUrl_ShouldReturnValidUrl() {
+        String fileName = "cover.jpg";
+
+        String url = bookCoverStorage.getUrl(fileName);
+
+        assertNotNull(url);
+        assertTrue(url.contains(COVERS_BUCKET));
+        assertTrue(url.contains(fileName));
+    }
+}
