@@ -12,7 +12,7 @@ spring:
     change-log: classpath:/db/changelog/changelog-master.yaml
 
   jpa:
-    show-sql: true
+    show-sql: ${SHOW_SQL:false}
     open-in-view: false
     properties:
       hibernate:
@@ -27,12 +27,15 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 10MB
+      max-file-size: ${MAX_FILE_SIZE:10MB}
 
-minio:
-  url: http://${MINIO_HOST:localhost}:9000
-  user: ${MINIO_ROOT_USER:minio}
-  password: ${MINIO_ROOT_PASSWORD:replace-it-please}
-  url-expiry: 1h
-  buckets:
-    covers: ${MINIO_COVERS_BUCKET:covers}
+app:
+  api:
+    max-file-size: ${spring.servlet.multipart.max-file-size}
+  minio:
+    url: ${MINIO_URL:http://localhost:9000}
+    user: ${MINIO_ROOT_USER:minio}
+    password: ${MINIO_ROOT_PASSWORD:replace-it-please}
+    url-expiry: ${MINIO_URL_EXPIRY:1h}
+    buckets:
+      covers: ${MINIO_COVERS_BUCKET:covers}

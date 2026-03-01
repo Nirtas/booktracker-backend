@@ -5,7 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.jerael.booktracker.backend.domain.constants.BookRules;
+import ru.jerael.booktracker.backend.domain.constant.BookRules;
+import ru.jerael.booktracker.backend.domain.constant.ImageRules;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
@@ -27,8 +28,11 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
     public Book execute(UUID bookId, UploadCover data) {
         Book book =
             bookRepository.findById(bookId).orElseThrow(() -> BookExceptionFactory.notFound(bookId));
-        if (!BookRules.ALLOWED_IMAGE_MIME_TYPES.contains(data.contentType())) {
-            throw FileValidationExceptionFactory.unsupportedFileContentType(data.contentType(), "cover");
+        if (!ImageRules.ALLOWED_MIME_TYPES.contains(data.contentType())) {
+            throw FileValidationExceptionFactory.unsupportedFileContentType(
+                data.contentType(),
+                BookRules.COVER_FIELD_NAME
+            );
         }
         String oldCoverFileName = book.coverFileName();
         String newCoverFileName = bookCoverStorage.save(bookId, data);

@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import ru.jerael.booktracker.backend.api.config.ApiProperties;
 import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
@@ -39,6 +40,9 @@ class BookControllerTest {
 
     @Autowired
     private MockMvcTester mockMvcTester;
+
+    @MockitoBean
+    private ApiProperties apiProperties;
 
     @Autowired
     private ObjectMapper objectMapper;

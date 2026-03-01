@@ -1,4 +1,4 @@
-package ru.jerael.booktracker.backend.domain.constants;
+package ru.jerael.booktracker.backend.domain.constant;
 
 public final class GenreRules {
     private GenreRules() {}

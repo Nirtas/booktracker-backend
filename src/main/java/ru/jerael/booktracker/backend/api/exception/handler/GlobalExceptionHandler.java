@@ -1,8 +1,8 @@
 package ru.jerael.booktracker.backend.api.exception.handler;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import ru.jerael.booktracker.backend.api.config.ApiProperties;
 import ru.jerael.booktracker.backend.api.exception.code.ApiErrorCode;
 import ru.jerael.booktracker.backend.api.exception.model.FieldErrorDetail;
 import ru.jerael.booktracker.backend.api.exception.util.ApiErrorUtils;
@@ -32,11 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
-    @Value("${spring.servlet.multipart.max-file-size}")
-    private String maxFileSize;
+    private final ApiProperties apiProperties;
 
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleNotFoundException(NotFoundException ex) {
@@ -121,6 +121,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ProblemDetail handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        String maxFileSize = apiProperties.getMaxFileSize().toMegabytes() + "MB";
         ProblemDetail problemDetail = buildProblemDetail(
             HttpStatus.BAD_REQUEST,
             "File size exceeds the limit of " + maxFileSize,

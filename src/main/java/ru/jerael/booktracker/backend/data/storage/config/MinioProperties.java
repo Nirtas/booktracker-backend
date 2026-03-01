@@ -7,7 +7,7 @@ import java.time.Duration;
 
 @Component
 @Data
-@ConfigurationProperties(prefix = "minio")
+@ConfigurationProperties(prefix = "app.minio")
 public class MinioProperties {
     private String url;
     private String user;

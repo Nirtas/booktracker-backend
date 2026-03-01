@@ -13,6 +13,8 @@ import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.api.mapper.BookApiMapper;
 import ru.jerael.booktracker.backend.api.mapper.UploadCoverApiMapper;
 import ru.jerael.booktracker.backend.api.validator.FileValidator;
+import ru.jerael.booktracker.backend.domain.constant.BookRules;
+import ru.jerael.booktracker.backend.domain.constant.PaginationRules;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
@@ -42,7 +44,7 @@ public class BookController {
     @GetMapping
     public PagedModel<BookResponse> getAll(Pageable pageable) {
         Sort.Order order = pageable.getSort().stream().findFirst().orElse(null);
-        String sortBy = order != null ? order.getProperty() : "createdAt";
+        String sortBy = order != null ? order.getProperty() : PaginationRules.DEFAULT_SORT_FIELD;
         SortDirection direction = order != null && order.isAscending()
             ? SortDirection.ASC
             : SortDirection.DESC;
@@ -91,8 +93,11 @@ public class BookController {
     }
 
     @PatchMapping("/{id}/cover")
-    public BookResponse uploadCover(@PathVariable UUID id, @RequestParam("cover") MultipartFile file) {
-        fileValidator.validate(file, "cover");
+    public BookResponse uploadCover(
+        @PathVariable UUID id,
+        @RequestParam(BookRules.COVER_FIELD_NAME) MultipartFile file
+    ) {
+        fileValidator.validate(file, BookRules.COVER_FIELD_NAME);
         UploadCover data = uploadCoverApiMapper.toDomain(file);
         Book book = uploadCoverUseCase.execute(id, data);
         return bookApiMapper.toResponse(book);

@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.jerael.booktracker.backend.data.db.DbConstants;
-import ru.jerael.booktracker.backend.domain.constants.BookRules;
+import ru.jerael.booktracker.backend.data.db.constant.Tables;
+import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
 import java.util.HashSet;
@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = DbConstants.TABLE_BOOKS)
+@Table(name = Tables.BOOKS)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -41,7 +41,7 @@ public class BookEntity {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = DbConstants.TABLE_BOOK_GENRES,
+        name = Tables.BOOK_GENRES,
         joinColumns = @JoinColumn(name = "book_id"),
         inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
