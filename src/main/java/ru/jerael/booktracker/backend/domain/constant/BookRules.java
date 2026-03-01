@@ -5,4 +5,5 @@ public final class BookRules {
 
     public static final int TITLE_MAX_LENGTH = 500;
     public static final int AUTHOR_MAX_LENGTH = 500;
+    public static final String COVER_FIELD_NAME = "cover";
 }
