@@ -45,7 +45,7 @@ class MinioBookCoverStorageTest {
 
     @DynamicPropertySource
     private static void configureMinioProperties(DynamicPropertyRegistry registry) {
-        registry.add("minio.url",
+        registry.add("app.minio.url",
             () -> "http://" + minioContainer.getHost() + ":" + minioContainer.getMappedPort(9000));
     }
 

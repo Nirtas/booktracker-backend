@@ -7,7 +7,7 @@ import org.springframework.util.unit.DataSize;
 
 @Component
 @Data
-@ConfigurationProperties(prefix = "api")
+@ConfigurationProperties(prefix = "app.api")
 public class ApiProperties {
     private DataSize maxFileSize = DataSize.ofMegabytes(10);
 }

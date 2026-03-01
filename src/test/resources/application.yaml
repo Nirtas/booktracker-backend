@@ -12,9 +12,13 @@ spring:
     multipart:
       max-file-size: 10MB
 
-minio:
-  url: http://localhost:9000
-  user: testuser
-  password: testpassword
-  buckets:
-    covers: covers
+app:
+  api:
+    max-file-size: ${spring.servlet.multipart.max-file-size}
+  minio:
+    url: http://localhost:9000
+    user: testuser
+    password: testpassword
+    url-expiry: 1h
+    buckets:
+      covers: covers
