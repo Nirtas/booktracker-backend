@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.mapper.BookDataMapper;
+import ru.jerael.booktracker.backend.domain.constant.PaginationRules;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
@@ -27,7 +28,7 @@ public class BookRepositoryImpl implements BookRepository {
     public PageResult<Book> findAll(PageQuery query) {
         int page = query != null ? query.page() : 0;
         int size = query != null ? query.size() : 0;
-        String sortBy = query != null ? query.sortBy() : "createdAt";
+        String sortBy = query != null ? query.sortBy() : PaginationRules.DEFAULT_SORT_FIELD;
         Sort.Direction direction = query != null && query.direction() == SortDirection.ASC
             ? Sort.Direction.ASC
             : Sort.Direction.DESC;
