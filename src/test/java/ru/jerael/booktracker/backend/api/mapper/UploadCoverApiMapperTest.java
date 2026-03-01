@@ -27,10 +27,10 @@ class UploadCoverApiMapperTest {
         byte[] content = "content".getBytes();
         MockMultipartFile mockMultipartFile = new MockMultipartFile("cover", fileName, contentType, content);
 
-        UploadCover data = uploadCoverApiMapper.toDomain(id, mockMultipartFile);
+        UploadCover data = uploadCoverApiMapper.toDomain(mockMultipartFile);
 
-        assertEquals(id, data.bookId());
         assertEquals(contentType, data.contentType());
+        assertEquals(content.length, data.size());
         assertThat(data.content().readAllBytes()).isEqualTo(content);
     }
 
@@ -39,6 +39,6 @@ class UploadCoverApiMapperTest {
         MultipartFile file = mock(MultipartFile.class);
         when(file.getInputStream()).thenThrow(FileApiExceptionFactory.readError("file name", null));
 
-        assertThrows(InternalException.class, () -> uploadCoverApiMapper.toDomain(id, file));
+        assertThrows(InternalException.class, () -> uploadCoverApiMapper.toDomain(file));
     }
 }

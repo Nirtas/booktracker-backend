@@ -193,12 +193,12 @@ class BookControllerTest {
             MediaType.IMAGE_JPEG_VALUE,
             "content".getBytes()
         );
-        UploadCover data = new UploadCover(id, MediaType.IMAGE_JPEG_VALUE, null);
+        UploadCover data = new UploadCover(MediaType.IMAGE_JPEG_VALUE, null, 0L);
         Book book = new Book(id, title, author, coverFileName, status, createdAt, null);
         BookResponse bookResponse =
             new BookResponse(id, title, author, coverFileName, status.getValue(), createdAt, null);
-        when(uploadCoverApiMapper.toDomain(id, mockMultipartFile)).thenReturn(data);
-        when(uploadCoverUseCase.execute(data)).thenReturn(book);
+        when(uploadCoverApiMapper.toDomain(mockMultipartFile)).thenReturn(data);
+        when(uploadCoverUseCase.execute(id, data)).thenReturn(book);
         when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);
 
         assertThat(

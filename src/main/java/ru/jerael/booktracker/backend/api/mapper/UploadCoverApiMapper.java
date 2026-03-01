@@ -8,19 +8,18 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
-import java.util.UUID;
 
 @Component
 public class UploadCoverApiMapper {
-    public UploadCover toDomain(UUID bookId, MultipartFile file) {
-        if (bookId == null || file == null) return null;
+    public UploadCover toDomain(MultipartFile file) {
+        if (file == null) return null;
 
         try {
             InputStream inputStream = new BufferedInputStream(file.getInputStream());
             return new UploadCover(
-                bookId,
                 file.getContentType(),
-                inputStream
+                inputStream,
+                file.getSize()
             );
         } catch (IOException e) {
             String fileName = Objects.requireNonNull(file.getOriginalFilename(), "unknown file name");

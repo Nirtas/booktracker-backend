@@ -13,6 +13,7 @@ import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import ru.jerael.booktracker.backend.domain.usecase.book.UploadCoverUseCase;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,14 +24,14 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
 
     @Override
     @Transactional
-    public Book execute(UploadCover data) {
+    public Book execute(UUID bookId, UploadCover data) {
         Book book =
-            bookRepository.findById(data.bookId()).orElseThrow(() -> BookExceptionFactory.notFound(data.bookId()));
+            bookRepository.findById(bookId).orElseThrow(() -> BookExceptionFactory.notFound(bookId));
         if (!BookRules.ALLOWED_IMAGE_MIME_TYPES.contains(data.contentType())) {
             throw FileValidationExceptionFactory.unsupportedFileContentType(data.contentType(), "cover");
         }
         String oldCoverFileName = book.coverFileName();
-        String newCoverFileName = bookCoverStorage.save(data.bookId(), data.contentType(), data.content());
+        String newCoverFileName = bookCoverStorage.save(bookId, data);
         Book updatedBook = new Book(
             book.id(),
             book.title(),

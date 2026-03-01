@@ -93,8 +93,8 @@ public class BookController {
     @PatchMapping("/{id}/cover")
     public BookResponse uploadCover(@PathVariable UUID id, @RequestParam("cover") MultipartFile file) {
         fileValidator.validate(file, "cover");
-        UploadCover data = uploadCoverApiMapper.toDomain(id, file);
-        Book book = uploadCoverUseCase.execute(data);
+        UploadCover data = uploadCoverApiMapper.toDomain(file);
+        Book book = uploadCoverUseCase.execute(id, data);
         return bookApiMapper.toResponse(book);
     }
 

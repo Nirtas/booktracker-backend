@@ -1,10 +1,15 @@
 package ru.jerael.booktracker.backend;
 
+import io.minio.MinioClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 class ApplicationTests {
+
+    @MockitoBean
+    private MinioClient minioClient;
 
     @Test
     void contextLoads() {
