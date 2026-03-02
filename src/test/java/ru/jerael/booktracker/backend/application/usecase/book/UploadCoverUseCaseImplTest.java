@@ -11,7 +11,10 @@ import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.image.ProcessedImage;
+import ru.jerael.booktracker.backend.domain.model.image.SaveImage;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
+import ru.jerael.booktracker.backend.domain.service.image.ImageProcessor;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.io.InputStream;
 import java.time.Instant;
@@ -29,6 +32,9 @@ class UploadCoverUseCaseImplTest {
 
     @Mock
     private BookCoverStorage bookCoverStorage;
+
+    @Mock
+    private ImageProcessor imageProcessor;
 
     @InjectMocks
     private UploadCoverUseCaseImpl useCase;
@@ -66,9 +72,11 @@ class UploadCoverUseCaseImplTest {
     @Test
     void execute_WhenDataIsValidAndOldCoverDoesNotExists_ShouldSaveCoverAndUpdateFileName() {
         UploadCover data = new UploadCover("image/jpeg", content, contentSize);
-        String coverFileName = "cover.jpg";
+        ProcessedImage processedImage = new ProcessedImage("image/jpeg", "jpg", content, contentSize);
+        String coverFileName = id + ".jpg";
+        SaveImage saveImage = new SaveImage(coverFileName, "image/jpeg", content, contentSize);
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-        when(bookCoverStorage.save(id, data)).thenReturn(coverFileName);
+        when(imageProcessor.process(content)).thenReturn(processedImage);
         when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         Book result = useCase.execute(id, data);
@@ -83,7 +91,7 @@ class UploadCoverUseCaseImplTest {
         Book capturedBook = bookArgumentCaptor.getValue();
         assertEquals(coverFileName, capturedBook.coverFileName());
 
-        verify(bookCoverStorage).save(id, data);
+        verify(bookCoverStorage).save(saveImage);
         verify(bookRepository).save(any());
         verify(bookCoverStorage, never()).delete(any());
     }
@@ -91,12 +99,13 @@ class UploadCoverUseCaseImplTest {
     @Test
     void execute_WhenOldCoverExists_ShouldDeleteOldCover() {
         String oldCoverFileName = "old_cover.jpg";
-        String newCoverFileName = "new_cover.jpg";
+        String newCoverFileName = id + ".jpg";
         Book book = new Book(id, title, author, oldCoverFileName, status, createdAt, Collections.emptySet());
+        ProcessedImage processedImage = new ProcessedImage("image/jpeg", "jpg", content, contentSize);
         UploadCover data = new UploadCover("image/jpeg", content, contentSize);
 
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-        when(bookCoverStorage.save(id, data)).thenReturn(newCoverFileName);
+        when(imageProcessor.process(content)).thenReturn(processedImage);
         when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         Book result = useCase.execute(id, data);
@@ -108,12 +117,12 @@ class UploadCoverUseCaseImplTest {
     @Test
     void execute_WhenDeleteOldCoverFails_ShouldReturnUpdatedBook() {
         String oldCoverFileName = "old_cover.jpg";
-        String newCoverFileName = "new_cover.jpg";
         Book book = new Book(id, title, author, oldCoverFileName, status, createdAt, Collections.emptySet());
+        ProcessedImage processedImage = new ProcessedImage("image/jpeg", "jpg", content, contentSize);
         UploadCover data = new UploadCover("image/jpeg", content, contentSize);
 
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-        when(bookCoverStorage.save(id, data)).thenReturn(newCoverFileName);
+        when(imageProcessor.process(content)).thenReturn(processedImage);
         when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
         doThrow(new RuntimeException("Error")).when(bookCoverStorage).delete(oldCoverFileName);
 
