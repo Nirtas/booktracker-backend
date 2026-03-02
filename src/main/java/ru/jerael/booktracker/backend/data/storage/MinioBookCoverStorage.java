@@ -47,7 +47,7 @@ public class MinioBookCoverStorage implements BookCoverStorage {
     @Override
     public String save(UUID bookId, UploadCover data) {
         try (InputStream content = data.content()) {
-            String extension = ImageRules.MIME_TO_EXTENSION.get(data.contentType());
+            String extension = ImageRules.MIME_TO_FORMAT.get(data.contentType()).getExtension();
             String fileName = String.format("%s.%s", bookId, extension);
             minioClient.putObject(
                 PutObjectArgs.builder()
