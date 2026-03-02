@@ -1,5 +1,6 @@
 package ru.jerael.booktracker.backend.domain.constant;
 
+import ru.jerael.booktracker.backend.domain.model.image.ImageFormat;
 import java.util.Map;
 import java.util.Set;
 
@@ -8,10 +9,11 @@ public final class ImageRules {
 
     public static final Set<String> ALLOWED_MIME_TYPES = Set.of("image/jpeg", "image/png", "image/webp", "image/bmp");
 
-    public static final Map<String, String> MIME_TO_EXTENSION = Map.of(
-        "image/jpeg", "jpg",
-        "image/png", "png",
-        "image/webp", "webp",
-        "image/bmp", "bmp"
+    public static final Map<ImageFormat, String> FORMAT_TO_MIME = Map.of(
+        ImageFormat.JPG, "image/jpeg",
+        ImageFormat.JPEG, "image/jpeg",
+        ImageFormat.PNG, "image/png",
+        ImageFormat.WEBP, "image/webp",
+        ImageFormat.BMP, "image/bmp"
     );
 }

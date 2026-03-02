@@ -14,7 +14,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.image.SaveImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -66,15 +66,16 @@ class MinioBookCoverStorageTest {
     void save_ShouldSaveCover() throws Exception {
         InputStream inputStream = new ByteArrayInputStream(content.getBytes());
         long inputStreamSize = content.getBytes().length;
-        UploadCover data = new UploadCover("image/jpeg", inputStream, inputStreamSize);
+        String coverFileName = id + ".jpg";
+        SaveImage data = new SaveImage(coverFileName, "image/jpeg", inputStream, inputStreamSize);
 
-        String savedFileName = bookCoverStorage.save(id, data);
+        bookCoverStorage.save(data);
 
-        assertEquals(id + ".jpg", savedFileName);
+        assertEquals(id + ".jpg", coverFileName);
         try (InputStream stream = minioClient.getObject(
             GetObjectArgs.builder()
                 .bucket(COVERS_BUCKET)
-                .object(savedFileName)
+                .object(coverFileName)
                 .build()
         )) {
             String streamContent = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
@@ -86,23 +87,24 @@ class MinioBookCoverStorageTest {
     void delete_ShouldDeleteCover() throws Exception {
         InputStream inputStream = new ByteArrayInputStream(content.getBytes());
         long inputStreamSize = content.getBytes().length;
-        UploadCover data = new UploadCover("image/jpeg", inputStream, inputStreamSize);
-        String savedFileName = bookCoverStorage.save(id, data);
+        String coverFileName = "cover.jpg";
+        SaveImage data = new SaveImage(coverFileName, "image/jpeg", inputStream, inputStreamSize);
+        bookCoverStorage.save(data);
         minioClient.statObject(
             StatObjectArgs.builder()
                 .bucket(COVERS_BUCKET)
-                .object(savedFileName)
+                .object(coverFileName)
                 .build()
         );
 
-        bookCoverStorage.delete(savedFileName);
+        bookCoverStorage.delete(coverFileName);
 
         String code = assertThrows(
             ErrorResponseException.class,
             () -> minioClient.statObject(
                 StatObjectArgs.builder()
                     .bucket(COVERS_BUCKET)
-                    .object(savedFileName)
+                    .object(coverFileName)
                     .build()
             )
         ).errorResponse().code();
