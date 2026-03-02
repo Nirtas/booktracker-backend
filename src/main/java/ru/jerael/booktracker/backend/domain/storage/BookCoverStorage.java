@@ -1,10 +1,9 @@
 package ru.jerael.booktracker.backend.domain.storage;
 
-import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
-import java.util.UUID;
+import ru.jerael.booktracker.backend.domain.model.image.SaveImage;
 
 public interface BookCoverStorage {
-    String save(UUID bookId, UploadCover data);
+    void save(SaveImage data);
 
     void delete(String fileName);
 
