@@ -9,6 +9,8 @@ import ru.jerael.booktracker.backend.domain.constant.ImageRules;
 import ru.jerael.booktracker.backend.domain.model.image.ImageFormat;
 import ru.jerael.booktracker.backend.domain.model.image.ProcessedImage;
 import ru.jerael.booktracker.backend.domain.service.image.ImageProcessor;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -22,11 +24,22 @@ public class ThumbnailatorImageProcessor implements ImageProcessor {
     public ProcessedImage process(InputStream content) {
         ImageFormat format = imageProperties.getTargetFormat();
         try (content; ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            Thumbnails.of(content)
-                .size(imageProperties.getMaxWidth(), imageProperties.getMaxHeight())
+            BufferedImage originalImage = ImageIO.read(content);
+
+            var builder = Thumbnails.of(originalImage)
                 .outputFormat(format.getExtension())
-                .outputQuality(imageProperties.getQuality())
-                .toOutputStream(outputStream);
+                .outputQuality(imageProperties.getQuality());
+
+            int maxWidth = imageProperties.getMaxWidth();
+            int maxHeight = imageProperties.getMaxHeight();
+            if (originalImage.getWidth() > maxWidth || originalImage.getHeight() > maxHeight) {
+                builder.size(maxWidth, maxHeight);
+            } else {
+                builder.scale(1.0);
+            }
+
+            builder.toOutputStream(outputStream);
+
             byte[] bytes = outputStream.toByteArray();
             return new ProcessedImage(
                 ImageRules.FORMAT_TO_MIME.get(format),
