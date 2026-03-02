@@ -206,7 +206,7 @@ class BookControllerTest {
         when(bookApiMapper.toResponse(book)).thenReturn(bookResponse);
 
         assertThat(
-            mockMvcTester.patch().uri("/api/v1/books/" + id + "/cover")
+            mockMvcTester.post().uri("/api/v1/books/" + id + "/cover")
                 .multipart()
                 .file(mockMultipartFile)
         )

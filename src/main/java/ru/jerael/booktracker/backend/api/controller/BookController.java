@@ -92,7 +92,7 @@ public class BookController {
         return bookApiMapper.toResponse(book);
     }
 
-    @PatchMapping("/{id}/cover")
+    @PostMapping("/{id}/cover")
     public BookResponse uploadCover(
         @PathVariable UUID id,
         @RequestParam(BookRules.COVER_FIELD_NAME) MultipartFile file
