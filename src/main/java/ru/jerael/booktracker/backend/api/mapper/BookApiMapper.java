@@ -9,14 +9,12 @@ import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
-import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class BookApiMapper {
     private final GenreApiMapper genreApiMapper;
-    private final BookCoverStorage bookCoverStorage;
 
     public BookResponse toResponse(Book book) {
         if (book == null) return null;
@@ -25,7 +23,7 @@ public class BookApiMapper {
             book.id(),
             book.title(),
             book.author(),
-            bookCoverStorage.getUrl(book.coverFileName()),
+            book.coverFileName(),
             book.status().getValue(),
             book.createdAt(),
             genreApiMapper.toResponses(book.genres())

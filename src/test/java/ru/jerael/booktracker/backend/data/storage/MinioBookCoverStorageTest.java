@@ -110,15 +110,4 @@ class MinioBookCoverStorageTest {
         ).errorResponse().code();
         assertEquals("NoSuchKey", code);
     }
-
-    @Test
-    void getUrl_ShouldReturnValidUrl() {
-        String fileName = "cover.jpg";
-
-        String url = bookCoverStorage.getUrl(fileName);
-
-        assertNotNull(url);
-        assertTrue(url.contains(COVERS_BUCKET));
-        assertTrue(url.contains(fileName));
-    }
 }

@@ -9,20 +9,16 @@ import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
-import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class BookApiMapperTest {
     private final GenreApiMapper genreApiMapper = new GenreApiMapper();
-    private final BookCoverStorage bookCoverStorage = mock(BookCoverStorage.class);
-    private final BookApiMapper bookApiMapper = new BookApiMapper(genreApiMapper, bookCoverStorage);
+    private final BookApiMapper bookApiMapper = new BookApiMapper(genreApiMapper);
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final String title = "title";
@@ -37,8 +33,7 @@ class BookApiMapperTest {
 
     @Test
     void toResponse() {
-        String coverUrl = "http://site.com/cover.jpg";
-        when(bookCoverStorage.getUrl(coverFileName)).thenReturn(coverUrl);
+        String coverUrl = coverFileName;
 
         BookResponse bookResponse = bookApiMapper.toResponse(book);
 

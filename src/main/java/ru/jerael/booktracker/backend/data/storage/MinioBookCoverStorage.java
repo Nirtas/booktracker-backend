@@ -1,7 +1,6 @@
 package ru.jerael.booktracker.backend.data.storage;
 
 import io.minio.*;
-import io.minio.http.Method;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -11,7 +10,6 @@ import ru.jerael.booktracker.backend.data.storage.config.MinioProperties;
 import ru.jerael.booktracker.backend.domain.model.image.SaveImage;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @Primary
@@ -65,24 +63,6 @@ public class MinioBookCoverStorage implements BookCoverStorage {
                 RemoveObjectArgs.builder()
                     .bucket(bucket)
                     .object(fileName)
-                    .build()
-            );
-        } catch (Exception e) {
-            throw StorageExceptionFactory.error(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public String getUrl(String fileName) {
-        if (fileName == null || fileName.isBlank()) return null;
-
-        try {
-            return minioClient.getPresignedObjectUrl(
-                GetPresignedObjectUrlArgs.builder()
-                    .method(Method.GET)
-                    .bucket(bucket)
-                    .object(fileName)
-                    .expiry((int) minioProperties.getUrlExpiry().toSeconds(), TimeUnit.SECONDS)
                     .build()
             );
         } catch (Exception e) {

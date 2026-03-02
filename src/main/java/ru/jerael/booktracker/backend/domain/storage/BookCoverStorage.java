@@ -6,6 +6,4 @@ public interface BookCoverStorage {
     void save(SaveImage data);
 
     void delete(String fileName);
-
-    String getUrl(String fileName);
 }
