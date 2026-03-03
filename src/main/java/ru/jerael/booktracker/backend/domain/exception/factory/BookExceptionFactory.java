@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class BookExceptionFactory {
-    public static NotFoundException notFound(UUID id) { // TODO: rename to bookNotFound
+    public static NotFoundException bookNotFound(UUID id) {
         return new NotFoundException(
             BookErrorCode.BOOK_NOT_FOUND,
             "Book with id " + id + " was not found"

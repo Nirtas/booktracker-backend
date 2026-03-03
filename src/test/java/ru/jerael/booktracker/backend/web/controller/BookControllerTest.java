@@ -117,7 +117,7 @@ class BookControllerTest {
     @Test
     void getById_WhenExceptionThrown_ShouldReturnNotFound() {
         UUID id = UUID.fromString("31d3f5e3-7faf-4678-a3cf-4657d8875a82");
-        when(getBookByIdUseCase.execute(id)).thenThrow(BookExceptionFactory.notFound(id));
+        when(getBookByIdUseCase.execute(id)).thenThrow(BookExceptionFactory.bookNotFound(id));
 
         assertThat(mockMvcTester.get().uri("/api/v1/books/" + id))
             .hasStatus(HttpStatus.NOT_FOUND)

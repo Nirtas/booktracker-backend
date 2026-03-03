@@ -52,7 +52,7 @@ class GenreControllerTest {
     @Test
     void getById_WhenExceptionThrown_ShouldReturnNotFound() {
         Integer genreId = 5555;
-        when(getGenreByIdUseCase.execute(genreId)).thenThrow(GenreExceptionFactory.notFound(genreId));
+        when(getGenreByIdUseCase.execute(genreId)).thenThrow(GenreExceptionFactory.genreNotFound(genreId));
 
         restTestClient.get().uri("/api/v1/genres/" + genreId)
             .exchange()

@@ -49,7 +49,7 @@ class GlobalExceptionHandlerTest {
 
         @GetMapping("/test/not-found")
         void notFound() {
-            throw BookExceptionFactory.notFound(id);
+            throw BookExceptionFactory.bookNotFound(id);
         }
 
         @GetMapping("/test/validation")

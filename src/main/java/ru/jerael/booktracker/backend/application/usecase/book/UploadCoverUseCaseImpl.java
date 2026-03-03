@@ -31,7 +31,7 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
     @Transactional
     public Book execute(UUID bookId, UploadCover data) {
         Book book =
-            bookRepository.findById(bookId).orElseThrow(() -> BookExceptionFactory.notFound(bookId));
+            bookRepository.findById(bookId).orElseThrow(() -> BookExceptionFactory.bookNotFound(bookId));
         if (!ImageRules.ALLOWED_MIME_TYPES.contains(data.contentType())) {
             throw FileValidationExceptionFactory.unsupportedFileContentType(
                 data.contentType(),

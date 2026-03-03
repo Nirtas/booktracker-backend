@@ -14,6 +14,6 @@ public class GetGenreByIdUseCaseImpl implements GetGenreByIdUseCase {
 
     @Override
     public Genre execute(Integer id) {
-        return genreRepository.findById(id).orElseThrow(() -> GenreExceptionFactory.notFound(id));
+        return genreRepository.findById(id).orElseThrow(() -> GenreExceptionFactory.genreNotFound(id));
     }
 }

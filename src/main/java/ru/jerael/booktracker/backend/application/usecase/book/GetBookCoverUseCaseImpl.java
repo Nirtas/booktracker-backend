@@ -20,7 +20,7 @@ public class GetBookCoverUseCaseImpl implements GetBookCoverUseCase {
     @Override
     @Transactional(readOnly = true)
     public ImageFile execute(UUID id) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> BookExceptionFactory.notFound(id));
+        Book book = bookRepository.findById(id).orElseThrow(() -> BookExceptionFactory.bookNotFound(id));
         if (book.coverFileName() == null || book.coverFileName().isBlank()) {
             throw BookExceptionFactory.coverNotFound(id);
         }

@@ -19,7 +19,7 @@ public class DeleteCoverUseCaseImpl implements DeleteCoverUseCase {
     @Override
     @Transactional
     public void execute(UUID bookId) {
-        Book book = bookRepository.findById(bookId).orElseThrow(() -> BookExceptionFactory.notFound(bookId));
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> BookExceptionFactory.bookNotFound(bookId));
         if (book.coverFileName() == null) return;
 
         Book updatedBook = new Book(
