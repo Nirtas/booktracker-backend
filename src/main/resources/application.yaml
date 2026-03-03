@@ -30,7 +30,7 @@ spring:
       max-file-size: ${MAX_FILE_SIZE:10MB}
 
 app:
-  api:
+  web:
     max-file-size: ${spring.servlet.multipart.max-file-size}
   minio:
     url: ${MINIO_URL:http://localhost:9000}
