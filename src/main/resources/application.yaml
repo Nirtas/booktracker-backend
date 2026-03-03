@@ -29,6 +29,12 @@ spring:
     multipart:
       max-file-size: ${MAX_FILE_SIZE:10MB}
 
+springdoc:
+  api-docs:
+    enabled: ${ENABLE_API_DOCS:false}
+  swagger-ui:
+    enabled: ${ENABLE_SWAGGER_UI:false}
+
 app:
   web:
     max-file-size: ${spring.servlet.multipart.max-file-size}
