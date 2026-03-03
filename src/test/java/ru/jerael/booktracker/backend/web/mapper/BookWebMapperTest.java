@@ -1,15 +1,15 @@
 package ru.jerael.booktracker.backend.web.mapper;
 
 import org.junit.jupiter.api.Test;
-import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
-import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
-import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
-import ru.jerael.booktracker.backend.web.util.LinkBuilder;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
+import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
+import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
+import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
+import ru.jerael.booktracker.backend.web.util.LinkBuilder;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -72,12 +72,14 @@ class BookWebMapperTest {
 
     @Test
     void toDomain_BookCreation() {
-        BookCreationRequest request = new BookCreationRequest(" title ", " author ", Set.of(1, 2));
+        BookCreationRequest request =
+            new BookCreationRequest(" title ", " author ", "reading", Set.of(1, 2));
 
         BookCreation data = bookWebMapper.toDomain(request);
 
         assertEquals(request.title().trim(), data.title());
         assertEquals(request.author().trim(), data.author());
+        assertEquals(BookStatus.fromString(request.status()), data.status());
         assertTrue(data.genreIds().containsAll(request.genreIds()));
     }
 

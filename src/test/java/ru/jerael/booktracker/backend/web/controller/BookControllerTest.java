@@ -10,6 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
+import ru.jerael.booktracker.backend.domain.model.book.*;
+import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
+import ru.jerael.booktracker.backend.domain.usecase.book.*;
 import ru.jerael.booktracker.backend.web.config.WebProperties;
 import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
@@ -19,12 +25,6 @@ import ru.jerael.booktracker.backend.web.mapper.BookWebMapper;
 import ru.jerael.booktracker.backend.web.mapper.GenreWebMapper;
 import ru.jerael.booktracker.backend.web.mapper.UploadCoverWebMapper;
 import ru.jerael.booktracker.backend.web.validator.FileValidator;
-import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
-import ru.jerael.booktracker.backend.domain.model.book.*;
-import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
-import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
-import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
-import ru.jerael.booktracker.backend.domain.usecase.book.*;
 import tools.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
@@ -169,8 +169,8 @@ class BookControllerTest {
 
     @Test
     void create_ShouldCreateBook() {
-        BookCreationRequest request = new BookCreationRequest(title, author, Set.of(1, 2));
-        BookCreation data = new BookCreation(title, author, Set.of(1, 2));
+        BookCreationRequest request = new BookCreationRequest(title, author, status.getValue(), Set.of(1, 2));
+        BookCreation data = new BookCreation(title, author, null, Set.of(1, 2));
         Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
         BookResponse bookResponse =
             new BookResponse(id, title, author, null, status.getValue(), createdAt, Collections.emptySet());
