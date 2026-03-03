@@ -110,4 +110,27 @@ class MinioBookCoverStorageTest {
         ).errorResponse().code();
         assertEquals("NoSuchKey", code);
     }
+
+    @Test
+    void download_ShouldReturnValidImageFile() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream(content.getBytes());
+        long inputStreamSize = content.getBytes().length;
+        String coverFileName = "cover.jpg";
+        ImageFile data = new ImageFile(coverFileName, "image/jpeg", inputStream, inputStreamSize);
+        bookCoverStorage.save(data);
+
+        ImageFile downloadFile = bookCoverStorage.download(coverFileName);
+
+        try {
+            assertNotNull(downloadFile);
+            assertEquals(coverFileName, downloadFile.fileName());
+            assertEquals("image/jpeg", downloadFile.contentType());
+            assertEquals(inputStreamSize, downloadFile.size());
+
+            byte[] downloadedBytes = downloadFile.content().readAllBytes();
+            assertArrayEquals(content.getBytes(), downloadedBytes);
+        } finally {
+            downloadFile.content().close();
+        }
+    }
 }

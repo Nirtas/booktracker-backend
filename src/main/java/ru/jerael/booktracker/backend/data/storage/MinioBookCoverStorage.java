@@ -10,6 +10,7 @@ import ru.jerael.booktracker.backend.data.storage.config.MinioProperties;
 import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.io.InputStream;
+import java.util.Objects;
 
 @Component
 @Primary
@@ -64,6 +65,26 @@ public class MinioBookCoverStorage implements BookCoverStorage {
                     .bucket(bucket)
                     .object(fileName)
                     .build()
+            );
+        } catch (Exception e) {
+            throw StorageExceptionFactory.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ImageFile download(String fileName) {
+        try {
+            GetObjectResponse response = minioClient.getObject(
+                GetObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(fileName)
+                    .build()
+            );
+            return new ImageFile(
+                fileName,
+                response.headers().get("Content-Type"),
+                response,
+                Long.parseLong(Objects.requireNonNull(response.headers().get("Content-Length")))
             );
         } catch (Exception e) {
             throw StorageExceptionFactory.error(e.getMessage(), e);
