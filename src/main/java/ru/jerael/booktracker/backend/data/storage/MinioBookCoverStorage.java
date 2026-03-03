@@ -1,17 +1,16 @@
 package ru.jerael.booktracker.backend.data.storage;
 
 import io.minio.*;
-import io.minio.http.Method;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.data.exception.factory.StorageExceptionFactory;
 import ru.jerael.booktracker.backend.data.storage.config.MinioProperties;
-import ru.jerael.booktracker.backend.domain.model.image.SaveImage;
+import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
 
 @Component
 @Primary
@@ -43,7 +42,7 @@ public class MinioBookCoverStorage implements BookCoverStorage {
     }
 
     @Override
-    public void save(SaveImage data) {
+    public void save(ImageFile data) {
         try (InputStream content = data.content()) {
             minioClient.putObject(
                 PutObjectArgs.builder()
@@ -73,17 +72,19 @@ public class MinioBookCoverStorage implements BookCoverStorage {
     }
 
     @Override
-    public String getUrl(String fileName) {
-        if (fileName == null || fileName.isBlank()) return null;
-
+    public ImageFile download(String fileName) {
         try {
-            return minioClient.getPresignedObjectUrl(
-                GetPresignedObjectUrlArgs.builder()
-                    .method(Method.GET)
+            GetObjectResponse response = minioClient.getObject(
+                GetObjectArgs.builder()
                     .bucket(bucket)
                     .object(fileName)
-                    .expiry((int) minioProperties.getUrlExpiry().toSeconds(), TimeUnit.SECONDS)
                     .build()
+            );
+            return new ImageFile(
+                fileName,
+                response.headers().get("Content-Type"),
+                response,
+                Long.parseLong(Objects.requireNonNull(response.headers().get("Content-Length")))
             );
         } catch (Exception e) {
             throw StorageExceptionFactory.error(e.getMessage(), e);

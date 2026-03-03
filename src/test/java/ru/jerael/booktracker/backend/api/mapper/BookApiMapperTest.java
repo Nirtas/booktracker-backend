@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
+import ru.jerael.booktracker.backend.api.util.LinkBuilder;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
-import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -21,8 +21,8 @@ import static org.mockito.Mockito.when;
 
 class BookApiMapperTest {
     private final GenreApiMapper genreApiMapper = new GenreApiMapper();
-    private final BookCoverStorage bookCoverStorage = mock(BookCoverStorage.class);
-    private final BookApiMapper bookApiMapper = new BookApiMapper(genreApiMapper, bookCoverStorage);
+    private final LinkBuilder linkBuilder = mock(LinkBuilder.class);
+    private final BookApiMapper bookApiMapper = new BookApiMapper(genreApiMapper, linkBuilder);
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final String title = "title";
@@ -37,8 +37,8 @@ class BookApiMapperTest {
 
     @Test
     void toResponse() {
-        String coverUrl = "http://site.com/cover.jpg";
-        when(bookCoverStorage.getUrl(coverFileName)).thenReturn(coverUrl);
+        String coverUrl = "http://localhost:8080/api/v1/books/" + id + "/cover";
+        when(linkBuilder.buildCoverUrl(id)).thenReturn(coverUrl);
 
         BookResponse bookResponse = bookApiMapper.toResponse(book);
 
@@ -56,6 +56,8 @@ class BookApiMapperTest {
         UUID id2 = UUID.fromString("31d3f5e3-7faf-4678-a3cf-4657d8875a82");
         Book book2 = new Book(id2, "asd", author, coverFileName, status, createdAt, genres);
         List<Book> books = List.of(book, book2);
+        when(linkBuilder.buildCoverUrl(id)).thenReturn("url1");
+        when(linkBuilder.buildCoverUrl(id2)).thenReturn("url2");
 
         List<BookResponse> bookResponses = bookApiMapper.toResponses(books);
 
@@ -64,6 +66,8 @@ class BookApiMapperTest {
         assertEquals(title, bookResponses.get(0).title());
         assertEquals(id2, bookResponses.get(1).id());
         assertEquals("asd", bookResponses.get(1).title());
+        assertEquals("url1", bookResponses.get(0).coverUrl());
+        assertEquals("url2", bookResponses.get(1).coverUrl());
     }
 
     @Test

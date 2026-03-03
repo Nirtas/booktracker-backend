@@ -2,9 +2,11 @@ package ru.jerael.booktracker.backend.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PagedModel;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
@@ -19,10 +21,12 @@ import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import ru.jerael.booktracker.backend.domain.model.pagination.SortDirection;
 import ru.jerael.booktracker.backend.domain.usecase.book.*;
+import java.time.Duration;
 import java.util.UUID;
 
 @RestController
@@ -36,6 +40,7 @@ public class BookController {
     private final DeleteCoverUseCase deleteCoverUseCase;
     private final DeleteBookUseCase deleteBookUseCase;
     private final UpdateBookDetailsUseCase updateBookDetailsUseCase;
+    private final GetBookCoverUseCase getBookCoverUseCase;
 
     private final FileValidator fileValidator;
     private final BookApiMapper bookApiMapper;
@@ -107,5 +112,16 @@ public class BookController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCover(@PathVariable UUID id) {
         deleteCoverUseCase.execute(id);
+    }
+
+    @GetMapping("/{id}/cover")
+    public ResponseEntity<Resource> getCover(@PathVariable UUID id) {
+        ImageFile imageFile = getBookCoverUseCase.execute(id);
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + imageFile.fileName() + "\"")
+            .contentType(MediaType.parseMediaType(imageFile.contentType()))
+            .contentLength(imageFile.size())
+            .cacheControl(CacheControl.maxAge(Duration.ofHours(24)))
+            .body(new InputStreamResource(imageFile.content()));
     }
 }

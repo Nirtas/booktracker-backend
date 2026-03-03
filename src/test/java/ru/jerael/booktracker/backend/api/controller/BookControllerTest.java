@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -20,10 +21,12 @@ import ru.jerael.booktracker.backend.api.mapper.UploadCoverApiMapper;
 import ru.jerael.booktracker.backend.api.validator.FileValidator;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.book.*;
+import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import ru.jerael.booktracker.backend.domain.usecase.book.*;
 import tools.jackson.databind.ObjectMapper;
+import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -67,6 +70,9 @@ class BookControllerTest {
 
     @MockitoBean
     private UpdateBookDetailsUseCase updateBookDetailsUseCase;
+
+    @MockitoBean
+    private GetBookCoverUseCase getBookCoverUseCase;
 
     @MockitoBean
     private FileValidator fileValidator;
@@ -222,5 +228,26 @@ class BookControllerTest {
 
         assertThat(response).hasStatus(HttpStatus.NO_CONTENT);
         verify(deleteCoverUseCase).execute(id);
+    }
+
+    @Test
+    void getCover_ShouldReturnImageFile() {
+        byte[] content = "content".getBytes();
+        String coverFileName = "cover.webp";
+        String contentType = "image/webp";
+        ImageFile imageFile = new ImageFile(
+            coverFileName,
+            contentType,
+            new ByteArrayInputStream(content),
+            content.length
+        );
+        when(getBookCoverUseCase.execute(id)).thenReturn(imageFile);
+
+        assertThat(mockMvcTester.get().uri("/api/v1/books/" + id + "/cover"))
+            .hasStatus(HttpStatus.OK)
+            .hasContentType(MediaType.parseMediaType(contentType))
+            .hasHeader(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + coverFileName + "\"")
+            .hasHeader(HttpHeaders.CACHE_CONTROL, "max-age=86400")
+            .body().isEqualTo(content);
     }
 }

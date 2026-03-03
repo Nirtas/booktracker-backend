@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class BookExceptionFactory {
-    public static NotFoundException notFound(UUID id) {
+    public static NotFoundException notFound(UUID id) { // TODO: rename to bookNotFound
         return new NotFoundException(
             BookErrorCode.BOOK_NOT_FOUND,
             "Book with id " + id + " was not found"
@@ -21,6 +21,13 @@ public class BookExceptionFactory {
             "Unknown book status: " + status,
             "status",
             Map.of("supported", BookStatus.values())
+        );
+    }
+
+    public static NotFoundException coverNotFound(UUID id) {
+        return new NotFoundException(
+            BookErrorCode.COVER_NOT_FOUND,
+            "Cover for book with id " + id + " was not found"
         );
     }
 }

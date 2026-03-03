@@ -5,27 +5,32 @@ import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.api.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.api.dto.book.BookResponse;
+import ru.jerael.booktracker.backend.api.util.LinkBuilder;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
-import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class BookApiMapper {
     private final GenreApiMapper genreApiMapper;
-    private final BookCoverStorage bookCoverStorage;
+    private final LinkBuilder linkBuilder;
 
     public BookResponse toResponse(Book book) {
         if (book == null) return null;
+
+        String coverUrl = null;
+        if (book.coverFileName() != null && !book.coverFileName().isBlank()) {
+            coverUrl = linkBuilder.buildCoverUrl(book.id());
+        }
 
         return new BookResponse(
             book.id(),
             book.title(),
             book.author(),
-            bookCoverStorage.getUrl(book.coverFileName()),
+            coverUrl,
             book.status().getValue(),
             book.createdAt(),
             genreApiMapper.toResponses(book.genres())

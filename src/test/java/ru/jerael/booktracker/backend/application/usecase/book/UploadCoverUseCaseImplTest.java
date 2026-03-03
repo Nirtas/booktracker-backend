@@ -11,8 +11,8 @@ import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.model.image.ProcessedImage;
-import ru.jerael.booktracker.backend.domain.model.image.SaveImage;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.service.image.ImageProcessor;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
@@ -74,7 +74,7 @@ class UploadCoverUseCaseImplTest {
         UploadCover data = new UploadCover("image/jpeg", content, contentSize);
         ProcessedImage processedImage = new ProcessedImage("image/jpeg", "jpg", content, contentSize);
         String coverFileName = id + ".jpg";
-        SaveImage saveImage = new SaveImage(coverFileName, "image/jpeg", content, contentSize);
+        ImageFile imageFile = new ImageFile(coverFileName, "image/jpeg", content, contentSize);
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
         when(imageProcessor.process(content)).thenReturn(processedImage);
         when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
@@ -91,7 +91,7 @@ class UploadCoverUseCaseImplTest {
         Book capturedBook = bookArgumentCaptor.getValue();
         assertEquals(coverFileName, capturedBook.coverFileName());
 
-        verify(bookCoverStorage).save(saveImage);
+        verify(bookCoverStorage).save(imageFile);
         verify(bookRepository).save(any());
         verify(bookCoverStorage, never()).delete(any());
     }

@@ -14,7 +14,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import ru.jerael.booktracker.backend.domain.model.image.SaveImage;
+import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -67,7 +67,7 @@ class MinioBookCoverStorageTest {
         InputStream inputStream = new ByteArrayInputStream(content.getBytes());
         long inputStreamSize = content.getBytes().length;
         String coverFileName = id + ".jpg";
-        SaveImage data = new SaveImage(coverFileName, "image/jpeg", inputStream, inputStreamSize);
+        ImageFile data = new ImageFile(coverFileName, "image/jpeg", inputStream, inputStreamSize);
 
         bookCoverStorage.save(data);
 
@@ -88,7 +88,7 @@ class MinioBookCoverStorageTest {
         InputStream inputStream = new ByteArrayInputStream(content.getBytes());
         long inputStreamSize = content.getBytes().length;
         String coverFileName = "cover.jpg";
-        SaveImage data = new SaveImage(coverFileName, "image/jpeg", inputStream, inputStreamSize);
+        ImageFile data = new ImageFile(coverFileName, "image/jpeg", inputStream, inputStreamSize);
         bookCoverStorage.save(data);
         minioClient.statObject(
             StatObjectArgs.builder()
@@ -112,13 +112,25 @@ class MinioBookCoverStorageTest {
     }
 
     @Test
-    void getUrl_ShouldReturnValidUrl() {
-        String fileName = "cover.jpg";
+    void download_ShouldReturnValidImageFile() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream(content.getBytes());
+        long inputStreamSize = content.getBytes().length;
+        String coverFileName = "cover.jpg";
+        ImageFile data = new ImageFile(coverFileName, "image/jpeg", inputStream, inputStreamSize);
+        bookCoverStorage.save(data);
 
-        String url = bookCoverStorage.getUrl(fileName);
+        ImageFile downloadFile = bookCoverStorage.download(coverFileName);
 
-        assertNotNull(url);
-        assertTrue(url.contains(COVERS_BUCKET));
-        assertTrue(url.contains(fileName));
+        try {
+            assertNotNull(downloadFile);
+            assertEquals(coverFileName, downloadFile.fileName());
+            assertEquals("image/jpeg", downloadFile.contentType());
+            assertEquals(inputStreamSize, downloadFile.size());
+
+            byte[] downloadedBytes = downloadFile.content().readAllBytes();
+            assertArrayEquals(content.getBytes(), downloadedBytes);
+        } finally {
+            downloadFile.content().close();
+        }
     }
 }

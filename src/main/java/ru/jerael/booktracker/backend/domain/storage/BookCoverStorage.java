@@ -1,11 +1,11 @@
 package ru.jerael.booktracker.backend.domain.storage;
 
-import ru.jerael.booktracker.backend.domain.model.image.SaveImage;
+import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 
 public interface BookCoverStorage {
-    void save(SaveImage data);
+    void save(ImageFile data);
 
     void delete(String fileName);
 
-    String getUrl(String fileName);
+    ImageFile download(String fileName);
 }
