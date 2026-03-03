@@ -37,7 +37,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
             data.title(),
             data.author(),
             null,
-            BookStatus.WANT_TO_READ,
+            data.status() != null ? data.status() : BookStatus.WANT_TO_READ,
             Instant.now(),
             genres
         );

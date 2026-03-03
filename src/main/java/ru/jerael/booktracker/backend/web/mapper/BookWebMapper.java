@@ -2,14 +2,14 @@ package ru.jerael.booktracker.backend.web.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
-import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
-import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
-import ru.jerael.booktracker.backend.web.util.LinkBuilder;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
+import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
+import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
+import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
+import ru.jerael.booktracker.backend.web.util.LinkBuilder;
 import java.util.List;
 
 @Component
@@ -49,6 +49,7 @@ public class BookWebMapper {
         return new BookCreation(
             request.title().trim(),
             request.author().trim(),
+            BookStatus.fromString(request.status()),
             request.genreIds()
         );
     }
