@@ -1,7 +1,10 @@
 package ru.jerael.booktracker.backend.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.*;
@@ -9,12 +12,6 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
-import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
-import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
-import ru.jerael.booktracker.backend.web.mapper.BookWebMapper;
-import ru.jerael.booktracker.backend.web.mapper.UploadCoverWebMapper;
-import ru.jerael.booktracker.backend.web.validator.FileValidator;
 import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import ru.jerael.booktracker.backend.domain.constant.PaginationRules;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
@@ -26,9 +23,16 @@ import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import ru.jerael.booktracker.backend.domain.model.pagination.SortDirection;
 import ru.jerael.booktracker.backend.domain.usecase.book.*;
+import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
+import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
+import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
+import ru.jerael.booktracker.backend.web.mapper.BookWebMapper;
+import ru.jerael.booktracker.backend.web.mapper.UploadCoverWebMapper;
+import ru.jerael.booktracker.backend.web.validator.FileValidator;
 import java.time.Duration;
 import java.util.UUID;
 
+@Tag(name = "Books")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/books")
@@ -46,8 +50,9 @@ public class BookController {
     private final BookWebMapper bookWebMapper;
     private final UploadCoverWebMapper uploadCoverWebMapper;
 
+    @Operation(summary = "Get all books")
     @GetMapping
-    public PagedModel<BookResponse> getAll(Pageable pageable) {
+    public PagedModel<BookResponse> getAll(@ParameterObject Pageable pageable) {
         Sort.Order order = pageable.getSort().stream().findFirst().orElse(null);
         String sortBy = order != null ? order.getProperty() : PaginationRules.DEFAULT_SORT_FIELD;
         SortDirection direction = order != null && order.isAscending()
@@ -70,18 +75,21 @@ public class BookController {
         return new PagedModel<>(page);
     }
 
+    @Operation(summary = "Get book by id")
     @GetMapping("/{id}")
     public BookResponse getById(@PathVariable UUID id) {
         Book book = getBookByIdUseCase.execute(id);
         return bookWebMapper.toResponse(book);
     }
 
+    @Operation(summary = "Delete book by id")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBook(@PathVariable UUID id) {
         deleteBookUseCase.execute(id);
     }
 
+    @Operation(summary = "Update book details")
     @PatchMapping("/{id}")
     public BookResponse updateDetails(@PathVariable UUID id, @Valid @RequestBody BookDetailsUpdateRequest request) {
         BookDetailsUpdate data = bookWebMapper.toDomain(request);
@@ -89,6 +97,7 @@ public class BookController {
         return bookWebMapper.toResponse(book);
     }
 
+    @Operation(summary = "Create book")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookResponse create(@Valid @RequestBody BookCreationRequest request) {
@@ -97,7 +106,8 @@ public class BookController {
         return bookWebMapper.toResponse(book);
     }
 
-    @PostMapping("/{id}/cover")
+    @Operation(summary = "Upload book cover")
+    @PostMapping(value = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BookResponse uploadCover(
         @PathVariable UUID id,
         @RequestParam(BookRules.COVER_FIELD_NAME) MultipartFile file
@@ -108,12 +118,14 @@ public class BookController {
         return bookWebMapper.toResponse(book);
     }
 
+    @Operation(summary = "Delete book cover")
     @DeleteMapping("/{id}/cover")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCover(@PathVariable UUID id) {
         deleteCoverUseCase.execute(id);
     }
 
+    @Operation(summary = "Get book cover")
     @GetMapping("/{id}/cover")
     public ResponseEntity<Resource> getCover(@PathVariable UUID id) {
         ImageFile imageFile = getBookCoverUseCase.execute(id);
