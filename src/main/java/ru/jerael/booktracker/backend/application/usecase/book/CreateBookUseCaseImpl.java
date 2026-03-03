@@ -30,7 +30,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
             Set<Integer> missingIds = data.genreIds().stream()
                 .filter(id -> !foundIds.contains(id))
                 .collect(Collectors.toSet());
-            throw GenreExceptionFactory.notFound(missingIds);
+            throw GenreExceptionFactory.genresNotFound(missingIds);
         }
         Book newBook = new Book(
             null,

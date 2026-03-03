@@ -24,7 +24,7 @@ public class UpdateBookDetailsUseCaseImpl implements UpdateBookDetailsUseCase {
     @Override
     @Transactional
     public Book execute(UUID id, BookDetailsUpdate data) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> BookExceptionFactory.notFound(id));
+        Book book = bookRepository.findById(id).orElseThrow(() -> BookExceptionFactory.bookNotFound(id));
 
         Set<Genre> updatedGenres = book.genres();
         if (data.genreIds() != null) {
@@ -34,7 +34,7 @@ public class UpdateBookDetailsUseCaseImpl implements UpdateBookDetailsUseCase {
                 Set<Integer> missingIds = data.genreIds().stream()
                     .filter(genreId -> !foundIds.contains(genreId))
                     .collect(Collectors.toSet());
-                throw GenreExceptionFactory.notFound(missingIds);
+                throw GenreExceptionFactory.genresNotFound(missingIds);
             }
         }
 

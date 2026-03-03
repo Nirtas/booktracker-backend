@@ -5,14 +5,14 @@ import ru.jerael.booktracker.backend.domain.exception.code.GenreErrorCode;
 import java.util.Set;
 
 public class GenreExceptionFactory {
-    public static NotFoundException notFound(Integer id) {
+    public static NotFoundException genreNotFound(Integer id) {
         return new NotFoundException(
             GenreErrorCode.GENRE_NOT_FOUND,
             "Genre not found with id: " + id
         );
     }
 
-    public static NotFoundException notFound(Set<Integer> ids) {
+    public static NotFoundException genresNotFound(Set<Integer> ids) {
         return new NotFoundException(
             GenreErrorCode.GENRE_NOT_FOUND,
             "Genres not found with ids: " + ids
