@@ -56,7 +56,7 @@ class BookDataMapperTest {
 
     @Test
     void creation_toEntity() {
-        BookCreation data = new BookCreation(title, author, Collections.emptySet());
+        BookCreation data = new BookCreation(title, author, null, Collections.emptySet());
         Set<GenreEntity> entities = genres.stream().map(genreDataMapper::toEntity).collect(Collectors.toSet());
 
         BookEntity entity = bookDataMapper.toEntity(data, entities);

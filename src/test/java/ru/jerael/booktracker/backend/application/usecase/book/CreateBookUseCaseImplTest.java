@@ -10,6 +10,7 @@ import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
+import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import java.time.Instant;
@@ -36,8 +37,9 @@ class CreateBookUseCaseImplTest {
 
         String title = "title";
         String author = "author";
+        BookStatus status = BookStatus.READING;
         Set<Integer> genreIds = Set.of(1, 2);
-        BookCreation data = new BookCreation(title, author, genreIds);
+        BookCreation data = new BookCreation(title, author, status, genreIds);
 
         Genre genre1 = new Genre(1, "action");
         Genre genre2 = new Genre(2, "adventure");
@@ -62,6 +64,7 @@ class CreateBookUseCaseImplTest {
         assertNotNull(result);
         assertEquals(id, result.id());
         assertNotNull(result.createdAt());
+        assertEquals(status, result.status());
         assertEquals(genres, result.genres());
 
         verify(genreRepository).findAllById(genreIds);
@@ -79,7 +82,7 @@ class CreateBookUseCaseImplTest {
         String title = "title";
         String author = "author";
         Set<Integer> genreIds = Set.of(1, 2);
-        BookCreation data = new BookCreation(title, author, genreIds);
+        BookCreation data = new BookCreation(title, author, null, genreIds);
 
         Genre genre1 = new Genre(1, "action");
         when(genreRepository.findAllById(genreIds)).thenReturn(Set.of(genre1));
