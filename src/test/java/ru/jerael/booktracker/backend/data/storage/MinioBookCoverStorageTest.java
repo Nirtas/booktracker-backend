@@ -14,7 +14,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import ru.jerael.booktracker.backend.domain.model.image.SaveImage;
+import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -67,7 +67,7 @@ class MinioBookCoverStorageTest {
         InputStream inputStream = new ByteArrayInputStream(content.getBytes());
         long inputStreamSize = content.getBytes().length;
         String coverFileName = id + ".jpg";
-        SaveImage data = new SaveImage(coverFileName, "image/jpeg", inputStream, inputStreamSize);
+        ImageFile data = new ImageFile(coverFileName, "image/jpeg", inputStream, inputStreamSize);
 
         bookCoverStorage.save(data);
 
@@ -88,7 +88,7 @@ class MinioBookCoverStorageTest {
         InputStream inputStream = new ByteArrayInputStream(content.getBytes());
         long inputStreamSize = content.getBytes().length;
         String coverFileName = "cover.jpg";
-        SaveImage data = new SaveImage(coverFileName, "image/jpeg", inputStream, inputStreamSize);
+        ImageFile data = new ImageFile(coverFileName, "image/jpeg", inputStream, inputStreamSize);
         bookCoverStorage.save(data);
         minioClient.statObject(
             StatObjectArgs.builder()

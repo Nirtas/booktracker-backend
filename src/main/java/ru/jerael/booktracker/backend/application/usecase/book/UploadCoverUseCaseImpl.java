@@ -11,8 +11,8 @@ import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFacto
 import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.model.image.ProcessedImage;
-import ru.jerael.booktracker.backend.domain.model.image.SaveImage;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.service.image.ImageProcessor;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
@@ -42,13 +42,13 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
 
         ProcessedImage processedImage = imageProcessor.process(data.content());
         String newCoverFileName = bookId + "." + processedImage.extension();
-        SaveImage saveImage = new SaveImage(
+        ImageFile imageFile = new ImageFile(
             newCoverFileName,
             processedImage.contentType(),
             processedImage.content(),
             processedImage.size()
         );
-        bookCoverStorage.save(saveImage);
+        bookCoverStorage.save(imageFile);
 
         Book updatedBook = new Book(
             book.id(),
