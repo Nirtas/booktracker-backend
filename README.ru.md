@@ -5,15 +5,9 @@
 <br>
 
 <p align="center">
-  <a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/badge/license-MIT-yellow.svg" alt="MIT">
-  </a>
-  <a href="https://github.com/Nirtas/booktracker-backend/releases/latest">
-    <img src="https://img.shields.io/github/v/release/Nirtas/booktracker-backend" alt="GitHub Release">
-  </a>
-  <a href="https://hub.docker.com/r/jerael/booktracker-backend">
-    <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff" alt="Docker">
-  </a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-yellow.svg" alt="MIT"></a>
+  <a href="https://github.com/Nirtas/booktracker-backend/releases/latest"><img src="https://img.shields.io/github/v/release/Nirtas/booktracker-backend" alt="GitHub Release"></a>
+  <a href="https://hub.docker.com/r/jerael/booktracker-backend"><img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff" alt="Docker"></a>
 </p>
 
 [English version](README.md)
