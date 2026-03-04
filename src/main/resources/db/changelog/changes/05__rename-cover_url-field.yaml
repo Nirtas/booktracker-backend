@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 05__rename-cover_url-to-cover_file_name
+      author: Jerael
+      comment: rename cover_url to cover_file_name
+      changes:
+        - renameColumn:
+            tableName: books
+            oldColumnName: cover_url
+            newColumnName: cover_file_name

@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+      file: classpath:/db/changelog/changes/01__genres-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/02__genres-data.yaml
+  - include:
+      file: classpath:/db/changelog/changes/03__books-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/04__book_genres-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/05__rename-cover_url-field.yaml

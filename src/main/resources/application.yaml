@@ -1,3 +1,52 @@
 spring:
   application:
     name: booktracker-backend
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:booktracker_db}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:replace-it-please}
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    change-log: classpath:/db/changelog/changelog-master.yaml
+
+  jpa:
+    show-sql: ${SHOW_SQL:false}
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 50
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  web:
+    resources:
+      add-mappings: false
+
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:10MB}
+
+springdoc:
+  api-docs:
+    enabled: ${ENABLE_API_DOCS:false}
+  swagger-ui:
+    enabled: ${ENABLE_SWAGGER_UI:false}
+
+app:
+  web:
+    max-file-size: ${spring.servlet.multipart.max-file-size}
+  minio:
+    url: ${MINIO_URL:http://localhost:9000}
+    user: ${MINIO_ROOT_USER:minio}
+    password: ${MINIO_ROOT_PASSWORD:replace-it-please}
+    url-expiry: ${MINIO_URL_EXPIRY:1h}
+    buckets:
+      covers: ${MINIO_COVERS_BUCKET:covers}
+  image:
+    target-format: ${IMAGE_TARGET_FORMAT:webp}
+    quality: ${IMAGE_QUALITY:0.8}
+    max-width: ${IMAGE_MAX_WIDTH:1080}
+    max-height: ${IMAGE_MAX_HEIGHT:1080}
