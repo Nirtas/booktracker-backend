@@ -49,6 +49,7 @@ class BookRepositoryImplTest {
         book1.setStatus(BookStatus.READING);
         book1.setCreatedAt(Instant.ofEpochMilli(1771249699347L));
         book1.setGenres(new HashSet<>(genres));
+        book1.setUserId(UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e")); // TODO: REMOVE THIS
 
         BookEntity book2 = new BookEntity();
         book2.setTitle("asd");
@@ -56,6 +57,7 @@ class BookRepositoryImplTest {
         book2.setStatus(BookStatus.WANT_TO_READ);
         book2.setCreatedAt(Instant.ofEpochMilli(177124961234L));
         book2.setGenres(Collections.emptySet());
+        book2.setUserId(UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e")); // TODO: REMOVE THIS
 
         List<BookEntity> entities = jpaBookRepository.saveAll(List.of(book1, book2));
         UUID id1 = entities.get(0).getId();
