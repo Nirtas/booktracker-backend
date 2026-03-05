@@ -7,11 +7,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BookRepository {
-    PageResult<Book> findAll(PageQuery query);
+    PageResult<Book> findAllByUserId(PageQuery query, UUID userId);
 
-    Optional<Book> findById(UUID id);
+    Optional<Book> findByIdAndUserId(UUID id, UUID userId);
 
-    Book save(Book book);
+    Book save(Book book, UUID userId);
 
-    void deleteById(UUID id);
+    void deleteByIdAndUserId(UUID id, UUID userId);
 }

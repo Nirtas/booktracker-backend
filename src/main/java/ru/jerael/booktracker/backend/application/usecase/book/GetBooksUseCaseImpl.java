@@ -8,6 +8,7 @@ import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.usecase.book.GetBooksUseCase;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ public class GetBooksUseCaseImpl implements GetBooksUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResult<Book> execute(PageQuery query) {
-        return bookRepository.findAll(query);
+    public PageResult<Book> execute(PageQuery query, UUID userId) {
+        return bookRepository.findAllByUserId(query, userId);
     }
 }

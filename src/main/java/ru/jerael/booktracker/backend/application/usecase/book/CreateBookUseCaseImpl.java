@@ -13,6 +13,7 @@ import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +24,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
 
     @Override
     @Transactional
-    public Book execute(BookCreation data) {
+    public Book execute(BookCreation data, UUID userId) {
         Set<Genre> genres = genreRepository.findAllById(data.genreIds());
         if (genres.size() != data.genreIds().size()) {
             Set<Integer> foundIds = genres.stream().map(Genre::id).collect(Collectors.toSet());
@@ -41,6 +42,6 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
             Instant.now(),
             genres
         );
-        return bookRepository.save(newBook);
+        return bookRepository.save(newBook, userId);
     }
 }

@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -84,6 +85,7 @@ class BookControllerTest {
     private UploadCoverWebMapper uploadCoverWebMapper;
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
     private final String title = "title";
     private final String author = "author";
     private final BookStatus status = BookStatus.READING;
@@ -95,7 +97,7 @@ class BookControllerTest {
         BookResponse bookResponse =
             new BookResponse(id, title, author, null, status.getValue(), createdAt, Collections.emptySet());
         PageResult<Book> pageResult = new PageResult<>(List.of(book), 10, 0, 1, 1);
-        when(getBooksUseCase.execute(any(PageQuery.class))).thenReturn(pageResult);
+        when(getBooksUseCase.execute(any(PageQuery.class), eq(userId))).thenReturn(pageResult);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
         var response = mockMvcTester.get().uri("/api/v1/books?page=0&size=10").exchange();
@@ -111,13 +113,13 @@ class BookControllerTest {
             .bodyJson()
             .extractingPath("$.page.totalElements").isEqualTo(1);
 
-        verify(getBooksUseCase).execute(any(PageQuery.class));
+        verify(getBooksUseCase).execute(any(PageQuery.class), eq(userId));
     }
 
     @Test
     void getById_WhenExceptionThrown_ShouldReturnNotFound() {
         UUID id = UUID.fromString("31d3f5e3-7faf-4678-a3cf-4657d8875a82");
-        when(getBookByIdUseCase.execute(id)).thenThrow(BookExceptionFactory.bookNotFound(id));
+        when(getBookByIdUseCase.execute(id, userId)).thenThrow(BookExceptionFactory.bookNotFound(id));
 
         assertThat(mockMvcTester.get().uri("/api/v1/books/" + id))
             .hasStatus(HttpStatus.NOT_FOUND)
@@ -125,7 +127,7 @@ class BookControllerTest {
             .extractingPath("$.detail")
             .isEqualTo("Book with id " + id + " was not found");
 
-        verify(getBookByIdUseCase).execute(id);
+        verify(getBookByIdUseCase).execute(id, userId);
     }
 
     @Test
@@ -133,7 +135,7 @@ class BookControllerTest {
         var response = mockMvcTester.delete().uri("/api/v1/books/" + id);
 
         assertThat(response).hasStatus(HttpStatus.NO_CONTENT);
-        verify(deleteBookUseCase).execute(id);
+        verify(deleteBookUseCase).execute(id, userId);
     }
 
     @Test
@@ -149,7 +151,7 @@ class BookControllerTest {
         BookResponse bookResponse =
             new BookResponse(id, "new title", author, null, "reading", createdAt, Collections.emptySet());
         when(bookWebMapper.toDomain(request)).thenReturn(data);
-        when(updateBookDetailsUseCase.execute(id, data)).thenReturn(book);
+        when(updateBookDetailsUseCase.execute(id, userId, data)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
         assertThat(
@@ -175,7 +177,7 @@ class BookControllerTest {
         BookResponse bookResponse =
             new BookResponse(id, title, author, null, status.getValue(), createdAt, Collections.emptySet());
         when(bookWebMapper.toDomain(request)).thenReturn(data);
-        when(createBookUseCase.execute(data)).thenReturn(book);
+        when(createBookUseCase.execute(data, userId)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
         assertThat(
@@ -208,7 +210,7 @@ class BookControllerTest {
         BookResponse bookResponse =
             new BookResponse(id, title, author, coverFileName, status.getValue(), createdAt, null);
         when(uploadCoverWebMapper.toDomain(mockMultipartFile)).thenReturn(data);
-        when(uploadCoverUseCase.execute(id, data)).thenReturn(book);
+        when(uploadCoverUseCase.execute(id, userId, data)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
         assertThat(
@@ -227,7 +229,7 @@ class BookControllerTest {
         var response = mockMvcTester.delete().uri("/api/v1/books/" + id + "/cover");
 
         assertThat(response).hasStatus(HttpStatus.NO_CONTENT);
-        verify(deleteCoverUseCase).execute(id);
+        verify(deleteCoverUseCase).execute(id, userId);
     }
 
     @Test
@@ -241,7 +243,7 @@ class BookControllerTest {
             new ByteArrayInputStream(content),
             content.length
         );
-        when(getBookCoverUseCase.execute(id)).thenReturn(imageFile);
+        when(getBookCoverUseCase.execute(id, userId)).thenReturn(imageFile);
 
         assertThat(mockMvcTester.get().uri("/api/v1/books/" + id + "/cover"))
             .hasStatus(HttpStatus.OK)

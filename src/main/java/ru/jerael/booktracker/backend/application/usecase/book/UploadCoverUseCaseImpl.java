@@ -29,9 +29,10 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
 
     @Override
     @Transactional
-    public Book execute(UUID bookId, UploadCover data) {
+    public Book execute(UUID bookId, UUID userId, UploadCover data) {
         Book book =
-            bookRepository.findById(bookId).orElseThrow(() -> BookExceptionFactory.bookNotFound(bookId));
+            bookRepository.findByIdAndUserId(bookId, userId)
+                .orElseThrow(() -> BookExceptionFactory.bookNotFound(bookId));
         if (!ImageRules.ALLOWED_MIME_TYPES.contains(data.contentType())) {
             throw FileValidationExceptionFactory.unsupportedFileContentType(
                 data.contentType(),
@@ -59,7 +60,7 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
             book.createdAt(),
             book.genres()
         );
-        Book savedBook = bookRepository.save(updatedBook);
+        Book savedBook = bookRepository.save(updatedBook, userId);
         if (oldCoverFileName != null && !oldCoverFileName.equals(newCoverFileName)) {
             try {
                 bookCoverStorage.delete(oldCoverFileName);

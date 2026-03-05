@@ -5,5 +5,5 @@ import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import java.util.UUID;
 
 public interface UploadCoverUseCase {
-    Book execute(UUID bookId, UploadCover data);
+    Book execute(UUID bookId, UUID userId, UploadCover data);
 }

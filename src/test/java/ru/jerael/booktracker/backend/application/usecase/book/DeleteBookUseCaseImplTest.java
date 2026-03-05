@@ -30,6 +30,7 @@ class DeleteBookUseCaseImplTest {
     private DeleteBookUseCaseImpl useCase;
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
     private final String title = "title";
     private final String author = "author";
     private final BookStatus status = BookStatus.WANT_TO_READ;
@@ -37,9 +38,9 @@ class DeleteBookUseCaseImplTest {
 
     @Test
     void execute_WhenBookDoesNotExists_ShouldThrowNotFoundException() {
-        when(bookRepository.findById(id)).thenReturn(Optional.empty());
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> useCase.execute(id));
+        assertThrows(NotFoundException.class, () -> useCase.execute(id, userId));
 
         verifyNoInteractions(bookCoverStorage);
     }
@@ -48,22 +49,22 @@ class DeleteBookUseCaseImplTest {
     void execute_WhenBookHasCover_ShouldDeleteBookAndCover() {
         String coverFileName = "cover.jpg";
         Book book = new Book(id, title, author, coverFileName, status, createdAt, Collections.emptySet());
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
 
-        useCase.execute(id);
+        useCase.execute(id, userId);
 
-        verify(bookRepository).deleteById(id);
+        verify(bookRepository).findByIdAndUserId(id, userId);
         verify(bookCoverStorage).delete(coverFileName);
     }
 
     @Test
     void execute_WhenBookHasNotCover_ShouldDeleteOnlyBook() {
         Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
 
-        useCase.execute(id);
+        useCase.execute(id, userId);
 
-        verify(bookRepository).deleteById(id);
+        verify(bookRepository).findByIdAndUserId(id, userId);
         verifyNoInteractions(bookCoverStorage);
     }
 }
