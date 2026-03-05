@@ -65,7 +65,8 @@ public class BookController {
             sortBy,
             direction
         );
-        PageResult<Book> books = getBooksUseCase.execute(query);
+        UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+        PageResult<Book> books = getBooksUseCase.execute(query, userId);
         PageResult<BookResponse> bookResponses = books.map(bookWebMapper::toResponse);
         Page<BookResponse> page = new PageImpl<>(
             bookResponses.content(),
@@ -78,7 +79,8 @@ public class BookController {
     @Operation(summary = "Get book by id")
     @GetMapping("/{id}")
     public BookResponse getById(@PathVariable UUID id) {
-        Book book = getBookByIdUseCase.execute(id);
+        UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+        Book book = getBookByIdUseCase.execute(id, userId);
         return bookWebMapper.toResponse(book);
     }
 
@@ -86,14 +88,16 @@ public class BookController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBook(@PathVariable UUID id) {
-        deleteBookUseCase.execute(id);
+        UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+        deleteBookUseCase.execute(id, userId);
     }
 
     @Operation(summary = "Update book details")
     @PatchMapping("/{id}")
     public BookResponse updateDetails(@PathVariable UUID id, @Valid @RequestBody BookDetailsUpdateRequest request) {
         BookDetailsUpdate data = bookWebMapper.toDomain(request);
-        Book book = updateBookDetailsUseCase.execute(id, data);
+        UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+        Book book = updateBookDetailsUseCase.execute(id, userId, data);
         return bookWebMapper.toResponse(book);
     }
 
@@ -102,7 +106,8 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     public BookResponse create(@Valid @RequestBody BookCreationRequest request) {
         BookCreation data = bookWebMapper.toDomain(request);
-        Book book = createBookUseCase.execute(data);
+        UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+        Book book = createBookUseCase.execute(data, userId);
         return bookWebMapper.toResponse(book);
     }
 
@@ -114,7 +119,8 @@ public class BookController {
     ) {
         fileValidator.validate(file, BookRules.COVER_FIELD_NAME);
         UploadCover data = uploadCoverWebMapper.toDomain(file);
-        Book book = uploadCoverUseCase.execute(id, data);
+        UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+        Book book = uploadCoverUseCase.execute(id, userId, data);
         return bookWebMapper.toResponse(book);
     }
 
@@ -122,13 +128,15 @@ public class BookController {
     @DeleteMapping("/{id}/cover")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCover(@PathVariable UUID id) {
-        deleteCoverUseCase.execute(id);
+        UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+        deleteCoverUseCase.execute(id, userId);
     }
 
     @Operation(summary = "Get book cover")
     @GetMapping("/{id}/cover")
     public ResponseEntity<Resource> getCover(@PathVariable UUID id) {
-        ImageFile imageFile = getBookCoverUseCase.execute(id);
+        UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+        ImageFile imageFile = getBookCoverUseCase.execute(id, userId);
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + imageFile.fileName() + "\"")
             .contentType(MediaType.parseMediaType(imageFile.contentType()))

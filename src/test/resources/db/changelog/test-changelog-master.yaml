@@ -7,3 +7,13 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/04__book_genres-schema.yaml
   - include:
       file: classpath:/db/changelog/changes/05__rename-cover_url-field.yaml
+  - include:
+      file: classpath:/db/changelog/changes/06__users-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/07__add-archive-user-to-users.yaml
+  - include:
+      file: classpath:/db/changelog/changes/08__add-nullable-user_id-field-in-books.yaml
+  - include:
+      file: classpath:/db/changelog/changes/09__set-archive-user-id-to-all-books.yaml
+  - include:
+      file: classpath:/db/changelog/changes/10__set-user_id-not-null-in-books.yaml

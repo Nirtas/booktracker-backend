@@ -23,6 +23,9 @@ public class BookEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
+
     @Column(name = "title", length = BookRules.TITLE_MAX_LENGTH, nullable = false)
     private String title;
 

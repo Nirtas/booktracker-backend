@@ -25,7 +25,7 @@ public class BookRepositoryImpl implements BookRepository {
     private final BookDataMapper bookDataMapper;
 
     @Override
-    public PageResult<Book> findAll(PageQuery query) {
+    public PageResult<Book> findAllByUserId(PageQuery query, UUID userId) {
         int page = query != null ? query.page() : 0;
         int size = query != null ? query.size() : 0;
         String sortBy = query != null ? query.sortBy() : PaginationRules.DEFAULT_SORT_FIELD;
@@ -34,7 +34,7 @@ public class BookRepositoryImpl implements BookRepository {
             : Sort.Direction.DESC;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-        Page<BookEntity> entities = jpaBookRepository.findAll(pageable);
+        Page<BookEntity> entities = jpaBookRepository.findAllByUserId(pageable, userId);
         return new PageResult<>(
             entities.getContent().stream().map(bookDataMapper::toDomain).toList(),
             entities.getSize(),
@@ -45,19 +45,20 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
-    public Optional<Book> findById(UUID id) {
-        return jpaBookRepository.findById(id).map(bookDataMapper::toDomain);
+    public Optional<Book> findByIdAndUserId(UUID id, UUID userId) {
+        return jpaBookRepository.findByIdAndUserId(id, userId).map(bookDataMapper::toDomain);
     }
 
     @Override
-    public Book save(Book book) {
+    public Book save(Book book, UUID userId) {
         BookEntity entity = bookDataMapper.toEntity(book);
+        entity.setUserId(userId); // TODO: REMOVE THIS
         BookEntity savedEntity = jpaBookRepository.save(entity);
         return bookDataMapper.toDomain(savedEntity);
     }
 
     @Override
-    public void deleteById(UUID id) {
-        jpaBookRepository.deleteById(id);
+    public void deleteByIdAndUserId(UUID id, UUID userId) {
+        jpaBookRepository.deleteByIdAndUserId(id, userId);
     }
 }

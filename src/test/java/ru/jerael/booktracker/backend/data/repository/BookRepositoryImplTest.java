@@ -35,6 +35,8 @@ class BookRepositoryImplTest {
     @Autowired
     private JpaGenreRepository jpaGenreRepository;
 
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+
     @Test
     void findAll_ShouldReturnAllBooks() {
         GenreEntity genre1 = new GenreEntity();
@@ -49,6 +51,7 @@ class BookRepositoryImplTest {
         book1.setStatus(BookStatus.READING);
         book1.setCreatedAt(Instant.ofEpochMilli(1771249699347L));
         book1.setGenres(new HashSet<>(genres));
+        book1.setUserId(userId); // TODO: REMOVE THIS
 
         BookEntity book2 = new BookEntity();
         book2.setTitle("asd");
@@ -56,6 +59,7 @@ class BookRepositoryImplTest {
         book2.setStatus(BookStatus.WANT_TO_READ);
         book2.setCreatedAt(Instant.ofEpochMilli(177124961234L));
         book2.setGenres(Collections.emptySet());
+        book2.setUserId(userId); // TODO: REMOVE THIS
 
         List<BookEntity> entities = jpaBookRepository.saveAll(List.of(book1, book2));
         UUID id1 = entities.get(0).getId();
@@ -63,7 +67,7 @@ class BookRepositoryImplTest {
 
         PageQuery query = new PageQuery(0, 10, "createdAt", SortDirection.DESC);
 
-        PageResult<Book> result = bookRepository.findAll(query);
+        PageResult<Book> result = bookRepository.findAllByUserId(query, userId);
 
         assertEquals(2, result.content().size());
         assertEquals(10, result.size());
@@ -85,11 +89,12 @@ class BookRepositoryImplTest {
         book1.setStatus(BookStatus.READING);
         book1.setCreatedAt(Instant.ofEpochMilli(1771249699347L));
         book1.setGenres(Set.of(savedGenre));
+        book1.setUserId(userId);
 
         BookEntity savedBook = jpaBookRepository.save(book1);
         UUID id = savedBook.getId();
 
-        Optional<Book> result = bookRepository.findById(id);
+        Optional<Book> result = bookRepository.findByIdAndUserId(id, userId);
 
         assertTrue(result.isPresent());
         assertEquals(id, result.get().id());
@@ -120,7 +125,7 @@ class BookRepositoryImplTest {
             genres
         );
 
-        Book createdBook = bookRepository.save(book);
+        Book createdBook = bookRepository.save(book, userId);
 
         assertNotNull(createdBook.id());
         assertEquals(title, createdBook.title());
@@ -152,7 +157,7 @@ class BookRepositoryImplTest {
             Collections.emptySet()
         );
 
-        Book updatedBook = bookRepository.save(book);
+        Book updatedBook = bookRepository.save(book, userId);
 
         assertEquals(id, updatedBook.id());
         assertEquals("new_cover.jpg", updatedBook.coverFileName());
@@ -186,7 +191,7 @@ class BookRepositoryImplTest {
             genres
         );
 
-        Book createdBook = bookRepository.save(book);
+        Book createdBook = bookRepository.save(book, userId);
 
         assertNotNull(createdBook.id());
         assertEquals(title, createdBook.title());
@@ -194,7 +199,7 @@ class BookRepositoryImplTest {
         assertEquals(2, createdBook.genres().size());
         assertTrue(jpaBookRepository.existsById(createdBook.id()));
 
-        bookRepository.deleteById(createdBook.id());
+        bookRepository.deleteByIdAndUserId(createdBook.id(), userId);
 
         assertEquals(Optional.empty(), jpaBookRepository.findById(createdBook.id()));
     }

@@ -3,5 +3,5 @@ package ru.jerael.booktracker.backend.domain.usecase.book;
 import java.util.UUID;
 
 public interface DeleteBookUseCase {
-    void execute(UUID id);
+    void execute(UUID id, UUID userId);
 }
