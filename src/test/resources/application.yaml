@@ -12,6 +12,16 @@ spring:
     multipart:
       max-file-size: 10MB
 
+  mail:
+    host: test@example.com
+    port: 587
+    username: test
+    password: test
+    properties.mail.smtp:
+      auth: false
+      starttls:
+        enable: false
+
 app:
   web:
     max-file-size: ${spring.servlet.multipart.max-file-size}

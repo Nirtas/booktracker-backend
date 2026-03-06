@@ -111,6 +111,13 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- SMTP -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- UTILS -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

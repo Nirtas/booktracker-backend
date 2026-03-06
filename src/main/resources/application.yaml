@@ -29,6 +29,16 @@ spring:
     multipart:
       max-file-size: ${MAX_FILE_SIZE:10MB}
 
+  mail:
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties.mail.smtp:
+      auth: ${SMTP_ENABLE_AUTH}
+      starttls:
+        enable: ${SMTP_ENABLE_TLS}
+
 springdoc:
   api-docs:
     enabled: ${ENABLE_API_DOCS:false}
@@ -59,3 +69,5 @@ app:
   otp:
     length: ${OTP_CODE_LENGTH:6}
     expiry: ${OTP_CODE_EXPIRY:10m}
+  smtp:
+    from: ${spring.mail.username}
