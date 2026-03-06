@@ -7,4 +7,5 @@ public class Tables {
     public final String GENRES = "genres";
     public final String BOOKS = "books";
     public final String BOOK_GENRES = "book_genres";
+    public final String USERS = "users";
 }
