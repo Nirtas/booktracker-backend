@@ -26,7 +26,7 @@ class GenreRepositoryImplTest {
     private JpaGenreRepository jpaGenreRepository;
 
     @Test
-    void getGenres_ShouldReturnAllGenres() {
+    void getGenres_ShouldReturnAllGenres() { // TODO: rename
         GenreEntity entity1 = new GenreEntity();
         entity1.setName("adventure");
         GenreEntity entity2 = new GenreEntity();
@@ -40,7 +40,7 @@ class GenreRepositoryImplTest {
     }
 
     @Test
-    void getGenreById_WhenExists_ShouldReturnGenre() {
+    void getGenreById_WhenExists_ShouldReturnGenre() { // TODO: rename
         GenreEntity entity = new GenreEntity();
         entity.setName("adventure");
         GenreEntity savedEntity = jpaGenreRepository.save(entity);
