@@ -50,3 +50,9 @@ app:
     quality: ${IMAGE_QUALITY:0.8}
     max-width: ${IMAGE_MAX_WIDTH:1080}
     max-height: ${IMAGE_MAX_HEIGHT:1080}
+  argon2:
+    salt-length: ${ARGON2_SALT_LENGTH:16}
+    hash-length: ${ARGON2_HASH_LENGTH:32}
+    parallelism: ${ARGON2_PARALLELISM:1}
+    memory: ${ARGON2_MEMORY:16384}
+    iterations: ${ARGON2_ITERATIONS:2}
