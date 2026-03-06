@@ -103,6 +103,14 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- SECURITY -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>7.0.3</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- UTILS -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
