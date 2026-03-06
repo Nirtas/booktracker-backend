@@ -43,6 +43,7 @@
         <thumbnailator.version>0.4.21</thumbnailator.version>
         <webp-imageio.version>0.10.2</webp-imageio.version>
         <springdoc.version>3.0.2</springdoc.version>
+        <testcontainers-mailpit.version>1.3.0</testcontainers-mailpit.version>
     </properties>
     <dependencies>
 
@@ -111,6 +112,13 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- SMTP -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- UTILS -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -154,6 +162,17 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.martinelli.oss</groupId>
+            <artifactId>testcontainers-mailpit</artifactId>
+            <version>${testcontainers-mailpit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
 
