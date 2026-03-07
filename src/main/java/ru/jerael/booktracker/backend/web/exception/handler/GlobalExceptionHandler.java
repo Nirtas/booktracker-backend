@@ -17,18 +17,17 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import ru.jerael.booktracker.backend.web.config.WebProperties;
-import ru.jerael.booktracker.backend.web.exception.code.WebErrorCode;
-import ru.jerael.booktracker.backend.web.exception.model.FieldErrorDetail;
-import ru.jerael.booktracker.backend.web.exception.util.WebErrorUtils;
 import ru.jerael.booktracker.backend.domain.exception.AppException;
 import ru.jerael.booktracker.backend.domain.exception.InternalException;
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.code.CommonErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.code.ErrorCode;
+import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
+import ru.jerael.booktracker.backend.web.config.WebProperties;
+import ru.jerael.booktracker.backend.web.exception.code.WebErrorCode;
+import ru.jerael.booktracker.backend.web.exception.util.WebErrorUtils;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,19 +55,7 @@ public class GlobalExceptionHandler {
             "Validation failed",
             CommonErrorCode.VALIDATION_ERROR
         );
-
-        Map<String, Object> params = new HashMap<>();
-        if (ex.getParams() != null && !ex.getParams().isEmpty()) {
-            params = ex.getParams();
-        }
-        FieldErrorDetail detail = new FieldErrorDetail(
-            ex.getField(),
-            ex.getErrorCode().name(),
-            ex.getMessage(),
-            params
-        );
-        problemDetail.setProperty("errors", List.of(detail));
-
+        problemDetail.setProperty("errors", ex.getErrors());
         return problemDetail;
     }
 
@@ -161,15 +148,15 @@ public class GlobalExceptionHandler {
             CommonErrorCode.VALIDATION_ERROR
         );
 
-        List<FieldErrorDetail> errors = new ArrayList<>();
+        List<ValidationError> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            FieldErrorDetail detail = new FieldErrorDetail(
-                error.getField(),
+            ValidationError validationError = new ValidationError(
                 WebErrorUtils.toSnakeCase(error.getCode()),
+                error.getField(),
                 error.getDefaultMessage(),
                 WebErrorUtils.extractParams(error)
             );
-            errors.add(detail);
+            errors.add(validationError);
         }
         problemDetail.setProperty("errors", errors);
 
