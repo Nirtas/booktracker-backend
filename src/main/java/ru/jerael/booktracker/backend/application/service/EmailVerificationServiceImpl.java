@@ -10,14 +10,14 @@ import ru.jerael.booktracker.backend.domain.model.verification.*;
 import ru.jerael.booktracker.backend.domain.repository.EmailVerificationRepository;
 import ru.jerael.booktracker.backend.domain.smtp.SmtpService;
 import ru.jerael.booktracker.backend.domain.verification.EmailVerificationService;
-import ru.jerael.booktracker.backend.domain.verification.VerificationCodeGenerator;
+import ru.jerael.booktracker.backend.domain.verification.VerificationTokenGenerator;
 import java.time.Instant;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationServiceImpl implements EmailVerificationService {
-    private final VerificationCodeGenerator verificationCodeGenerator;
+    private final VerificationTokenGenerator verificationTokenGenerator;
     private final EmailVerificationRepository emailVerificationRepository;
     private final SmtpService smtpService;
     private final VerificationTokenValidatorImpl verificationTokenValidator;
@@ -31,20 +31,20 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
         emailVerificationRepository.deleteByUserIdAndType(userId, type);
 
-        VerificationCode code = verificationCodeGenerator.generate();
+        VerificationToken token = verificationTokenGenerator.generate();
 
         EmailVerification emailVerification = new EmailVerification(
             null,
             userId,
             email,
             type,
-            code.value(),
-            Instant.now().plusMillis(code.expiry().toMillis()),
+            token.value(),
+            Instant.now().plusMillis(token.expiry().toMillis()),
             Instant.now()
         );
         emailVerificationRepository.save(emailVerification);
 
-        smtpService.sendEmail(email, new VerificationMailMessage(code));
+        smtpService.sendEmail(email, new VerificationMailMessage(token));
     }
 
     @Override

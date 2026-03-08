@@ -12,7 +12,7 @@ import ru.jerael.booktracker.backend.domain.mail.VerificationMailMessage;
 import ru.jerael.booktracker.backend.domain.model.verification.*;
 import ru.jerael.booktracker.backend.domain.repository.EmailVerificationRepository;
 import ru.jerael.booktracker.backend.domain.smtp.SmtpService;
-import ru.jerael.booktracker.backend.domain.verification.VerificationCodeGenerator;
+import ru.jerael.booktracker.backend.domain.verification.VerificationTokenGenerator;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 class EmailVerificationServiceImplTest {
 
     @Mock
-    private VerificationCodeGenerator verificationCodeGenerator;
+    private VerificationTokenGenerator verificationTokenGenerator;
 
     @Mock
     private EmailVerificationRepository emailVerificationRepository;
@@ -47,8 +47,8 @@ class EmailVerificationServiceImplTest {
     @Test
     void initiate_ShouldCleanOldCodeAndSaveNewOne() {
         EmailVerificationInitiation payload = new EmailVerificationInitiation(userId, email, type);
-        VerificationCode code = new VerificationCode(token, Duration.ofMinutes(10L));
-        when(verificationCodeGenerator.generate()).thenReturn(code);
+        VerificationToken verificationToken = new VerificationToken(token, Duration.ofMinutes(10L));
+        when(verificationTokenGenerator.generate()).thenReturn(verificationToken);
 
         service.initiate(payload);
 
