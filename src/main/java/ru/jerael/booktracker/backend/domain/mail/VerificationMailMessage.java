@@ -1,12 +1,12 @@
 package ru.jerael.booktracker.backend.domain.mail;
 
-import ru.jerael.booktracker.backend.domain.model.verification.VerificationCode;
+import ru.jerael.booktracker.backend.domain.model.verification.VerificationToken;
 
 public class VerificationMailMessage implements MailMessage {
-    private final VerificationCode code;
+    private final VerificationToken token;
 
-    public VerificationMailMessage(VerificationCode code) {
-        this.code = code;
+    public VerificationMailMessage(VerificationToken token) {
+        this.token = token;
     }
 
     @Override
@@ -27,8 +27,8 @@ public class VerificationMailMessage implements MailMessage {
                     \s
                     If you did not request this, please ignore this email.
                 \s""",
-            code.value(),
-            code.expiry().toMinutes()
+            token.value(),
+            token.expiry().toMinutes()
         );
     }
 }

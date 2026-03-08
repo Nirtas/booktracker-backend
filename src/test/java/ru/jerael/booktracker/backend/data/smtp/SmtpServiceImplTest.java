@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.jerael.booktracker.backend.config.TestcontainersConfiguration;
 import ru.jerael.booktracker.backend.domain.mail.VerificationMailMessage;
-import ru.jerael.booktracker.backend.domain.model.verification.VerificationCode;
+import ru.jerael.booktracker.backend.domain.model.verification.VerificationToken;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.time.Duration;
 import static ch.martinelli.oss.testcontainers.mailpit.assertions.MailpitAssertions.assertThat;
@@ -32,8 +32,8 @@ class SmtpServiceImplTest {
     void sendEmail_ShouldSendVerificationMessage() {
         String to = "user@example.com";
         String code = "123456";
-        VerificationCode verificationCode = new VerificationCode(code, Duration.ofMinutes(10L));
-        VerificationMailMessage mailMessage = new VerificationMailMessage(verificationCode);
+        VerificationToken verificationToken = new VerificationToken(code, Duration.ofMinutes(10L));
+        VerificationMailMessage mailMessage = new VerificationMailMessage(verificationToken);
 
         smtpService.sendEmail(to, mailMessage);
 
