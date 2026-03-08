@@ -24,7 +24,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     @Override
     @Transactional
-    public void initiate(EmailVerificationInitiation payload) {
+    public Instant initiate(EmailVerificationInitiation payload) {
         UUID userId = payload.userId();
         String email = payload.email();
         VerificationType type = payload.type();
@@ -33,18 +33,21 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
         VerificationToken token = verificationTokenGenerator.generate();
 
+        Instant expiresAt = Instant.now().plusMillis(token.expiry().toMillis());
         EmailVerification emailVerification = new EmailVerification(
             null,
             userId,
             email,
             type,
             token.value(),
-            Instant.now().plusMillis(token.expiry().toMillis()),
+            expiresAt,
             Instant.now()
         );
         emailVerificationRepository.save(emailVerification);
 
         smtpService.sendEmail(email, new VerificationMailMessage(token));
+
+        return expiresAt;
     }
 
     @Override

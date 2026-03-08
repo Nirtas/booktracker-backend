@@ -17,10 +17,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import ru.jerael.booktracker.backend.domain.exception.AppException;
-import ru.jerael.booktracker.backend.domain.exception.InternalException;
-import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
-import ru.jerael.booktracker.backend.domain.exception.ValidationException;
+import ru.jerael.booktracker.backend.domain.exception.*;
 import ru.jerael.booktracker.backend.domain.exception.code.CommonErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.code.ErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
@@ -43,6 +40,16 @@ public class GlobalExceptionHandler {
             HttpStatus.NOT_FOUND,
             ex.getMessage(),
             "Resource not found",
+            ex.getErrorCode()
+        );
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ProblemDetail handleAlreadyExistsException(AlreadyExistsException ex) {
+        return buildProblemDetail(
+            HttpStatus.CONFLICT,
+            ex.getMessage(),
+            "Already exists",
             ex.getErrorCode()
         );
     }

@@ -18,14 +18,16 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import ru.jerael.booktracker.backend.web.config.WebProperties;
-import ru.jerael.booktracker.backend.web.exception.code.WebErrorCode;
-import ru.jerael.booktracker.backend.web.exception.factory.FileWebExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.AppException;
 import ru.jerael.booktracker.backend.domain.exception.code.BookErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.code.CommonErrorCode;
+import ru.jerael.booktracker.backend.domain.exception.code.UserErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
+import ru.jerael.booktracker.backend.domain.exception.factory.UserExceptionFactory;
+import ru.jerael.booktracker.backend.web.config.WebProperties;
+import ru.jerael.booktracker.backend.web.exception.code.WebErrorCode;
+import ru.jerael.booktracker.backend.web.exception.factory.FileWebExceptionFactory;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -50,6 +52,11 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/not-found")
         void notFound() {
             throw BookExceptionFactory.bookNotFound(id);
+        }
+
+        @GetMapping("/test/already-exists")
+        void alreadyExists() {
+            throw UserExceptionFactory.emailAlreadyExists("test@example.com");
         }
 
         @GetMapping("/test/validation")
@@ -108,6 +115,16 @@ class GlobalExceptionHandlerTest {
         json.extractingPath("$.detail").isEqualTo("Book with id " + id + " was not found");
         json.extractingPath("$.title").isEqualTo("Resource not found");
         json.extractingPath("$.code").isEqualTo(BookErrorCode.BOOK_NOT_FOUND.name());
+    }
+
+    @Test
+    void handleAlreadyExistsException() {
+        var response = mockMvcTester.get().uri("/test/already-exists");
+        assertThat(response).hasStatus(HttpStatus.CONFLICT);
+        var json = assertThat(response).bodyJson();
+        json.extractingPath("$.detail").isEqualTo("User with email test@example.com already exists");
+        json.extractingPath("$.title").isEqualTo("Already exists");
+        json.extractingPath("$.code").isEqualTo(UserErrorCode.EMAIL_ALREADY_EXISTS.name());
     }
 
     @Test
