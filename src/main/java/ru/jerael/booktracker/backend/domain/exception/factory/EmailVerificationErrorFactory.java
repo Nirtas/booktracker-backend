@@ -8,8 +8,8 @@ public class EmailVerificationErrorFactory {
     public static ValidationError tokenExpired() {
         return new ValidationError(
             EmailVerificationErrorCode.TOKEN_EXPIRED.name(),
-            "Verification token has expired",
             "token",
+            "Verification token has expired",
             Map.of()
         );
     }
@@ -17,8 +17,8 @@ public class EmailVerificationErrorFactory {
     public static ValidationError invalidToken() {
         return new ValidationError(
             EmailVerificationErrorCode.INVALID_TOKEN.name(),
-            "Verification token is invalid",
             "token",
+            "Verification token is invalid",
             Map.of()
         );
     }
