@@ -8,4 +8,5 @@ public class Tables {
     public final String BOOKS = "books";
     public final String BOOK_GENRES = "book_genres";
     public final String USERS = "users";
+    public final String EMAIL_VERIFICATIONS = "email_verifications";
 }
