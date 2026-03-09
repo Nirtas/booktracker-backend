@@ -27,6 +27,7 @@ class JwtProviderTest {
     private final String issuer = "issuer";
 
     private final UUID userId = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+    private final Map<String, Object> claims = Map.of("sub", userId);
 
     public JwtProviderTest() {
         JwtProperties properties = new JwtProperties();
@@ -39,7 +40,7 @@ class JwtProviderTest {
 
     @Test
     void generateAccessToken_ShouldCreateValidSignedJwt() {
-        String token = jwtProvider.generateAccessToken(userId);
+        String token = jwtProvider.generateAccessToken(claims);
 
         assertThat(token).isNotBlank();
         assertEquals(3, token.split("\\.").length);
@@ -47,7 +48,7 @@ class JwtProviderTest {
 
     @Test
     void generateRefreshToken_ShouldCreateValidUuidAndExpiry() {
-        GeneratedToken generatedToken = jwtProvider.generateRefreshToken(userId);
+        GeneratedToken generatedToken = jwtProvider.generateRefreshToken();
 
         assertThat(generatedToken.value()).isNotBlank();
         assertNotNull(UUID.fromString(generatedToken.value()));
@@ -56,17 +57,17 @@ class JwtProviderTest {
 
     @Test
     void extractClaims_WhenTokenIsValid_ShouldReturnCorrectClaims() {
-        String token = jwtProvider.generateAccessToken(userId);
+        String token = jwtProvider.generateAccessToken(claims);
 
-        Map<String, Object> claims = jwtProvider.extractClaims(token);
+        Map<String, Object> result = jwtProvider.extractClaims(token);
 
-        assertThat(claims.get("sub")).isEqualTo(userId.toString());
-        assertThat(claims.get("iss")).isEqualTo(issuer);
+        assertThat(result.get("sub")).isEqualTo(userId.toString());
+        assertThat(result.get("iss")).isEqualTo(issuer);
     }
 
     @Test
     void extractClaims_WhenSignatureIsInvalid_ShouldThrowException() {
-        String validToken = jwtProvider.generateAccessToken(userId);
+        String validToken = jwtProvider.generateAccessToken(claims);
         String invalidToken = validToken.substring(0, validToken.length() - 10);
 
         Throwable throwable =
@@ -77,10 +78,11 @@ class JwtProviderTest {
 
     @Test
     void extractClaims_WhenTokenIsExpired_ShouldThrowException() throws Exception {
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-            .subject(userId.toString())
-            .expirationTime(Date.from(Instant.now().minusSeconds(10)))
-            .build();
+        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
+            .expirationTime(Date.from(Instant.now().minusSeconds(10)));
+        claims.forEach(builder::claim);
+
+        JWTClaimsSet jwtClaimsSet = builder.build();
 
         JWSSigner jwsSigner = new MACSigner(secret);
         SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), jwtClaimsSet);
@@ -97,11 +99,13 @@ class JwtProviderTest {
     @Test
     void extractClaims_WhenIssuerIsInvalid_ShouldThrowException() throws Exception {
         String wrongIssuer = "wrong issuer";
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-            .subject(userId.toString())
+
+        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
             .issuer(wrongIssuer)
-            .expirationTime(Date.from(Instant.now().plus(accessExpiry)))
-            .build();
+            .expirationTime(Date.from(Instant.now().plus(accessExpiry)));
+        claims.forEach(builder::claim);
+
+        JWTClaimsSet jwtClaimsSet = builder.build();
 
         JWSSigner jwsSigner = new MACSigner(secret);
         SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), jwtClaimsSet);

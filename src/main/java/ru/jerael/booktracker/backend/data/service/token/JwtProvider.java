@@ -24,20 +24,19 @@ public class JwtProvider implements IdentityTokenProvider {
     private final JWSAlgorithm jwsAlgorithm = JWSAlgorithm.HS256;
 
     @Override
-    public String generateAccessToken(UUID userId) {
+    public String generateAccessToken(Map<String, Object> claims) {
         Instant now = Instant.now();
         Instant expiresAt = now.plus(properties.getAccessExpiry());
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-            .subject(userId.toString())
+        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
             .issuer(properties.getIssuer())
             .issueTime(Date.from(now))
-            .expirationTime(Date.from(expiresAt))
-            .build();
-        return signJWT(jwtClaimsSet);
+            .expirationTime(Date.from(expiresAt));
+        claims.forEach(builder::claim);
+        return signJWT(builder.build());
     }
 
     @Override
-    public GeneratedToken generateRefreshToken(UUID userId) {
+    public GeneratedToken generateRefreshToken() {
         String value = UUID.randomUUID().toString();
         Instant expiresAt = Instant.now().plus(properties.getRefreshExpiry());
         return new GeneratedToken(value, expiresAt);
