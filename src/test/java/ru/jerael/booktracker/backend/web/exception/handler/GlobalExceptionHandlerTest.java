@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import ru.jerael.booktracker.backend.data.exception.code.JwtProviderErrorCode;
+import ru.jerael.booktracker.backend.data.exception.factory.JwtProviderExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.AppException;
 import ru.jerael.booktracker.backend.domain.exception.code.BookErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.code.CommonErrorCode;
@@ -52,6 +54,11 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/not-found")
         void notFound() {
             throw BookExceptionFactory.bookNotFound(id);
+        }
+
+        @GetMapping("/test/unauthenticated")
+        void unauthenticated() {
+            throw JwtProviderExceptionFactory.invalidSignature();
         }
 
         @GetMapping("/test/already-exists")
@@ -115,6 +122,16 @@ class GlobalExceptionHandlerTest {
         json.extractingPath("$.detail").isEqualTo("Book with id " + id + " was not found");
         json.extractingPath("$.title").isEqualTo("Resource not found");
         json.extractingPath("$.code").isEqualTo(BookErrorCode.BOOK_NOT_FOUND.name());
+    }
+
+    @Test
+    void handleUnauthenticatedException() {
+        var response = mockMvcTester.get().uri("/test/unauthenticated");
+        assertThat(response).hasStatus(HttpStatus.UNAUTHORIZED);
+        var json = assertThat(response).bodyJson();
+        json.extractingPath("$.detail").isEqualTo("Token signature is invalid");
+        json.extractingPath("$.title").isEqualTo("Authentication failed");
+        json.extractingPath("$.code").isEqualTo(JwtProviderErrorCode.INVALID_SIGNATURE.name());
     }
 
     @Test

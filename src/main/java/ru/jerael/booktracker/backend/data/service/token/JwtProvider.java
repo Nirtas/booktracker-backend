@@ -1,0 +1,81 @@
+package ru.jerael.booktracker.backend.data.service.token;
+
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import ru.jerael.booktracker.backend.data.exception.factory.JwtProviderExceptionFactory;
+import ru.jerael.booktracker.backend.data.service.token.config.JwtProperties;
+import ru.jerael.booktracker.backend.domain.exception.UnauthenticatedException;
+import ru.jerael.booktracker.backend.domain.model.auth.GeneratedToken;
+import ru.jerael.booktracker.backend.domain.service.token.IdentityTokenProvider;
+import java.time.Instant;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class JwtProvider implements IdentityTokenProvider {
+    private final JwtProperties properties;
+    private final JWSAlgorithm jwsAlgorithm = JWSAlgorithm.HS256;
+
+    @Override
+    public String generateAccessToken(UUID userId) {
+        Instant now = Instant.now();
+        Instant expiresAt = now.plus(properties.getAccessExpiry());
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+            .subject(userId.toString())
+            .issuer(properties.getIssuer())
+            .issueTime(Date.from(now))
+            .expirationTime(Date.from(expiresAt))
+            .build();
+        return signJWT(jwtClaimsSet);
+    }
+
+    @Override
+    public GeneratedToken generateRefreshToken(UUID userId) {
+        String value = UUID.randomUUID().toString();
+        Instant expiresAt = Instant.now().plus(properties.getRefreshExpiry());
+        return new GeneratedToken(value, expiresAt);
+    }
+
+    @Override
+    public Map<String, Object> extractClaims(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWSVerifier jwsVerifier = new MACVerifier(properties.getSecret());
+            if (!signedJWT.verify(jwsVerifier)) {
+                throw JwtProviderExceptionFactory.invalidSignature();
+            }
+            JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+            if (new Date().after(jwtClaimsSet.getExpirationTime())) {
+                throw JwtProviderExceptionFactory.tokenExpired();
+            }
+            if (!jwtClaimsSet.getIssuer().equals(properties.getIssuer())) {
+                throw JwtProviderExceptionFactory.invalidIssuer(jwtClaimsSet.getIssuer());
+            }
+            return jwtClaimsSet.getClaims();
+        } catch (JOSEException e) {
+            throw JwtProviderExceptionFactory.signingFailed(e.getMessage(), e);
+        } catch (UnauthenticatedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw JwtProviderExceptionFactory.tokenMalformed(e.getMessage());
+        }
+    }
+
+    private String signJWT(JWTClaimsSet jwtClaimsSet) {
+        try {
+            JWSSigner jwsSigner = new MACSigner(properties.getSecret());
+            SignedJWT signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), jwtClaimsSet);
+            signedJWT.sign(jwsSigner);
+            return signedJWT.serialize();
+        } catch (Exception e) {
+            throw JwtProviderExceptionFactory.signingFailed(e.getMessage(), e);
+        }
+    }
+}

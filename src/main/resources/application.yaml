@@ -74,3 +74,8 @@ app:
     expiry: ${OTP_CODE_EXPIRY:10m}
   smtp:
     from: ${spring.mail.username}
+  jwt:
+    secret: ${JWT_SECRET}
+    access-expiry: ${JWT_ACCESS_EXPIRY:10m}
+    refresh-expiry: ${JWT_REFRESH_EXPIRY:30d}
+    issuer: ${JWT_ISSUER}

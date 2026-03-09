@@ -44,6 +44,16 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ProblemDetail handleUnauthenticatedException(UnauthenticatedException ex) {
+        return buildProblemDetail(
+            HttpStatus.UNAUTHORIZED,
+            ex.getMessage(),
+            "Authentication failed",
+            ex.getErrorCode()
+        );
+    }
+
     @ExceptionHandler(AlreadyExistsException.class)
     public ProblemDetail handleAlreadyExistsException(AlreadyExistsException ex) {
         return buildProblemDetail(
