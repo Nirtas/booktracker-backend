@@ -2,12 +2,11 @@ package ru.jerael.booktracker.backend.domain.service.token;
 
 import ru.jerael.booktracker.backend.domain.model.auth.GeneratedToken;
 import java.util.Map;
-import java.util.UUID;
 
 public interface IdentityTokenProvider {
-    String generateAccessToken(UUID userId);
+    String generateAccessToken(Map<String, Object> claims);
 
-    GeneratedToken generateRefreshToken(UUID userId);
+    GeneratedToken generateRefreshToken();
 
     Map<String, Object> extractClaims(String token);
 }
