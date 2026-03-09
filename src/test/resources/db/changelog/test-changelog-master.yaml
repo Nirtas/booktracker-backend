@@ -19,3 +19,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/10__set-user_id-not-null-in-books.yaml
   - include:
       file: classpath:/db/changelog/changes/11__email_verifications-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/12__refresh_tokens-schema.yaml
