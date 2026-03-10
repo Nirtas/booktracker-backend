@@ -42,4 +42,15 @@ public class UserExceptionFactory {
             "Invalid email or password"
         );
     }
+
+    public static ValidationException userNotVerified(String email) {
+        return new ValidationException(List.of(
+            new ValidationError(
+                UserErrorCode.USER_NOT_VERIFIED.name(),
+                "email",
+                "Email " + email + " is not verified",
+                Map.of()
+            )
+        ));
+    }
 }

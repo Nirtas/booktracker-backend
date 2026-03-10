@@ -4,5 +4,6 @@ public enum UserErrorCode implements ErrorCode {
     EMAIL_ALREADY_EXISTS,
     USER_NOT_FOUND,
     ALREADY_VERIFIED,
-    INVALID_CREDENTIALS
+    INVALID_CREDENTIALS,
+    USER_NOT_VERIFIED
 }
