@@ -2,6 +2,7 @@ package ru.jerael.booktracker.backend.domain.exception.factory;
 
 import ru.jerael.booktracker.backend.domain.exception.AlreadyExistsException;
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
+import ru.jerael.booktracker.backend.domain.exception.UnauthenticatedException;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.code.UserErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
@@ -30,6 +31,24 @@ public class UserExceptionFactory {
                 UserErrorCode.ALREADY_VERIFIED.name(),
                 "userId",
                 "User with id " + id + " already verified",
+                Map.of()
+            )
+        ));
+    }
+
+    public static UnauthenticatedException invalidCredentials() {
+        return new UnauthenticatedException(
+            UserErrorCode.INVALID_CREDENTIALS,
+            "Invalid email or password"
+        );
+    }
+
+    public static ValidationException userNotVerified(String email) {
+        return new ValidationException(List.of(
+            new ValidationError(
+                UserErrorCode.USER_NOT_VERIFIED.name(),
+                "email",
+                "Email " + email + " is not verified",
                 Map.of()
             )
         ));
