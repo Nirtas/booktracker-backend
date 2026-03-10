@@ -6,13 +6,15 @@ import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.code.CommonValidationErrorCode;
 import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
 import ru.jerael.booktracker.backend.domain.validator.AuthValidator;
+import ru.jerael.booktracker.backend.domain.validator.FieldValidator;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AuthValidatorImplTest {
-    private final AuthValidator authValidator = new AuthValidatorImpl();
+    private final FieldValidator fieldValidator = new FieldValidatorImpl();
+    private final AuthValidator authValidator = new AuthValidatorImpl(fieldValidator);
 
     private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
 

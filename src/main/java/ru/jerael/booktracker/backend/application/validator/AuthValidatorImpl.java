@@ -1,18 +1,24 @@
 package ru.jerael.booktracker.backend.application.validator;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.domain.constant.EmailVerificationRules;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.factory.CommonValidationErrorFactory;
 import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
 import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
+import ru.jerael.booktracker.backend.domain.model.auth.UserLogin;
 import ru.jerael.booktracker.backend.domain.validator.AuthValidator;
+import ru.jerael.booktracker.backend.domain.validator.FieldValidator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class AuthValidatorImpl implements AuthValidator {
+    private final FieldValidator fieldValidator;
+
     @Override
     public void validateRegistrationConfirmation(ConfirmRegistration data) {
         List<ValidationError> errors = new ArrayList<>();
@@ -36,6 +42,16 @@ public class AuthValidatorImpl implements AuthValidator {
             }
         }
 
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+    }
+
+    @Override
+    public void validateLogin(UserLogin data) {
+        List<ValidationError> errors = new ArrayList<>();
+        errors.addAll(fieldValidator.validateEmail(data.email()));
+        errors.addAll(fieldValidator.validatePassword(data.password()));
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
