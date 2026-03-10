@@ -4,5 +4,7 @@ public final class EmailVerificationRules {
     private EmailVerificationRules() {}
 
     public static final int TYPE_MAX_LENGTH = 255;
+
+    public static final int TOKEN_MIN_LENGTH = 6;
     public static final int TOKEN_MAX_LENGTH = 255;
 }
