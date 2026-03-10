@@ -2,6 +2,7 @@ package ru.jerael.booktracker.backend.domain.exception.factory;
 
 import ru.jerael.booktracker.backend.domain.exception.AlreadyExistsException;
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
+import ru.jerael.booktracker.backend.domain.exception.UnauthenticatedException;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.code.UserErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
@@ -33,5 +34,12 @@ public class UserExceptionFactory {
                 Map.of()
             )
         ));
+    }
+
+    public static UnauthenticatedException invalidCredentials() {
+        return new UnauthenticatedException(
+            UserErrorCode.INVALID_CREDENTIALS,
+            "Invalid email or password"
+        );
     }
 }
