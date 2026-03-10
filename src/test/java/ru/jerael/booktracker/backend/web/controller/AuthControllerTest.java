@@ -11,13 +11,16 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import ru.jerael.booktracker.backend.domain.exception.factory.UserExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
 import ru.jerael.booktracker.backend.domain.model.auth.TokenPair;
+import ru.jerael.booktracker.backend.domain.model.auth.UserLogin;
 import ru.jerael.booktracker.backend.domain.model.user.UserCreation;
 import ru.jerael.booktracker.backend.domain.model.user.UserCreationResult;
 import ru.jerael.booktracker.backend.domain.usecase.auth.ConfirmRegistrationUseCase;
+import ru.jerael.booktracker.backend.domain.usecase.auth.LoginUserUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.user.CreateUserUseCase;
 import ru.jerael.booktracker.backend.web.config.WebProperties;
 import ru.jerael.booktracker.backend.web.dto.auth.AuthResponse;
 import ru.jerael.booktracker.backend.web.dto.auth.ConfirmRegistrationRequest;
+import ru.jerael.booktracker.backend.web.dto.auth.LoginRequest;
 import ru.jerael.booktracker.backend.web.dto.user.UserCreationRequest;
 import ru.jerael.booktracker.backend.web.dto.user.UserCreationResponse;
 import ru.jerael.booktracker.backend.web.mapper.AuthWebMapper;
@@ -48,6 +51,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private ConfirmRegistrationUseCase confirmRegistrationUseCase;
+
+    @MockitoBean
+    private LoginUserUseCase loginUserUseCase;
 
     private final String email = "test@example.com";
     private final String password = "Password123!";
@@ -96,13 +102,33 @@ class AuthControllerTest {
     }
 
     @Test
-    void confirmRegistration_ShouldReturnTokens_WhenRequestIsValid() {
+    void confirmRegistration_WhenRequestIsValid_ShouldReturnTokens() {
         ConfirmRegistrationRequest request = new ConfirmRegistrationRequest(userId, token);
         TokenPair tokenPair = new TokenPair(accessToken, refreshToken);
         when(confirmRegistrationUseCase.execute(any(ConfirmRegistration.class))).thenReturn(tokenPair);
 
         assertThat(
             mockMvcTester.post().uri("/api/v1/auth/confirm-registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .hasStatus(HttpStatus.OK)
+            .bodyJson()
+            .convertTo(AuthResponse.class)
+            .satisfies(response -> {
+                assertEquals(accessToken, response.accessToken());
+                assertEquals(refreshToken, response.refreshToken());
+            });
+    }
+
+    @Test
+    void login_WhenRequestIsValid_ShouldReturnTokens() {
+        LoginRequest request = new LoginRequest(email, password);
+        TokenPair tokenPair = new TokenPair(accessToken, refreshToken);
+        when(loginUserUseCase.execute(any(UserLogin.class))).thenReturn(tokenPair);
+
+        assertThat(
+            mockMvcTester.post().uri("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
         )
