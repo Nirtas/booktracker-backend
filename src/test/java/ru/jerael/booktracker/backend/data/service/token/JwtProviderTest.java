@@ -74,7 +74,7 @@ class JwtProviderTest {
     void extractClaims_WhenTokenIsValid_ShouldReturnCorrectClaims() {
         GeneratedToken generatedToken = jwtProvider.generateToken(claims, IdentityTokenType.ACCESS);
 
-        Map<String, Object> result = jwtProvider.extractClaims(generatedToken.value());
+        Map<String, Object> result = jwtProvider.extractClaims(generatedToken.value(), IdentityTokenType.ACCESS);
 
         assertThat(result.get("sub")).isEqualTo(userId.toString());
         assertThat(result.get("iss")).isEqualTo(issuer);
@@ -86,8 +86,8 @@ class JwtProviderTest {
         String validToken = jwtProvider.generateToken(claims, IdentityTokenType.ACCESS).value();
         String invalidToken = validToken.substring(0, validToken.length() - 10);
 
-        Throwable throwable =
-            assertThrows(UnauthenticatedException.class, () -> jwtProvider.extractClaims(invalidToken));
+        Throwable throwable = assertThrows(UnauthenticatedException.class,
+            () -> jwtProvider.extractClaims(invalidToken, IdentityTokenType.ACCESS));
 
         assertThat(throwable.getMessage()).contains("Token signature is invalid");
     }
@@ -106,8 +106,8 @@ class JwtProviderTest {
 
         String expiredToken = signedJWT.serialize();
 
-        Throwable throwable =
-            assertThrows(UnauthenticatedException.class, () -> jwtProvider.extractClaims(expiredToken));
+        Throwable throwable = assertThrows(UnauthenticatedException.class,
+            () -> jwtProvider.extractClaims(expiredToken, IdentityTokenType.ACCESS));
 
         assertThat(throwable.getMessage()).contains("Token has expired");
     }
@@ -130,7 +130,8 @@ class JwtProviderTest {
         String badToken = signedJWT.serialize();
 
         Throwable throwable =
-            assertThrows(UnauthenticatedException.class, () -> jwtProvider.extractClaims(badToken));
+            assertThrows(UnauthenticatedException.class,
+                () -> jwtProvider.extractClaims(badToken, IdentityTokenType.ACCESS));
 
         assertThat(throwable.getMessage()).contains("Token issuer is invalid: " + wrongIssuer);
     }
@@ -140,7 +141,8 @@ class JwtProviderTest {
         String malformedToken = "not a jwt string";
 
         Throwable throwable =
-            assertThrows(UnauthenticatedException.class, () -> jwtProvider.extractClaims(malformedToken));
+            assertThrows(UnauthenticatedException.class,
+                () -> jwtProvider.extractClaims(malformedToken, IdentityTokenType.ACCESS));
 
         assertThat(throwable.getMessage()).contains("Token is invalid or corrupted");
     }

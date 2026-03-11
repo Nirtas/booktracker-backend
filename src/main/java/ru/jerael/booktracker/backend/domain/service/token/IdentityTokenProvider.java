@@ -7,5 +7,5 @@ import java.util.Map;
 public interface IdentityTokenProvider {
     GeneratedToken generateToken(Map<String, Object> claims, IdentityTokenType tokenType);
 
-    Map<String, Object> extractClaims(String token);
+    Map<String, Object> extractClaims(String token, IdentityTokenType expectedType);
 }

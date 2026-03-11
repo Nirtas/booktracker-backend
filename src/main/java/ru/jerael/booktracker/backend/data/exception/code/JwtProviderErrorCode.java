@@ -7,5 +7,6 @@ public enum JwtProviderErrorCode implements ErrorCode {
     INVALID_SIGNATURE,
     TOKEN_EXPIRED,
     TOKEN_MALFORMED,
-    INVALID_ISSUER
+    INVALID_ISSUER,
+    INVALID_TOKEN_TYPE
 }
