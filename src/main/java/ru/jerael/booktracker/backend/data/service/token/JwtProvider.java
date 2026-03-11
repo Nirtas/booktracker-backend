@@ -72,9 +72,7 @@ public class JwtProvider implements IdentityTokenProvider {
     @Override
     public String encode(Map<String, Object> claims) {
         try {
-            JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
-                .issuer(properties.getIssuer())
-                .issueTime(new Date());
+            JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
             claims.forEach(builder::claim);
             JWTClaimsSet jwtClaimsSet = builder.build();
 

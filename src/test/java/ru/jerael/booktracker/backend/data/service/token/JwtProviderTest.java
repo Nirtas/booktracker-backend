@@ -26,10 +26,11 @@ class JwtProviderTest {
     private final JwtProvider jwtProvider;
 
     private final String secret = "very-very-very-very-very-long-string";
+    private final Instant issuedAt = Instant.now();
     private final Duration accessExpiry = Duration.ofMinutes(10L);
-    private final long accessExpiresAt = Instant.now().plus(accessExpiry).toEpochMilli();
+    private final long accessExpiresAt = issuedAt.plus(accessExpiry).toEpochMilli();
     private final Duration refreshExpiry = Duration.ofDays(30L);
-    private final long refreshExpiresAt = Instant.now().plus(refreshExpiry).toEpochMilli();
+    private final long refreshExpiresAt = issuedAt.plus(refreshExpiry).toEpochMilli();
     private final String issuer = "issuer";
 
     private final UUID userId = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
@@ -38,6 +39,7 @@ class JwtProviderTest {
         "userId", userId,
         "issuer", issuer,
         "type", IdentityTokenType.ACCESS,
+        "issuedAt", issuedAt.toEpochMilli(),
         "expiresAt", accessExpiresAt
     );
 
@@ -173,6 +175,7 @@ class JwtProviderTest {
         assertThat(result.get("userId")).isEqualTo(userId.toString());
         assertThat(result.get("issuer")).isEqualTo(issuer);
         assertThat(result.get("type")).isEqualTo(IdentityTokenType.ACCESS.name());
+        assertThat(result.get("issuedAt")).isEqualTo(issuedAt.toEpochMilli());
         assertThat(result.get("expiresAt")).isEqualTo(accessExpiresAt);
     }
 
