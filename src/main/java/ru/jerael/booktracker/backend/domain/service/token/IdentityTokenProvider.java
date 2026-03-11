@@ -5,7 +5,13 @@ import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenType;
 import java.util.Map;
 
 public interface IdentityTokenProvider {
+    @Deprecated
     GeneratedToken generateToken(Map<String, Object> claims, IdentityTokenType tokenType);
 
+    @Deprecated
     Map<String, Object> extractClaims(String token, IdentityTokenType expectedType);
+
+    String encode(Map<String, Object> claims);
+
+    Map<String, Object> decode(String token);
 }
