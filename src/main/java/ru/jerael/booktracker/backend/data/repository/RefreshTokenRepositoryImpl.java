@@ -7,6 +7,8 @@ import ru.jerael.booktracker.backend.data.db.repository.JpaRefreshTokenRepositor
 import ru.jerael.booktracker.backend.data.mapper.RefreshTokenDataMapper;
 import ru.jerael.booktracker.backend.domain.model.auth.RefreshToken;
 import ru.jerael.booktracker.backend.domain.repository.RefreshTokenRepository;
+import java.util.List;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,5 +20,11 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
     public void save(RefreshToken refreshToken) {
         RefreshTokenEntity entity = refreshTokenDataMapper.toEntity(refreshToken);
         jpaRefreshTokenRepository.save(entity);
+    }
+
+    @Override
+    public List<RefreshToken> findAllByUserId(UUID userId) {
+        return jpaRefreshTokenRepository.findAllByUserId(userId).stream().map(refreshTokenDataMapper::toDomain)
+            .toList();
     }
 }
