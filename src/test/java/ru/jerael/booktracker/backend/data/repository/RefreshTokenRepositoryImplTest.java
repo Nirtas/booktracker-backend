@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @DataJpaTest
 @Import({RefreshTokenRepositoryImpl.class, RefreshTokenDataMapper.class})
@@ -71,11 +71,29 @@ class RefreshTokenRepositoryImplTest {
         });
     }
 
-    private void saveEntity(UUID userId, String hash) {
+    @Test
+    void deleteById() {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setEmail(userId + "@example.com");
+        userEntity.setPasswordHash("password hash");
+        userEntity.setVerified(true);
+        userEntity.setCreatedAt(Instant.now());
+        UUID userId = jpaUserRepository.save(userEntity).getId();
+
+        RefreshTokenEntity savedEntity = saveEntity(userId, tokenHash);
+
+        assertTrue(jpaRefreshTokenRepository.existsById(savedEntity.getId()));
+
+        refreshTokenRepository.deleteById(savedEntity.getId());
+
+        assertFalse(jpaRefreshTokenRepository.existsById(savedEntity.getId()));
+    }
+
+    private RefreshTokenEntity saveEntity(UUID userId, String hash) {
         RefreshTokenEntity entity = new RefreshTokenEntity();
         entity.setUserId(userId);
         entity.setTokenHash(hash);
         entity.setExpiresAt(expiresAt);
-        jpaRefreshTokenRepository.save(entity);
+        return jpaRefreshTokenRepository.save(entity);
     }
 }

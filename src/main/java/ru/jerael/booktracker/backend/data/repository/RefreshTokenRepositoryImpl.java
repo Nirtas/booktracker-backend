@@ -27,4 +27,9 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
         return jpaRefreshTokenRepository.findAllByUserId(userId).stream().map(refreshTokenDataMapper::toDomain)
             .toList();
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRefreshTokenRepository.deleteById(id);
+    }
 }
