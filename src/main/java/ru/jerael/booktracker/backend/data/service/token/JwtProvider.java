@@ -11,11 +11,12 @@ import ru.jerael.booktracker.backend.data.exception.factory.JwtProviderException
 import ru.jerael.booktracker.backend.data.service.token.config.JwtProperties;
 import ru.jerael.booktracker.backend.domain.exception.UnauthenticatedException;
 import ru.jerael.booktracker.backend.domain.model.auth.GeneratedToken;
+import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenType;
 import ru.jerael.booktracker.backend.domain.service.token.IdentityTokenProvider;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,21 +25,18 @@ public class JwtProvider implements IdentityTokenProvider {
     private final JWSAlgorithm jwsAlgorithm = JWSAlgorithm.HS256;
 
     @Override
-    public String generateAccessToken(Map<String, Object> claims) {
+    public GeneratedToken generateToken(Map<String, Object> claims, IdentityTokenType tokenType) {
         Instant now = Instant.now();
-        Instant expiresAt = now.plus(properties.getAccessExpiry());
+        Duration expiry =
+            tokenType == IdentityTokenType.ACCESS ? properties.getAccessExpiry() : properties.getRefreshExpiry();
+        Instant expiresAt = now.plus(expiry);
         JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
             .issuer(properties.getIssuer())
             .issueTime(Date.from(now))
             .expirationTime(Date.from(expiresAt));
         claims.forEach(builder::claim);
-        return signJWT(builder.build());
-    }
-
-    @Override
-    public GeneratedToken generateRefreshToken() {
-        String value = UUID.randomUUID().toString();
-        Instant expiresAt = Instant.now().plus(properties.getRefreshExpiry());
+        builder.claim("type", tokenType.name());
+        String value = signJWT(builder.build());
         return new GeneratedToken(value, expiresAt);
     }
 

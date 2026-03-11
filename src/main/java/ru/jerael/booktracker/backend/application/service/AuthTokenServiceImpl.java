@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jerael.booktracker.backend.domain.hasher.PasswordHasher;
 import ru.jerael.booktracker.backend.domain.model.auth.GeneratedToken;
+import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenType;
 import ru.jerael.booktracker.backend.domain.model.auth.RefreshToken;
 import ru.jerael.booktracker.backend.domain.model.auth.TokenPair;
 import ru.jerael.booktracker.backend.domain.repository.RefreshTokenRepository;
@@ -24,10 +25,10 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     @Transactional
     public TokenPair issueTokens(UUID userId) {
         Map<String, Object> claims = Map.of("sub", userId);
-        String accessToken = identityTokenProvider.generateAccessToken(claims);
-        GeneratedToken refreshToken = identityTokenProvider.generateRefreshToken();
+        GeneratedToken accessToken = identityTokenProvider.generateToken(claims, IdentityTokenType.ACCESS);
+        GeneratedToken refreshToken = identityTokenProvider.generateToken(claims, IdentityTokenType.REFRESH);
         String hash = passwordHasher.hash(refreshToken.value());
         refreshTokenRepository.save(new RefreshToken(null, userId, hash, refreshToken.expiresAt()));
-        return new TokenPair(accessToken, refreshToken.value());
+        return new TokenPair(accessToken.value(), refreshToken.value());
     }
 }
