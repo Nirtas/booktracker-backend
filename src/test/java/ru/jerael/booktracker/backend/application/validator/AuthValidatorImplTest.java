@@ -5,6 +5,7 @@ import ru.jerael.booktracker.backend.domain.constant.EmailVerificationRules;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.code.CommonValidationErrorCode;
 import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
+import ru.jerael.booktracker.backend.domain.model.auth.RefreshTokenPayload;
 import ru.jerael.booktracker.backend.domain.validator.AuthValidator;
 import ru.jerael.booktracker.backend.domain.validator.FieldValidator;
 import java.util.UUID;
@@ -17,6 +18,7 @@ class AuthValidatorImplTest {
     private final AuthValidator authValidator = new AuthValidatorImpl(fieldValidator);
 
     private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
+    private final String refreshToken = "refresh token";
 
     @Test
     void validateRegistrationConfirmation_WhenValid_ShouldNotThrowException() {
@@ -64,5 +66,22 @@ class AuthValidatorImplTest {
             assertThrows(ValidationException.class, () -> authValidator.validateRegistrationConfirmation(data));
 
         assertThat(ex.getErrors()).anyMatch(e -> e.code().equals(CommonValidationErrorCode.FIELD_TOO_LONG.name()));
+    }
+
+    @Test
+    void validateRefreshTokenPayload_WhenValid_ShouldNotThrowException() {
+        RefreshTokenPayload data = new RefreshTokenPayload(refreshToken);
+
+        assertDoesNotThrow(() -> authValidator.validateRefreshTokenPayload(data));
+    }
+
+    @Test
+    void validateRefreshTokenPayload_WhenRefreshTokenIsBlank_ShouldThrowException() {
+        RefreshTokenPayload data = new RefreshTokenPayload("  ");
+
+        ValidationException ex =
+            assertThrows(ValidationException.class, () -> authValidator.validateRefreshTokenPayload(data));
+
+        assertThat(ex.getErrors()).anyMatch(e -> e.field().equals("refreshToken"));
     }
 }
