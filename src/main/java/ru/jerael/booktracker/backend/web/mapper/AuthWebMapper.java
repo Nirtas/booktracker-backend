@@ -2,11 +2,13 @@ package ru.jerael.booktracker.backend.web.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
+import ru.jerael.booktracker.backend.domain.model.auth.RefreshTokenPayload;
 import ru.jerael.booktracker.backend.domain.model.auth.TokenPair;
 import ru.jerael.booktracker.backend.domain.model.auth.UserLogin;
 import ru.jerael.booktracker.backend.web.dto.auth.AuthResponse;
 import ru.jerael.booktracker.backend.web.dto.auth.ConfirmRegistrationRequest;
 import ru.jerael.booktracker.backend.web.dto.auth.LoginRequest;
+import ru.jerael.booktracker.backend.web.dto.auth.RefreshTokensRequest;
 
 @Component
 public class AuthWebMapper {
@@ -35,5 +37,11 @@ public class AuthWebMapper {
             request.email(),
             request.password()
         );
+    }
+
+    public RefreshTokenPayload toDomain(RefreshTokensRequest request) {
+        if (request == null) return null;
+
+        return new RefreshTokenPayload(request.refreshToken());
     }
 }
