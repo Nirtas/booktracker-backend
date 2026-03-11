@@ -27,11 +27,19 @@ class JwtProviderTest {
 
     private final String secret = "very-very-very-very-very-long-string";
     private final Duration accessExpiry = Duration.ofMinutes(10L);
+    private final long accessExpiresAt = Instant.now().plus(accessExpiry).toEpochMilli();
     private final Duration refreshExpiry = Duration.ofDays(30L);
+    private final long refreshExpiresAt = Instant.now().plus(refreshExpiry).toEpochMilli();
     private final String issuer = "issuer";
 
     private final UUID userId = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final Map<String, Object> claims = Map.of("sub", userId);
+    private final Map<String, Object> claims2 = Map.of(
+        "userId", userId,
+        "issuer", issuer,
+        "type", IdentityTokenType.ACCESS,
+        "expiresAt", accessExpiresAt
+    );
 
     public JwtProviderTest() {
         JwtProperties properties = new JwtProperties();
@@ -143,6 +151,46 @@ class JwtProviderTest {
         Throwable throwable =
             assertThrows(UnauthenticatedException.class,
                 () -> jwtProvider.extractClaims(malformedToken, IdentityTokenType.ACCESS));
+
+        assertThat(throwable.getMessage()).contains("Token is invalid or corrupted");
+    }
+
+
+    @Test
+    void encode_ShouldCreateValidSignedJwt() {
+        String token = jwtProvider.encode(claims2);
+
+        assertThat(token).isNotBlank();
+        assertEquals(3, token.split("\\.").length);
+    }
+
+    @Test
+    void decode_WhenTokenIsValid_ShouldReturnCorrectClaims() {
+        String token = jwtProvider.encode(claims2);
+
+        Map<String, Object> result = jwtProvider.decode(token);
+
+        assertThat(result.get("userId")).isEqualTo(userId.toString());
+        assertThat(result.get("issuer")).isEqualTo(issuer);
+        assertThat(result.get("type")).isEqualTo(IdentityTokenType.ACCESS.name());
+        assertThat(result.get("expiresAt")).isEqualTo(accessExpiresAt);
+    }
+
+    @Test
+    void decode_WhenSignatureIsInvalid_ShouldThrowException() {
+        String validToken = jwtProvider.encode(claims2);
+        String invalidToken = validToken.substring(0, validToken.length() - 10);
+
+        Throwable throwable = assertThrows(UnauthenticatedException.class, () -> jwtProvider.decode(invalidToken));
+
+        assertThat(throwable.getMessage()).contains("Token signature is invalid");
+    }
+
+    @Test
+    void decode_WhenTokenIsMalformed_ShouldThrowException() {
+        String malformedToken = "not a jwt string";
+
+        Throwable throwable = assertThrows(UnauthenticatedException.class, () -> jwtProvider.decode(malformedToken));
 
         assertThat(throwable.getMessage()).contains("Token is invalid or corrupted");
     }
