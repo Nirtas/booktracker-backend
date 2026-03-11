@@ -79,3 +79,7 @@ app:
     access-expiry: ${JWT_ACCESS_EXPIRY:10m}
     refresh-expiry: ${JWT_REFRESH_EXPIRY:30d}
     issuer: ${JWT_ISSUER}
+  auth:
+    token:
+      access-expiry: ${AUTH_ACCESS_TOKEN_EXPIRY:10m}
+      refresh-expiry: ${AUTH_REFRESH_TOKEN_EXPIRY:30d}
