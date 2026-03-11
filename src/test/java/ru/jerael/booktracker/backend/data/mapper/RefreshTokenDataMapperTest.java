@@ -26,4 +26,20 @@ class RefreshTokenDataMapperTest {
         assertEquals(tokenHash, entity.getTokenHash());
         assertEquals(expiresAt, entity.getExpiresAt());
     }
+
+    @Test
+    void toDomain() {
+        RefreshTokenEntity entity = new RefreshTokenEntity();
+        entity.setId(id);
+        entity.setUserId(userId);
+        entity.setTokenHash(tokenHash);
+        entity.setExpiresAt(expiresAt);
+
+        RefreshToken domain = refreshTokenDataMapper.toDomain(entity);
+
+        assertEquals(id, domain.id());
+        assertEquals(userId, domain.userId());
+        assertEquals(tokenHash, domain.tokenHash());
+        assertEquals(expiresAt, domain.expiresAt());
+    }
 }

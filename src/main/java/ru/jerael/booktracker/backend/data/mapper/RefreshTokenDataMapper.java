@@ -16,4 +16,15 @@ public class RefreshTokenDataMapper {
         entity.setExpiresAt(refreshToken.expiresAt());
         return entity;
     }
+
+    public RefreshToken toDomain(RefreshTokenEntity entity) {
+        if (entity == null) return null;
+
+        return new RefreshToken(
+            entity.getId(),
+            entity.getUserId(),
+            entity.getTokenHash(),
+            entity.getExpiresAt()
+        );
+    }
 }

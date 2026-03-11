@@ -41,7 +41,7 @@ public class JwtProvider implements IdentityTokenProvider {
     }
 
     @Override
-    public Map<String, Object> extractClaims(String token) {
+    public Map<String, Object> extractClaims(String token, IdentityTokenType expectedType) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
             JWSVerifier jwsVerifier = new MACVerifier(properties.getSecret());
@@ -54,6 +54,10 @@ public class JwtProvider implements IdentityTokenProvider {
             }
             if (!jwtClaimsSet.getIssuer().equals(properties.getIssuer())) {
                 throw JwtProviderExceptionFactory.invalidIssuer(jwtClaimsSet.getIssuer());
+            }
+            String actualType = jwtClaimsSet.getClaim("type").toString();
+            if (actualType == null || actualType.isBlank() || !actualType.equals(expectedType.name())) {
+                throw JwtProviderExceptionFactory.invalidTokenType(expectedType.name(), actualType);
             }
             return jwtClaimsSet.getClaims();
         } catch (JOSEException e) {

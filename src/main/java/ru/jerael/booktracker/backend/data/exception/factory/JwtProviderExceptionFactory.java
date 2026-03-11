@@ -40,4 +40,11 @@ public class JwtProviderExceptionFactory {
             "Token issuer is invalid: " + issuer
         );
     }
+
+    public static UnauthenticatedException invalidTokenType(String expected, String actual) {
+        return new UnauthenticatedException(
+            JwtProviderErrorCode.INVALID_TOKEN_TYPE,
+            "Expected token type " + expected + " but got " + actual
+        );
+    }
 }
