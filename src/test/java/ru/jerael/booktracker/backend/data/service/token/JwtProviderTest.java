@@ -10,13 +10,17 @@ import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.data.service.token.config.JwtProperties;
 import ru.jerael.booktracker.backend.domain.exception.UnauthenticatedException;
 import ru.jerael.booktracker.backend.domain.model.auth.GeneratedToken;
+import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenType;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+import static org.assertj.core.api.Assertions.within;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JwtProviderTest {
     private final JwtProvider jwtProvider;
@@ -39,35 +43,47 @@ class JwtProviderTest {
     }
 
     @Test
-    void generateAccessToken_ShouldCreateValidSignedJwt() {
-        String token = jwtProvider.generateAccessToken(claims);
+    void generateToken_ShouldCreateValidSignedJwt() {
+        String token = jwtProvider.generateToken(claims, IdentityTokenType.ACCESS).value();
 
         assertThat(token).isNotBlank();
         assertEquals(3, token.split("\\.").length);
     }
 
     @Test
-    void generateRefreshToken_ShouldCreateValidUuidAndExpiry() {
-        GeneratedToken generatedToken = jwtProvider.generateRefreshToken();
+    void generateToken_WhenTypeIsAccess_ShouldSetAccessExpiry() {
+        Instant now = Instant.now();
+        Instant expectedExpiry = now.plus(accessExpiry);
 
-        assertThat(generatedToken.value()).isNotBlank();
-        assertNotNull(UUID.fromString(generatedToken.value()));
-        assertThat(generatedToken.expiresAt()).isAfter(Instant.now());
+        GeneratedToken generatedToken = jwtProvider.generateToken(claims, IdentityTokenType.ACCESS);
+
+        assertThat(generatedToken.expiresAt()).isCloseTo(expectedExpiry, within(1, ChronoUnit.SECONDS));
+    }
+
+    @Test
+    void generateToken_WhenTypeIsRefresh_ShouldSetRefreshExpiry() {
+        Instant now = Instant.now();
+        Instant expectedExpiry = now.plus(refreshExpiry);
+
+        GeneratedToken generatedToken = jwtProvider.generateToken(claims, IdentityTokenType.REFRESH);
+
+        assertThat(generatedToken.expiresAt()).isCloseTo(expectedExpiry, within(1, ChronoUnit.SECONDS));
     }
 
     @Test
     void extractClaims_WhenTokenIsValid_ShouldReturnCorrectClaims() {
-        String token = jwtProvider.generateAccessToken(claims);
+        GeneratedToken generatedToken = jwtProvider.generateToken(claims, IdentityTokenType.ACCESS);
 
-        Map<String, Object> result = jwtProvider.extractClaims(token);
+        Map<String, Object> result = jwtProvider.extractClaims(generatedToken.value());
 
         assertThat(result.get("sub")).isEqualTo(userId.toString());
         assertThat(result.get("iss")).isEqualTo(issuer);
+        assertThat(result.get("type")).isEqualTo(IdentityTokenType.ACCESS.name());
     }
 
     @Test
     void extractClaims_WhenSignatureIsInvalid_ShouldThrowException() {
-        String validToken = jwtProvider.generateAccessToken(claims);
+        String validToken = jwtProvider.generateToken(claims, IdentityTokenType.ACCESS).value();
         String invalidToken = validToken.substring(0, validToken.length() - 10);
 
         Throwable throwable =

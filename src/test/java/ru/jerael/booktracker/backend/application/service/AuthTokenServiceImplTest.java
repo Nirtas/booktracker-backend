@@ -9,15 +9,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.jerael.booktracker.backend.domain.hasher.PasswordHasher;
 import ru.jerael.booktracker.backend.domain.model.auth.GeneratedToken;
+import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenType;
 import ru.jerael.booktracker.backend.domain.model.auth.RefreshToken;
 import ru.jerael.booktracker.backend.domain.model.auth.TokenPair;
 import ru.jerael.booktracker.backend.domain.repository.RefreshTokenRepository;
 import ru.jerael.booktracker.backend.domain.service.token.IdentityTokenProvider;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,8 +50,10 @@ class AuthTokenServiceImplTest {
         String accessToken = "access token";
         String refreshToken = "refresh token";
         String hash = "refresh token hash";
-        when(identityTokenProvider.generateAccessToken(any())).thenReturn(accessToken);
-        when(identityTokenProvider.generateRefreshToken()).thenReturn(new GeneratedToken(refreshToken, expiresAt));
+        when(identityTokenProvider.generateToken(any(), eq(IdentityTokenType.ACCESS)))
+            .thenReturn(new GeneratedToken(accessToken, expiresAt));
+        when(identityTokenProvider.generateToken(any(), eq(IdentityTokenType.REFRESH)))
+            .thenReturn(new GeneratedToken(refreshToken, expiresAt));
         when(passwordHasher.hash(refreshToken)).thenReturn(hash);
 
         TokenPair result = service.issueTokens(userId);
@@ -56,9 +61,12 @@ class AuthTokenServiceImplTest {
         assertEquals(accessToken, result.accessToken());
         assertEquals(refreshToken, result.refreshToken());
 
-        verify(identityTokenProvider).generateAccessToken(claimsCaptor.capture());
-        Map<String, Object> capturedClaims = claimsCaptor.getValue();
-        assertEquals(userId, capturedClaims.get("sub"));
+        verify(identityTokenProvider).generateToken(claimsCaptor.capture(), eq(IdentityTokenType.ACCESS));
+        verify(identityTokenProvider).generateToken(claimsCaptor.capture(), eq(IdentityTokenType.REFRESH));
+
+        List<Map<String, Object>> capturedClaims = claimsCaptor.getAllValues();
+        assertEquals(userId, capturedClaims.get(0).get("sub"));
+        assertEquals(userId, capturedClaims.get(1).get("sub"));
 
         verify(passwordHasher).hash(refreshToken);
 
