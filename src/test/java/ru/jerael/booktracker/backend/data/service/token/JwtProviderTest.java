@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.data.service.token.config.JwtProperties;
 import ru.jerael.booktracker.backend.domain.exception.UnauthenticatedException;
 import ru.jerael.booktracker.backend.domain.model.auth.GeneratedToken;
+import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenClaims;
 import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenType;
 import java.time.Duration;
 import java.time.Instant;
@@ -26,21 +27,21 @@ class JwtProviderTest {
     private final JwtProvider jwtProvider;
 
     private final String secret = "very-very-very-very-very-long-string";
-    private final Instant issuedAt = Instant.now();
+    private final Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     private final Duration accessExpiry = Duration.ofMinutes(10L);
-    private final long accessExpiresAt = issuedAt.plus(accessExpiry).toEpochMilli();
+    private final Instant accessExpiresAt = issuedAt.plus(accessExpiry);
     private final Duration refreshExpiry = Duration.ofDays(30L);
-    private final long refreshExpiresAt = issuedAt.plus(refreshExpiry).toEpochMilli();
+    private final Instant refreshExpiresAt = issuedAt.plus(refreshExpiry);
     private final String issuer = "issuer";
 
     private final UUID userId = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final Map<String, Object> claims = Map.of("sub", userId);
-    private final Map<String, Object> claims2 = Map.of(
-        "userId", userId,
-        "issuer", issuer,
-        "type", IdentityTokenType.ACCESS,
-        "issuedAt", issuedAt.toEpochMilli(),
-        "expiresAt", accessExpiresAt
+    private final IdentityTokenClaims claims2 = new IdentityTokenClaims(
+        userId,
+        IdentityTokenType.ACCESS,
+        issuer,
+        issuedAt,
+        accessExpiresAt
     );
 
     public JwtProviderTest() {
@@ -170,13 +171,13 @@ class JwtProviderTest {
     void decode_WhenTokenIsValid_ShouldReturnCorrectClaims() {
         String token = jwtProvider.encode(claims2);
 
-        Map<String, Object> result = jwtProvider.decode(token);
+        IdentityTokenClaims result = jwtProvider.decode(token);
 
-        assertThat(result.get("userId")).isEqualTo(userId.toString());
-        assertThat(result.get("issuer")).isEqualTo(issuer);
-        assertThat(result.get("type")).isEqualTo(IdentityTokenType.ACCESS.name());
-        assertThat(result.get("issuedAt")).isEqualTo(issuedAt.toEpochMilli());
-        assertThat(result.get("expiresAt")).isEqualTo(accessExpiresAt);
+        assertThat(result.userId()).isEqualTo(userId);
+        assertThat(result.issuer()).isEqualTo(issuer);
+        assertThat(result.type()).isEqualTo(IdentityTokenType.ACCESS);
+        assertThat(result.issuedAt()).isEqualTo(issuedAt);
+        assertThat(result.expiresAt()).isEqualTo(accessExpiresAt);
     }
 
     @Test
