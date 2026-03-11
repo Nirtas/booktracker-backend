@@ -69,6 +69,42 @@ public class JwtProvider implements IdentityTokenProvider {
         }
     }
 
+    @Override
+    public String encode(Map<String, Object> claims) {
+        try {
+            JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
+                .issuer(properties.getIssuer())
+                .issueTime(new Date());
+            claims.forEach(builder::claim);
+            JWTClaimsSet jwtClaimsSet = builder.build();
+
+            JWSSigner jwsSigner = new MACSigner(properties.getSecret());
+            SignedJWT signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), jwtClaimsSet);
+            signedJWT.sign(jwsSigner);
+            return signedJWT.serialize();
+        } catch (Exception e) {
+            throw JwtProviderExceptionFactory.signingFailed(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Map<String, Object> decode(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWSVerifier jwsVerifier = new MACVerifier(properties.getSecret());
+            if (!signedJWT.verify(jwsVerifier)) {
+                throw JwtProviderExceptionFactory.invalidSignature();
+            }
+            return signedJWT.getJWTClaimsSet().getClaims();
+        } catch (JOSEException e) {
+            throw JwtProviderExceptionFactory.signingFailed(e.getMessage(), e);
+        } catch (UnauthenticatedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw JwtProviderExceptionFactory.tokenMalformed(e.getMessage());
+        }
+    }
+
     private String signJWT(JWTClaimsSet jwtClaimsSet) {
         try {
             JWSSigner jwsSigner = new MACSigner(properties.getSecret());
