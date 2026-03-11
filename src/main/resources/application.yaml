@@ -83,3 +83,4 @@ app:
     token:
       access-expiry: ${AUTH_ACCESS_TOKEN_EXPIRY:10m}
       refresh-expiry: ${AUTH_REFRESH_TOKEN_EXPIRY:30d}
+      issuer: ${AUTH_TOKEN_ISSUER}

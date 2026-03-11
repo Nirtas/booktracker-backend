@@ -11,4 +11,5 @@ import java.time.Duration;
 public class AuthTokenProperties {
     private Duration accessExpiry = Duration.ofMinutes(10);
     private Duration refreshExpiry = Duration.ofDays(30);
+    private String issuer;
 }
