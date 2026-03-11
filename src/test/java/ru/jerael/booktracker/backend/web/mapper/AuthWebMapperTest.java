@@ -2,11 +2,13 @@ package ru.jerael.booktracker.backend.web.mapper;
 
 import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
+import ru.jerael.booktracker.backend.domain.model.auth.RefreshTokenPayload;
 import ru.jerael.booktracker.backend.domain.model.auth.TokenPair;
 import ru.jerael.booktracker.backend.domain.model.auth.UserLogin;
 import ru.jerael.booktracker.backend.web.dto.auth.AuthResponse;
 import ru.jerael.booktracker.backend.web.dto.auth.ConfirmRegistrationRequest;
 import ru.jerael.booktracker.backend.web.dto.auth.LoginRequest;
+import ru.jerael.booktracker.backend.web.dto.auth.RefreshTokensRequest;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -48,5 +50,14 @@ class AuthWebMapperTest {
 
         assertEquals(email, domain.email());
         assertEquals(password, domain.password());
+    }
+
+    @Test
+    void toDomain_RefreshTokenPayload() {
+        RefreshTokensRequest request = new RefreshTokensRequest(refreshToken);
+
+        RefreshTokenPayload domain = authWebMapper.toDomain(request);
+
+        assertEquals(refreshToken, domain.refreshToken());
     }
 }
