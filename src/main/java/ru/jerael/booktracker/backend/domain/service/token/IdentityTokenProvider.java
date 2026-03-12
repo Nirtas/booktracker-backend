@@ -1,17 +1,9 @@
 package ru.jerael.booktracker.backend.domain.service.token;
 
-import ru.jerael.booktracker.backend.domain.model.auth.GeneratedToken;
-import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenType;
-import java.util.Map;
+import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenClaims;
 
 public interface IdentityTokenProvider {
-    @Deprecated
-    GeneratedToken generateToken(Map<String, Object> claims, IdentityTokenType tokenType);
+    String encode(IdentityTokenClaims data);
 
-    @Deprecated
-    Map<String, Object> extractClaims(String token, IdentityTokenType expectedType);
-
-    String encode(Map<String, Object> claims);
-
-    Map<String, Object> decode(String token);
+    IdentityTokenClaims decode(String token);
 }
