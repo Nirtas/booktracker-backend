@@ -1,4 +1,4 @@
-package ru.jerael.booktracker.backend.application.service.token;
+package ru.jerael.booktracker.backend.application.service.token.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

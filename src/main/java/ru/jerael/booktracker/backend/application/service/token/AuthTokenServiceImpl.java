@@ -1,9 +1,9 @@
-package ru.jerael.booktracker.backend.application.service;
+package ru.jerael.booktracker.backend.application.service.token;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.jerael.booktracker.backend.application.service.token.AuthTokenProperties;
+import ru.jerael.booktracker.backend.application.service.token.config.AuthTokenProperties;
 import ru.jerael.booktracker.backend.domain.hasher.PasswordHasher;
 import ru.jerael.booktracker.backend.domain.model.auth.*;
 import ru.jerael.booktracker.backend.domain.repository.RefreshTokenRepository;

@@ -1,4 +1,4 @@
-package ru.jerael.booktracker.backend.application.service;
+package ru.jerael.booktracker.backend.application.service.token;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,7 +7,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.jerael.booktracker.backend.application.service.token.AuthTokenProperties;
+import ru.jerael.booktracker.backend.application.service.token.config.AuthTokenProperties;
 import ru.jerael.booktracker.backend.domain.hasher.PasswordHasher;
 import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenClaims;
 import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenType;
