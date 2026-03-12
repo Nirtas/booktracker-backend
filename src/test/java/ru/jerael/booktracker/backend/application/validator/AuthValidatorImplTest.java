@@ -7,6 +7,8 @@ import ru.jerael.booktracker.backend.domain.exception.code.CommonValidationError
 import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
 import ru.jerael.booktracker.backend.domain.model.auth.LogoutPayload;
 import ru.jerael.booktracker.backend.domain.model.auth.RefreshTokenPayload;
+import ru.jerael.booktracker.backend.domain.model.auth.ResendVerification;
+import ru.jerael.booktracker.backend.domain.model.verification.VerificationType;
 import ru.jerael.booktracker.backend.domain.validator.AuthValidator;
 import ru.jerael.booktracker.backend.domain.validator.FieldValidator;
 import java.util.UUID;
@@ -101,5 +103,32 @@ class AuthValidatorImplTest {
             assertThrows(ValidationException.class, () -> authValidator.validateLogoutPayload(data));
 
         assertThat(ex.getErrors()).anyMatch(e -> e.field().equals("refreshToken"));
+    }
+
+    @Test
+    void validateResendVerification_WhenValid_ShouldNotThrowException() {
+        ResendVerification data = new ResendVerification(userId, VerificationType.REGISTRATION);
+
+        assertDoesNotThrow(() -> authValidator.validateResendVerification(data));
+    }
+
+    @Test
+    void validateResendVerification_WhenUserIdIsNull_ShouldThrowException() {
+        ResendVerification data = new ResendVerification(null, VerificationType.REGISTRATION);
+
+        ValidationException ex =
+            assertThrows(ValidationException.class, () -> authValidator.validateResendVerification(data));
+
+        assertThat(ex.getErrors()).anyMatch(e -> e.field().equals("userId"));
+    }
+
+    @Test
+    void validateResendVerification_WhenTypeIsNull_ShouldThrowException() {
+        ResendVerification data = new ResendVerification(userId, null);
+
+        ValidationException ex =
+            assertThrows(ValidationException.class, () -> authValidator.validateResendVerification(data));
+
+        assertThat(ex.getErrors()).anyMatch(e -> e.field().equals("type"));
     }
 }
