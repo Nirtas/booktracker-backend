@@ -38,4 +38,11 @@ public class IdentityTokenExceptionFactory {
             "Expected token type " + expected + " but got " + actual
         );
     }
+
+    public static UnauthenticatedException invalidToken() {
+        return new UnauthenticatedException(
+            IdentityTokenErrorCode.INVALID_TOKEN,
+            "Token is invalid, login again"
+        );
+    }
 }
