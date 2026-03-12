@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.jerael.booktracker.backend.application.service.token.config.AuthTokenProperties;
+import ru.jerael.booktracker.backend.domain.exception.UnauthenticatedException;
+import ru.jerael.booktracker.backend.domain.exception.code.IdentityTokenErrorCode;
 import ru.jerael.booktracker.backend.domain.hasher.PasswordHasher;
 import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenClaims;
 import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenType;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -46,6 +49,7 @@ class AuthTokenServiceImplTest {
     private ArgumentCaptor<IdentityTokenClaims> claimsCaptor;
 
     private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
+    private final String token = "token";
 
     @Test
     void issueTokens_ShouldSaveHashedRefreshTokenAndReturnTokenPair() {
@@ -97,5 +101,77 @@ class AuthTokenServiceImplTest {
         assertEquals(userId, savedToken.userId());
         assertEquals(hash, savedToken.tokenHash());
         assertEquals(refreshClaims.expiresAt(), savedToken.expiresAt());
+    }
+
+    @Test
+    void verifyToken_WhenTokenIsValid_ShouldReturnClaims() {
+        IdentityTokenClaims claims = new IdentityTokenClaims(
+            userId,
+            IdentityTokenType.ACCESS,
+            "issuer",
+            Instant.now().minusSeconds(100),
+            Instant.now().plusSeconds(1000)
+        );
+        when(properties.getIssuer()).thenReturn("issuer");
+        when(identityTokenProvider.decode(token)).thenReturn(claims);
+
+        IdentityTokenClaims result = service.verifyToken(token, IdentityTokenType.ACCESS);
+
+        assertEquals(claims, result);
+        assertEquals(userId, result.userId());
+    }
+
+    @Test
+    void verifyToken_WhenIssuerIsInvalid_ShouldThrowException() {
+        IdentityTokenClaims claims = new IdentityTokenClaims(
+            userId,
+            IdentityTokenType.ACCESS,
+            "wrong issuer",
+            Instant.now().minusSeconds(100),
+            Instant.now().plusSeconds(1000)
+        );
+        when(properties.getIssuer()).thenReturn("issuer");
+        when(identityTokenProvider.decode(token)).thenReturn(claims);
+
+        UnauthenticatedException exception =
+            assertThrows(UnauthenticatedException.class, () -> service.verifyToken(token, IdentityTokenType.ACCESS));
+
+        assertEquals(IdentityTokenErrorCode.INVALID_ISSUER, exception.getErrorCode());
+    }
+
+    @Test
+    void verifyToken_WhenTokenTypeIsInvalid_ShouldThrowException() {
+        IdentityTokenClaims claims = new IdentityTokenClaims(
+            userId,
+            IdentityTokenType.ACCESS,
+            "issuer",
+            Instant.now().minusSeconds(100),
+            Instant.now().plusSeconds(1000)
+        );
+        when(properties.getIssuer()).thenReturn("issuer");
+        when(identityTokenProvider.decode(token)).thenReturn(claims);
+
+        UnauthenticatedException exception =
+            assertThrows(UnauthenticatedException.class, () -> service.verifyToken(token, IdentityTokenType.REFRESH));
+
+        assertEquals(IdentityTokenErrorCode.INVALID_TOKEN_TYPE, exception.getErrorCode());
+    }
+
+    @Test
+    void verifyToken_WhenTokenIsExpired_ShouldThrowException() {
+        IdentityTokenClaims claims = new IdentityTokenClaims(
+            userId,
+            IdentityTokenType.ACCESS,
+            "issuer",
+            Instant.now().minusSeconds(1000),
+            Instant.now().minusSeconds(100)
+        );
+        when(properties.getIssuer()).thenReturn("issuer");
+        when(identityTokenProvider.decode(token)).thenReturn(claims);
+
+        UnauthenticatedException exception =
+            assertThrows(UnauthenticatedException.class, () -> service.verifyToken(token, IdentityTokenType.ACCESS));
+
+        assertEquals(IdentityTokenErrorCode.TOKEN_EXPIRED, exception.getErrorCode());
     }
 }
