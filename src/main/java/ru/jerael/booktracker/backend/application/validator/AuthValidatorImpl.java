@@ -7,6 +7,7 @@ import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.factory.CommonValidationErrorFactory;
 import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
 import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
+import ru.jerael.booktracker.backend.domain.model.auth.LogoutPayload;
 import ru.jerael.booktracker.backend.domain.model.auth.RefreshTokenPayload;
 import ru.jerael.booktracker.backend.domain.model.auth.UserLogin;
 import ru.jerael.booktracker.backend.domain.validator.AuthValidator;
@@ -61,12 +62,16 @@ public class AuthValidatorImpl implements AuthValidator {
     @Override
     public void validateRefreshTokenPayload(RefreshTokenPayload data) {
         List<ValidationError> errors = new ArrayList<>();
-        String refreshToken = data.refreshToken();
-
-        if (refreshToken == null || refreshToken.isBlank()) {
-            errors.add(CommonValidationErrorFactory.emptyField("refreshToken"));
+        errors.addAll(fieldValidator.validateRefreshToken(data.refreshToken()));
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
         }
+    }
 
+    @Override
+    public void validateLogoutPayload(LogoutPayload data) {
+        List<ValidationError> errors = new ArrayList<>();
+        errors.addAll(fieldValidator.validateRefreshToken(data.refreshToken()));
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
