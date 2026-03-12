@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.jerael.booktracker.backend.domain.model.auth.*;
 import ru.jerael.booktracker.backend.domain.model.user.UserCreation;
 import ru.jerael.booktracker.backend.domain.model.user.UserCreationResult;
-import ru.jerael.booktracker.backend.domain.usecase.auth.ConfirmRegistrationUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.auth.LoginUserUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.auth.LogoutUserUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.auth.RefreshTokensUseCase;
+import ru.jerael.booktracker.backend.domain.usecase.auth.*;
 import ru.jerael.booktracker.backend.domain.usecase.user.CreateUserUseCase;
 import ru.jerael.booktracker.backend.web.dto.auth.*;
 import ru.jerael.booktracker.backend.web.dto.user.UserCreationRequest;
@@ -32,6 +29,7 @@ public class AuthController {
     private final LoginUserUseCase loginUserUseCase;
     private final RefreshTokensUseCase refreshTokensUseCase;
     private final LogoutUserUseCase logoutUserUseCase;
+    private final ResendVerificationUseCase resendVerificationUseCase;
 
     @Operation(summary = "Register new user")
     @PostMapping("/register")
@@ -71,5 +69,13 @@ public class AuthController {
     public void logout(@Valid @RequestBody LogoutRequest request) {
         LogoutPayload data = authWebMapper.toDomain(request);
         logoutUserUseCase.execute(data);
+    }
+
+    @Operation(summary = "Resend verification code")
+    @PostMapping("/resend-code")
+    public ResendVerificationResponse resendCode(@Valid @RequestBody ResendVerificationRequest request) {
+        ResendVerification data = authWebMapper.toDomain(request);
+        ResendVerificationResult result = resendVerificationUseCase.execute(data);
+        return authWebMapper.toResponse(result);
     }
 }

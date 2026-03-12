@@ -9,16 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import ru.jerael.booktracker.backend.domain.exception.factory.UserExceptionFactory;
-import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
-import ru.jerael.booktracker.backend.domain.model.auth.RefreshTokenPayload;
-import ru.jerael.booktracker.backend.domain.model.auth.TokenPair;
-import ru.jerael.booktracker.backend.domain.model.auth.UserLogin;
+import ru.jerael.booktracker.backend.domain.model.auth.*;
 import ru.jerael.booktracker.backend.domain.model.user.UserCreation;
 import ru.jerael.booktracker.backend.domain.model.user.UserCreationResult;
-import ru.jerael.booktracker.backend.domain.usecase.auth.ConfirmRegistrationUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.auth.LoginUserUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.auth.LogoutUserUseCase;
-import ru.jerael.booktracker.backend.domain.usecase.auth.RefreshTokensUseCase;
+import ru.jerael.booktracker.backend.domain.usecase.auth.*;
 import ru.jerael.booktracker.backend.domain.usecase.user.CreateUserUseCase;
 import ru.jerael.booktracker.backend.web.config.WebProperties;
 import ru.jerael.booktracker.backend.web.dto.auth.*;
@@ -61,6 +55,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private LogoutUserUseCase logoutUserUseCase;
+
+    @MockitoBean
+    private ResendVerificationUseCase resendVerificationUseCase;
 
     private final String email = "test@example.com";
     private final String password = "Password123!";
@@ -178,5 +175,27 @@ class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(request))
         )
             .hasStatus(HttpStatus.OK);
+    }
+
+    @Test
+    void resendCode_WhenRequestIsValid_ShouldReturnResendVerificationResponse() {
+        Instant expiresAt = Instant.now().plusSeconds(600);
+        ResendVerificationRequest request = new ResendVerificationRequest(userId, "REGISTRATION");
+        ResendVerificationResult result = new ResendVerificationResult(userId, email, expiresAt);
+        when(resendVerificationUseCase.execute(any(ResendVerification.class))).thenReturn(result);
+
+        assertThat(
+            mockMvcTester.post().uri("/api/v1/auth/resend-code")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .hasStatus(HttpStatus.OK)
+            .bodyJson()
+            .convertTo(ResendVerificationResponse.class)
+            .satisfies(response -> {
+                assertEquals(userId, response.userId());
+                assertEquals(email, response.email());
+                assertEquals(expiresAt, response.expiresAt());
+            });
     }
 }

@@ -6,10 +6,7 @@ import ru.jerael.booktracker.backend.domain.constant.EmailVerificationRules;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.factory.CommonValidationErrorFactory;
 import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
-import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
-import ru.jerael.booktracker.backend.domain.model.auth.LogoutPayload;
-import ru.jerael.booktracker.backend.domain.model.auth.RefreshTokenPayload;
-import ru.jerael.booktracker.backend.domain.model.auth.UserLogin;
+import ru.jerael.booktracker.backend.domain.model.auth.*;
 import ru.jerael.booktracker.backend.domain.validator.AuthValidator;
 import ru.jerael.booktracker.backend.domain.validator.FieldValidator;
 import java.util.ArrayList;
@@ -72,6 +69,20 @@ public class AuthValidatorImpl implements AuthValidator {
     public void validateLogoutPayload(LogoutPayload data) {
         List<ValidationError> errors = new ArrayList<>();
         errors.addAll(fieldValidator.validateRefreshToken(data.refreshToken()));
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+    }
+
+    @Override
+    public void validateResendVerification(ResendVerification data) {
+        List<ValidationError> errors = new ArrayList<>();
+        if (data.userId() == null) {
+            errors.add(CommonValidationErrorFactory.emptyField("userId"));
+        }
+        if (data.type() == null) {
+            errors.add(CommonValidationErrorFactory.emptyField("type"));
+        }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }

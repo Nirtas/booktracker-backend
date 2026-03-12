@@ -19,14 +19,8 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.jerael.booktracker.backend.domain.exception.AppException;
-import ru.jerael.booktracker.backend.domain.exception.code.BookErrorCode;
-import ru.jerael.booktracker.backend.domain.exception.code.CommonErrorCode;
-import ru.jerael.booktracker.backend.domain.exception.code.IdentityTokenErrorCode;
-import ru.jerael.booktracker.backend.domain.exception.code.UserErrorCode;
-import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
-import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
-import ru.jerael.booktracker.backend.domain.exception.factory.IdentityTokenExceptionFactory;
-import ru.jerael.booktracker.backend.domain.exception.factory.UserExceptionFactory;
+import ru.jerael.booktracker.backend.domain.exception.code.*;
+import ru.jerael.booktracker.backend.domain.exception.factory.*;
 import ru.jerael.booktracker.backend.web.config.WebProperties;
 import ru.jerael.booktracker.backend.web.exception.code.WebErrorCode;
 import ru.jerael.booktracker.backend.web.exception.factory.FileWebExceptionFactory;
@@ -54,6 +48,11 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/not-found")
         void notFound() {
             throw BookExceptionFactory.bookNotFound(id);
+        }
+
+        @GetMapping("/test/too-many-requests")
+        void tooManyRequests() {
+            throw EmailVerificationExceptionFactory.tooManyRequests();
         }
 
         @GetMapping("/test/unauthenticated")
@@ -122,6 +121,16 @@ class GlobalExceptionHandlerTest {
         json.extractingPath("$.detail").isEqualTo("Book with id " + id + " was not found");
         json.extractingPath("$.title").isEqualTo("Resource not found");
         json.extractingPath("$.code").isEqualTo(BookErrorCode.BOOK_NOT_FOUND.name());
+    }
+
+    @Test
+    void handleTooManyRequestsException() {
+        var response = mockMvcTester.get().uri("/test/too-many-requests");
+        assertThat(response).hasStatus(HttpStatus.TOO_MANY_REQUESTS);
+        var json = assertThat(response).bodyJson();
+        json.extractingPath("$.detail").isEqualTo("Please wait before requesting another code");
+        json.extractingPath("$.title").isEqualTo("Rate limit exceeded");
+        json.extractingPath("$.code").isEqualTo(EmailVerificationErrorCode.TOO_MANY_REQUESTS.name());
     }
 
     @Test

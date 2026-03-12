@@ -6,14 +6,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.jerael.booktracker.backend.application.validator.VerificationTokenValidatorImpl;
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
+import ru.jerael.booktracker.backend.domain.exception.TooManyRequestsException;
 import ru.jerael.booktracker.backend.domain.mail.VerificationMailMessage;
 import ru.jerael.booktracker.backend.domain.model.verification.*;
 import ru.jerael.booktracker.backend.domain.repository.EmailVerificationRepository;
 import ru.jerael.booktracker.backend.domain.smtp.SmtpService;
+import ru.jerael.booktracker.backend.domain.validator.VerificationTokenValidator;
 import ru.jerael.booktracker.backend.domain.verification.VerificationTokenGenerator;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +36,7 @@ class EmailVerificationServiceImplTest {
     private SmtpService smtpService;
 
     @Mock
-    private VerificationTokenValidatorImpl verificationTokenValidator;
+    private VerificationTokenValidator verificationTokenValidator;
 
     @InjectMocks
     private EmailVerificationServiceImpl service;
@@ -45,15 +47,15 @@ class EmailVerificationServiceImplTest {
     private final String token = "123456";
 
     @Test
-    void initiate_ShouldCleanOldCodeAndSaveNewOne() {
+    void initiate_WhenNoExistingCode_ShouldGenerateAndSaveNewOne() {
         EmailVerificationInitiation payload = new EmailVerificationInitiation(userId, email, type);
         VerificationToken verificationToken = new VerificationToken(token, Duration.ofMinutes(10L));
+        when(emailVerificationRepository.findByUserIdAndType(userId, type)).thenReturn(Optional.empty());
         when(verificationTokenGenerator.generate()).thenReturn(verificationToken);
 
         service.initiate(payload);
 
-        verify(emailVerificationRepository).deleteByUserIdAndType(userId, type);
-        verify(smtpService).sendEmail(eq(email), any(VerificationMailMessage.class));
+        verify(verificationTokenGenerator).generate();
 
         ArgumentCaptor<EmailVerification> captor = ArgumentCaptor.forClass(EmailVerification.class);
         verify(emailVerificationRepository).save(captor.capture());
@@ -62,6 +64,54 @@ class EmailVerificationServiceImplTest {
         assertEquals(email, savedVerification.email());
         assertEquals(token, savedVerification.token());
         assertNotNull(savedVerification.expiresAt());
+
+        verify(smtpService).sendEmail(eq(email), any(VerificationMailMessage.class));
+    }
+
+    @Test
+    void initiate_WhenValidCodeExists_ShouldResendSameCodeWithoutGeneratingNewOne() {
+        EmailVerificationInitiation payload = new EmailVerificationInitiation(userId, email, type);
+        EmailVerification found = new EmailVerification(
+            UUID.randomUUID(),
+            userId,
+            email,
+            type,
+            "old token",
+            Instant.now().plus(Duration.ofMinutes(8)),
+            Instant.now().minus(Duration.ofMinutes(2))
+        );
+        when(emailVerificationRepository.findByUserIdAndType(userId, type)).thenReturn(Optional.of(found));
+
+        service.initiate(payload);
+
+        ArgumentCaptor<VerificationMailMessage> mailCaptor = ArgumentCaptor.forClass(VerificationMailMessage.class);
+        verify(smtpService).sendEmail(eq(email), mailCaptor.capture());
+        assertEquals("old token", mailCaptor.getValue().getToken().value());
+
+        verify(verificationTokenGenerator, never()).generate();
+        verify(emailVerificationRepository, never()).save(any());
+    }
+
+    @Test
+    void initiate_WhenResendingTooFast_ShouldThrowException() {
+        EmailVerificationInitiation payload = new EmailVerificationInitiation(userId, email, type);
+        EmailVerification found = new EmailVerification(
+            UUID.randomUUID(),
+            userId,
+            email,
+            type,
+            token,
+            Instant.now().plus(Duration.ofMinutes(10)),
+            Instant.now().minus(Duration.ofSeconds(30))
+        );
+        when(emailVerificationRepository.findByUserIdAndType(userId, type)).thenReturn(Optional.of(found));
+
+        assertThrows(TooManyRequestsException.class, () -> service.initiate(payload));
+
+        verify(smtpService, never()).sendEmail(any(), any());
+        verify(emailVerificationRepository, never()).deleteByUserIdAndType(any(), any());
+        verify(verificationTokenGenerator, never()).generate();
+        verify(emailVerificationRepository, never()).save(any());
     }
 
     @Test

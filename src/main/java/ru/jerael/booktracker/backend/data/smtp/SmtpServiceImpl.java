@@ -3,6 +3,7 @@ package ru.jerael.booktracker.backend.data.smtp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.jerael.booktracker.backend.data.smtp.config.SmtpProperties;
 import ru.jerael.booktracker.backend.domain.mail.MailMessage;
@@ -15,6 +16,7 @@ public class SmtpServiceImpl implements SmtpService {
     private final SmtpProperties properties;
 
     @Override
+    @Async
     public void sendEmail(String to, MailMessage message) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(to);

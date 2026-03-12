@@ -9,6 +9,10 @@ public class VerificationMailMessage implements MailMessage {
         this.token = token;
     }
 
+    public VerificationToken getToken() {
+        return token;
+    }
+
     @Override
     public String subject() {
         return "Your verification code for BookTracker";

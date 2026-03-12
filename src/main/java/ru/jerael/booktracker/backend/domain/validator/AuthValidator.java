@@ -1,9 +1,6 @@
 package ru.jerael.booktracker.backend.domain.validator;
 
-import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
-import ru.jerael.booktracker.backend.domain.model.auth.LogoutPayload;
-import ru.jerael.booktracker.backend.domain.model.auth.RefreshTokenPayload;
-import ru.jerael.booktracker.backend.domain.model.auth.UserLogin;
+import ru.jerael.booktracker.backend.domain.model.auth.*;
 
 public interface AuthValidator {
     void validateRegistrationConfirmation(ConfirmRegistration data);
@@ -13,4 +10,6 @@ public interface AuthValidator {
     void validateRefreshTokenPayload(RefreshTokenPayload data);
 
     void validateLogoutPayload(LogoutPayload data);
+
+    void validateResendVerification(ResendVerification data);
 }
