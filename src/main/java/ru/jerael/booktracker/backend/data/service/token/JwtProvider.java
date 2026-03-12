@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.jerael.booktracker.backend.data.exception.factory.JwtProviderExceptionFactory;
 import ru.jerael.booktracker.backend.data.service.token.config.JwtProperties;
 import ru.jerael.booktracker.backend.domain.exception.UnauthenticatedException;
+import ru.jerael.booktracker.backend.domain.exception.factory.IdentityTokenExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.auth.GeneratedToken;
 import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenClaims;
 import ru.jerael.booktracker.backend.domain.model.auth.IdentityTokenType;
@@ -87,7 +88,7 @@ public class JwtProvider implements IdentityTokenProvider {
             signedJWT.sign(jwsSigner);
             return signedJWT.serialize();
         } catch (NullPointerException e) {
-            throw JwtProviderExceptionFactory.tokenMalformed(e.getMessage());
+            throw IdentityTokenExceptionFactory.tokenMalformed(e.getMessage());
         } catch (Exception e) {
             throw JwtProviderExceptionFactory.signingFailed(e.getMessage(), e);
         }
@@ -99,7 +100,7 @@ public class JwtProvider implements IdentityTokenProvider {
             SignedJWT signedJWT = SignedJWT.parse(token);
             JWSVerifier jwsVerifier = new MACVerifier(properties.getSecret());
             if (!signedJWT.verify(jwsVerifier)) {
-                throw JwtProviderExceptionFactory.invalidSignature();
+                throw IdentityTokenExceptionFactory.invalidSignature();
             }
             Map<String, Object> claims = signedJWT.getJWTClaimsSet().getClaims();
             return new IdentityTokenClaims(
@@ -114,7 +115,7 @@ public class JwtProvider implements IdentityTokenProvider {
         } catch (UnauthenticatedException e) {
             throw e;
         } catch (Exception e) {
-            throw JwtProviderExceptionFactory.tokenMalformed(e.getMessage());
+            throw IdentityTokenExceptionFactory.tokenMalformed(e.getMessage());
         }
     }
 
