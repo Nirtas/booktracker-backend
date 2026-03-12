@@ -50,6 +50,14 @@ class AuthTokenServiceImplTest {
 
     private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String token = "token";
+    private final IdentityTokenClaims claims = new IdentityTokenClaims(
+        userId,
+        IdentityTokenType.REFRESH,
+        "issuer",
+        Instant.now().plusSeconds(100),
+        Instant.now().plusSeconds(1000)
+    );
+    private final UUID tokenId = UUID.fromString("b4e4e673-b851-4c0e-8626-a073941a018b");
 
     @Test
     void issueTokens_ShouldSaveHashedRefreshTokenAndReturnTokenPair() {
@@ -104,28 +112,29 @@ class AuthTokenServiceImplTest {
     }
 
     @Test
-    void verifyToken_WhenTokenIsValid_ShouldReturnClaims() {
-        IdentityTokenClaims claims = new IdentityTokenClaims(
+    void revokeToken_ShouldDeleteExistingTokenAndReturnUserId() {
+        RefreshToken refreshToken = new RefreshToken(
+            tokenId,
             userId,
-            IdentityTokenType.ACCESS,
-            "issuer",
-            Instant.now().minusSeconds(100),
+            "token hash",
             Instant.now().plusSeconds(1000)
         );
         when(properties.getIssuer()).thenReturn("issuer");
         when(identityTokenProvider.decode(token)).thenReturn(claims);
+        when(refreshTokenRepository.findAllByUserId(userId)).thenReturn(List.of(refreshToken));
+        when(passwordHasher.verify(token, "token hash")).thenReturn(true);
 
-        IdentityTokenClaims result = service.verifyToken(token, IdentityTokenType.ACCESS);
+        UUID result = service.revokeToken(token);
 
-        assertEquals(claims, result);
-        assertEquals(userId, result.userId());
+        assertEquals(userId, result);
+        verify(refreshTokenRepository).deleteById(tokenId);
     }
 
     @Test
-    void verifyToken_WhenIssuerIsInvalid_ShouldThrowException() {
+    void revokeToken_WhenIssuerIsInvalid_ShouldThrowException() {
         IdentityTokenClaims claims = new IdentityTokenClaims(
             userId,
-            IdentityTokenType.ACCESS,
+            IdentityTokenType.REFRESH,
             "wrong issuer",
             Instant.now().minusSeconds(100),
             Instant.now().plusSeconds(1000)
@@ -134,13 +143,15 @@ class AuthTokenServiceImplTest {
         when(identityTokenProvider.decode(token)).thenReturn(claims);
 
         UnauthenticatedException exception =
-            assertThrows(UnauthenticatedException.class, () -> service.verifyToken(token, IdentityTokenType.ACCESS));
+            assertThrows(UnauthenticatedException.class, () -> service.revokeToken(token));
 
-        assertEquals(IdentityTokenErrorCode.INVALID_ISSUER, exception.getErrorCode());
+        assertEquals(IdentityTokenErrorCode.INVALID_TOKEN, exception.getErrorCode());
+        verifyNoInteractions(refreshTokenRepository);
+        verifyNoInteractions(passwordHasher);
     }
 
     @Test
-    void verifyToken_WhenTokenTypeIsInvalid_ShouldThrowException() {
+    void revokeToken_WhenTokenTypeIsInvalid_ShouldThrowException() {
         IdentityTokenClaims claims = new IdentityTokenClaims(
             userId,
             IdentityTokenType.ACCESS,
@@ -152,16 +163,18 @@ class AuthTokenServiceImplTest {
         when(identityTokenProvider.decode(token)).thenReturn(claims);
 
         UnauthenticatedException exception =
-            assertThrows(UnauthenticatedException.class, () -> service.verifyToken(token, IdentityTokenType.REFRESH));
+            assertThrows(UnauthenticatedException.class, () -> service.revokeToken(token));
 
-        assertEquals(IdentityTokenErrorCode.INVALID_TOKEN_TYPE, exception.getErrorCode());
+        assertEquals(IdentityTokenErrorCode.INVALID_TOKEN, exception.getErrorCode());
+        verifyNoInteractions(refreshTokenRepository);
+        verifyNoInteractions(passwordHasher);
     }
 
     @Test
-    void verifyToken_WhenTokenIsExpired_ShouldThrowException() {
+    void revokeToken_WhenTokenIsExpired_ShouldThrowException() {
         IdentityTokenClaims claims = new IdentityTokenClaims(
             userId,
-            IdentityTokenType.ACCESS,
+            IdentityTokenType.REFRESH,
             "issuer",
             Instant.now().minusSeconds(1000),
             Instant.now().minusSeconds(100)
@@ -170,8 +183,38 @@ class AuthTokenServiceImplTest {
         when(identityTokenProvider.decode(token)).thenReturn(claims);
 
         UnauthenticatedException exception =
-            assertThrows(UnauthenticatedException.class, () -> service.verifyToken(token, IdentityTokenType.ACCESS));
+            assertThrows(UnauthenticatedException.class, () -> service.revokeToken(token));
 
-        assertEquals(IdentityTokenErrorCode.TOKEN_EXPIRED, exception.getErrorCode());
+        assertEquals(IdentityTokenErrorCode.INVALID_TOKEN, exception.getErrorCode());
+        verifyNoInteractions(refreshTokenRepository);
+        verifyNoInteractions(passwordHasher);
+    }
+
+    @Test
+    void revokeToken_WhenTokenHashMismatched_ShouldThrowException() {
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, "token hash 2", Instant.now());
+        when(properties.getIssuer()).thenReturn("issuer");
+        when(identityTokenProvider.decode(token)).thenReturn(claims);
+        when(refreshTokenRepository.findAllByUserId(userId)).thenReturn(List.of(refreshToken));
+        when(passwordHasher.verify(token, "token hash 2")).thenReturn(false);
+
+        UnauthenticatedException exception =
+            assertThrows(UnauthenticatedException.class, () -> service.revokeToken(token));
+
+        assertEquals(IdentityTokenErrorCode.INVALID_TOKEN, exception.getErrorCode());
+        verify(refreshTokenRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void revokeToken_WhenNotFoundTokensForUser_ShouldThrowUnauthenticatedException() {
+        when(properties.getIssuer()).thenReturn("issuer");
+        when(identityTokenProvider.decode(token)).thenReturn(claims);
+        when(refreshTokenRepository.findAllByUserId(userId)).thenReturn(List.of());
+
+        UnauthenticatedException exception =
+            assertThrows(UnauthenticatedException.class, () -> service.revokeToken(token));
+
+        assertEquals(IdentityTokenErrorCode.INVALID_TOKEN, exception.getErrorCode());
+        verify(refreshTokenRepository, never()).deleteById(any());
     }
 }

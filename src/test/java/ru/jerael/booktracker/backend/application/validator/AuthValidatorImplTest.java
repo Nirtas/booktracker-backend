@@ -5,6 +5,7 @@ import ru.jerael.booktracker.backend.domain.constant.EmailVerificationRules;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.code.CommonValidationErrorCode;
 import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
+import ru.jerael.booktracker.backend.domain.model.auth.LogoutPayload;
 import ru.jerael.booktracker.backend.domain.model.auth.RefreshTokenPayload;
 import ru.jerael.booktracker.backend.domain.validator.AuthValidator;
 import ru.jerael.booktracker.backend.domain.validator.FieldValidator;
@@ -81,6 +82,23 @@ class AuthValidatorImplTest {
 
         ValidationException ex =
             assertThrows(ValidationException.class, () -> authValidator.validateRefreshTokenPayload(data));
+
+        assertThat(ex.getErrors()).anyMatch(e -> e.field().equals("refreshToken"));
+    }
+
+    @Test
+    void validateLogoutPayload_WhenValid_ShouldNotThrowException() {
+        LogoutPayload data = new LogoutPayload(refreshToken);
+
+        assertDoesNotThrow(() -> authValidator.validateLogoutPayload(data));
+    }
+
+    @Test
+    void validateLogoutPayload_WhenRefreshTokenIsBlank_ShouldThrowException() {
+        LogoutPayload data = new LogoutPayload("  ");
+
+        ValidationException ex =
+            assertThrows(ValidationException.class, () -> authValidator.validateLogoutPayload(data));
 
         assertThat(ex.getErrors()).anyMatch(e -> e.field().equals("refreshToken"));
     }

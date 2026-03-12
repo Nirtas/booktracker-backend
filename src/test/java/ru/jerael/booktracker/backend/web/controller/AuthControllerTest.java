@@ -17,13 +17,11 @@ import ru.jerael.booktracker.backend.domain.model.user.UserCreation;
 import ru.jerael.booktracker.backend.domain.model.user.UserCreationResult;
 import ru.jerael.booktracker.backend.domain.usecase.auth.ConfirmRegistrationUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.auth.LoginUserUseCase;
+import ru.jerael.booktracker.backend.domain.usecase.auth.LogoutUserUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.auth.RefreshTokensUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.user.CreateUserUseCase;
 import ru.jerael.booktracker.backend.web.config.WebProperties;
-import ru.jerael.booktracker.backend.web.dto.auth.AuthResponse;
-import ru.jerael.booktracker.backend.web.dto.auth.ConfirmRegistrationRequest;
-import ru.jerael.booktracker.backend.web.dto.auth.LoginRequest;
-import ru.jerael.booktracker.backend.web.dto.auth.RefreshTokensRequest;
+import ru.jerael.booktracker.backend.web.dto.auth.*;
 import ru.jerael.booktracker.backend.web.dto.user.UserCreationRequest;
 import ru.jerael.booktracker.backend.web.dto.user.UserCreationResponse;
 import ru.jerael.booktracker.backend.web.mapper.AuthWebMapper;
@@ -60,6 +58,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private RefreshTokensUseCase refreshTokensUseCase;
+
+    @MockitoBean
+    private LogoutUserUseCase logoutUserUseCase;
 
     private final String email = "test@example.com";
     private final String password = "Password123!";
@@ -165,5 +166,17 @@ class AuthControllerTest {
                 assertEquals(accessToken, response.accessToken());
                 assertEquals(refreshToken, response.refreshToken());
             });
+    }
+
+    @Test
+    void logout() {
+        LogoutRequest request = new LogoutRequest(refreshToken);
+
+        assertThat(
+            mockMvcTester.post().uri("/api/v1/auth/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .hasStatus(HttpStatus.OK);
     }
 }

@@ -147,4 +147,24 @@ class FieldValidatorImplTest {
 
         assertNotNull(errors.get(0).params().get("forbidden"));
     }
+
+    @Test
+    void validateRefreshToken_WhenValid_ShouldReturnEmptyList() {
+        String refreshToken = "token";
+
+        List<ValidationError> errors = fieldValidator.validateRefreshToken(refreshToken);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void validateRefreshToken_WhenRefreshTokenIsBlank_ShouldReturnEmptyFieldError() {
+        String refreshToken = "  ";
+
+        List<ValidationError> errors = fieldValidator.validateRefreshToken(refreshToken);
+
+        assertThat(errors)
+            .extracting("code")
+            .contains(CommonValidationErrorCode.FIELD_CANNOT_BE_EMPTY.name());
+    }
 }
