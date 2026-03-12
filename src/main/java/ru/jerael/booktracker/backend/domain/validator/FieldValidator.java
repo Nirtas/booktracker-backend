@@ -7,4 +7,6 @@ public interface FieldValidator {
     List<ValidationError> validateEmail(String email);
 
     List<ValidationError> validatePassword(String password);
+
+    List<ValidationError> validateRefreshToken(String refreshToken);
 }

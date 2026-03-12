@@ -69,4 +69,13 @@ public class FieldValidatorImpl implements FieldValidator {
         }
         return errors;
     }
+
+    @Override
+    public List<ValidationError> validateRefreshToken(String refreshToken) {
+        List<ValidationError> errors = new ArrayList<>();
+        if (refreshToken == null || refreshToken.isBlank()) {
+            errors.add(CommonValidationErrorFactory.emptyField("refreshToken"));
+        }
+        return errors;
+    }
 }
