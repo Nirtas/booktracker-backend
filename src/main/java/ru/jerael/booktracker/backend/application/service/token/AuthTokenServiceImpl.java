@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jerael.booktracker.backend.application.service.token.config.AuthTokenProperties;
+import ru.jerael.booktracker.backend.domain.exception.UnauthenticatedException;
 import ru.jerael.booktracker.backend.domain.exception.factory.IdentityTokenExceptionFactory;
 import ru.jerael.booktracker.backend.domain.hasher.PasswordHasher;
 import ru.jerael.booktracker.backend.domain.model.auth.*;
@@ -12,6 +13,7 @@ import ru.jerael.booktracker.backend.domain.service.token.AuthTokenService;
 import ru.jerael.booktracker.backend.domain.service.token.IdentityTokenProvider;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,8 +35,26 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     }
 
     @Override
-    public IdentityTokenClaims verifyToken(String token, IdentityTokenType expectedTokenType) {
-        IdentityTokenClaims claims = identityTokenProvider.decode(token);
+    @Transactional
+    public UUID revokeToken(String token) {
+        IdentityTokenClaims claims;
+        try {
+            claims = identityTokenProvider.decode(token);
+            verifyToken(claims, IdentityTokenType.REFRESH);
+        } catch (UnauthenticatedException e) {
+            throw IdentityTokenExceptionFactory.invalidToken();
+        }
+
+        List<RefreshToken> refreshTokens = refreshTokenRepository.findAllByUserId(claims.userId());
+        RefreshToken foundRefreshToken = refreshTokens.stream()
+            .filter(refreshToken -> passwordHasher.verify(token, refreshToken.tokenHash()))
+            .findFirst()
+            .orElseThrow(IdentityTokenExceptionFactory::invalidToken);
+        refreshTokenRepository.deleteById(foundRefreshToken.id());
+        return claims.userId();
+    }
+
+    private void verifyToken(IdentityTokenClaims claims, IdentityTokenType expectedTokenType) {
         if (!properties.getIssuer().equals(claims.issuer())) {
             throw IdentityTokenExceptionFactory.invalidIssuer(claims.issuer());
         }
@@ -44,7 +64,6 @@ public class AuthTokenServiceImpl implements AuthTokenService {
         if (Instant.now().isAfter(claims.expiresAt())) {
             throw IdentityTokenExceptionFactory.tokenExpired();
         }
-        return claims;
     }
 
     private GeneratedToken createToken(UUID userId, IdentityTokenType tokenType) {
