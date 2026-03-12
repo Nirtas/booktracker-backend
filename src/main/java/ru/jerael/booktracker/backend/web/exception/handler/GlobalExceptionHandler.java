@@ -44,6 +44,16 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ProblemDetail handleTooManyRequestsException(TooManyRequestsException ex) {
+        return buildProblemDetail(
+            HttpStatus.TOO_MANY_REQUESTS,
+            ex.getMessage(),
+            "Rate limit exceeded",
+            ex.getErrorCode()
+        );
+    }
+
     @ExceptionHandler(UnauthenticatedException.class)
     public ProblemDetail handleUnauthenticatedException(UnauthenticatedException ex) {
         return buildProblemDetail(
