@@ -10,7 +10,4 @@ import java.time.Duration;
 @ConfigurationProperties(prefix = "app.jwt")
 public class JwtProperties {
     private String secret;
-    private Duration accessExpiry = Duration.ofMinutes(10);
-    private Duration refreshExpiry = Duration.ofDays(30);
-    private String issuer;
 }

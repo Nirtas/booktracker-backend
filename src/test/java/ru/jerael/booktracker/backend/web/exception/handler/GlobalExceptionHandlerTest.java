@@ -18,14 +18,14 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import ru.jerael.booktracker.backend.data.exception.code.JwtProviderErrorCode;
-import ru.jerael.booktracker.backend.data.exception.factory.JwtProviderExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.AppException;
 import ru.jerael.booktracker.backend.domain.exception.code.BookErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.code.CommonErrorCode;
+import ru.jerael.booktracker.backend.domain.exception.code.IdentityTokenErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.code.UserErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
+import ru.jerael.booktracker.backend.domain.exception.factory.IdentityTokenExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.UserExceptionFactory;
 import ru.jerael.booktracker.backend.web.config.WebProperties;
 import ru.jerael.booktracker.backend.web.exception.code.WebErrorCode;
@@ -58,7 +58,7 @@ class GlobalExceptionHandlerTest {
 
         @GetMapping("/test/unauthenticated")
         void unauthenticated() {
-            throw JwtProviderExceptionFactory.invalidSignature();
+            throw IdentityTokenExceptionFactory.invalidSignature();
         }
 
         @GetMapping("/test/already-exists")
@@ -131,7 +131,7 @@ class GlobalExceptionHandlerTest {
         var json = assertThat(response).bodyJson();
         json.extractingPath("$.detail").isEqualTo("Token signature is invalid");
         json.extractingPath("$.title").isEqualTo("Authentication failed");
-        json.extractingPath("$.code").isEqualTo(JwtProviderErrorCode.INVALID_SIGNATURE.name());
+        json.extractingPath("$.code").isEqualTo(IdentityTokenErrorCode.INVALID_SIGNATURE.name());
     }
 
     @Test
