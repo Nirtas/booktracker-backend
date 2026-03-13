@@ -39,8 +39,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     public UUID revokeToken(String token) {
         IdentityTokenClaims claims;
         try {
-            claims = identityTokenProvider.decode(token);
-            verifyToken(claims, IdentityTokenType.REFRESH);
+            claims = authenticateToken(token, IdentityTokenType.REFRESH);
         } catch (UnauthenticatedException e) {
             throw IdentityTokenExceptionFactory.invalidToken();
         }
@@ -52,6 +51,13 @@ public class AuthTokenServiceImpl implements AuthTokenService {
             .orElseThrow(IdentityTokenExceptionFactory::invalidToken);
         refreshTokenRepository.deleteById(foundRefreshToken.id());
         return claims.userId();
+    }
+
+    @Override
+    public IdentityTokenClaims authenticateToken(String token, IdentityTokenType expectedTokenType) {
+        IdentityTokenClaims claims = identityTokenProvider.decode(token);
+        verifyToken(claims, expectedTokenType);
+        return claims;
     }
 
     private void verifyToken(IdentityTokenClaims claims, IdentityTokenType expectedTokenType) {
