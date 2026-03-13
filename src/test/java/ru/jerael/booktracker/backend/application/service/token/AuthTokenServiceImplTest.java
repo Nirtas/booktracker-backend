@@ -217,4 +217,76 @@ class AuthTokenServiceImplTest {
         assertEquals(IdentityTokenErrorCode.INVALID_TOKEN, exception.getErrorCode());
         verify(refreshTokenRepository, never()).deleteById(any());
     }
+
+    @Test
+    void authenticateToken_WhenTokenIsValid_ShouldReturnClaims() {
+        IdentityTokenClaims claims = new IdentityTokenClaims(
+            userId,
+            IdentityTokenType.ACCESS,
+            "issuer",
+            Instant.now().minusSeconds(100),
+            Instant.now().plusSeconds(1000)
+        );
+        when(properties.getIssuer()).thenReturn("issuer");
+        when(identityTokenProvider.decode(token)).thenReturn(claims);
+
+        IdentityTokenClaims result = service.authenticateToken(token, IdentityTokenType.ACCESS);
+
+        assertEquals(claims, result);
+        assertEquals(userId, result.userId());
+    }
+
+    @Test
+    void authenticateToken_WhenIssuerIsInvalid_ShouldThrowInvalidIssuerError() {
+        IdentityTokenClaims claims = new IdentityTokenClaims(
+            userId,
+            IdentityTokenType.ACCESS,
+            "wrong issuer",
+            Instant.now().minusSeconds(100),
+            Instant.now().plusSeconds(1000)
+        );
+        when(properties.getIssuer()).thenReturn("issuer");
+        when(identityTokenProvider.decode(token)).thenReturn(claims);
+
+        UnauthenticatedException exception = assertThrows(UnauthenticatedException.class,
+            () -> service.authenticateToken(token, IdentityTokenType.ACCESS));
+
+        assertEquals(IdentityTokenErrorCode.INVALID_ISSUER, exception.getErrorCode());
+    }
+
+    @Test
+    void authenticateToken_WhenTokenTypeIsInvalid_ShouldThrowInvalidTokenTypeError() {
+        IdentityTokenClaims claims = new IdentityTokenClaims(
+            userId,
+            IdentityTokenType.REFRESH,
+            "issuer",
+            Instant.now().minusSeconds(100),
+            Instant.now().plusSeconds(1000)
+        );
+        when(properties.getIssuer()).thenReturn("issuer");
+        when(identityTokenProvider.decode(token)).thenReturn(claims);
+
+        UnauthenticatedException exception = assertThrows(UnauthenticatedException.class,
+            () -> service.authenticateToken(token, IdentityTokenType.ACCESS));
+
+        assertEquals(IdentityTokenErrorCode.INVALID_TOKEN_TYPE, exception.getErrorCode());
+    }
+
+    @Test
+    void authenticateToken_WhenTokenIsExpired_ShouldThrowTokenExpiredError() {
+        IdentityTokenClaims claims = new IdentityTokenClaims(
+            userId,
+            IdentityTokenType.ACCESS,
+            "issuer",
+            Instant.now().minusSeconds(1000),
+            Instant.now().minusSeconds(100)
+        );
+        when(properties.getIssuer()).thenReturn("issuer");
+        when(identityTokenProvider.decode(token)).thenReturn(claims);
+
+        UnauthenticatedException exception = assertThrows(UnauthenticatedException.class,
+            () -> service.authenticateToken(token, IdentityTokenType.ACCESS));
+
+        assertEquals(IdentityTokenErrorCode.TOKEN_EXPIRED, exception.getErrorCode());
+    }
 }
