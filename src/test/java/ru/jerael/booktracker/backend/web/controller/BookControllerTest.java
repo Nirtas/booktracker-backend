@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
@@ -15,6 +16,7 @@ import ru.jerael.booktracker.backend.domain.model.book.*;
 import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
+import ru.jerael.booktracker.backend.domain.service.token.AuthTokenService;
 import ru.jerael.booktracker.backend.domain.usecase.book.*;
 import ru.jerael.booktracker.backend.web.config.WebProperties;
 import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
@@ -24,6 +26,7 @@ import ru.jerael.booktracker.backend.web.exception.handler.GlobalExceptionHandle
 import ru.jerael.booktracker.backend.web.mapper.BookWebMapper;
 import ru.jerael.booktracker.backend.web.mapper.GenreWebMapper;
 import ru.jerael.booktracker.backend.web.mapper.UploadCoverWebMapper;
+import ru.jerael.booktracker.backend.web.security.SecurityConfig;
 import ru.jerael.booktracker.backend.web.validator.FileValidator;
 import tools.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
@@ -37,9 +40,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 
 @WebMvcTest(BookController.class)
-@Import({GlobalExceptionHandler.class, BookWebMapper.class, GenreWebMapper.class})
+@Import({GlobalExceptionHandler.class, BookWebMapper.class, GenreWebMapper.class, SecurityConfig.class})
 class BookControllerTest {
 
     @Autowired
@@ -84,12 +88,19 @@ class BookControllerTest {
     @MockitoBean
     private UploadCoverWebMapper uploadCoverWebMapper;
 
+    @MockitoBean
+    private AuthTokenService authTokenService;
+
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
-    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
     private final String author = "author";
     private final BookStatus status = BookStatus.READING;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
+
+    private UsernamePasswordAuthenticationToken getAuth() {
+        return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
+    }
 
     @Test
     void getAll_ShouldReturnListOfBookResponses() {
@@ -100,16 +111,17 @@ class BookControllerTest {
         when(getBooksUseCase.execute(any(PageQuery.class), eq(userId))).thenReturn(pageResult);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
-        var response = mockMvcTester.get().uri("/api/v1/books?page=0&size=10").exchange();
+        var mockResponse = mockMvcTester.get().uri("/api/v1/books?page=0&size=10")
+            .with(authentication(getAuth())).exchange();
 
-        assertThat(response)
+        assertThat(mockResponse)
             .hasStatus(HttpStatus.OK)
             .bodyJson()
             .extractingPath("$.content")
             .convertTo(BookResponse[].class)
             .satisfies(responses -> assertThat(responses).containsExactly(bookResponse));
 
-        assertThat(response)
+        assertThat(mockResponse)
             .bodyJson()
             .extractingPath("$.page.totalElements").isEqualTo(1);
 
@@ -121,7 +133,9 @@ class BookControllerTest {
         UUID id = UUID.fromString("31d3f5e3-7faf-4678-a3cf-4657d8875a82");
         when(getBookByIdUseCase.execute(id, userId)).thenThrow(BookExceptionFactory.bookNotFound(id));
 
-        assertThat(mockMvcTester.get().uri("/api/v1/books/" + id))
+        var mockResponse = mockMvcTester.get().uri("/api/v1/books/" + id).with(authentication(getAuth()));
+
+        assertThat(mockResponse)
             .hasStatus(HttpStatus.NOT_FOUND)
             .bodyJson()
             .extractingPath("$.detail")
@@ -132,9 +146,9 @@ class BookControllerTest {
 
     @Test
     void deleteBook_ShouldReturnNoContent() {
-        var response = mockMvcTester.delete().uri("/api/v1/books/" + id);
+        var mockResponse = mockMvcTester.delete().uri("/api/v1/books/" + id).with(authentication(getAuth()));
 
-        assertThat(response).hasStatus(HttpStatus.NO_CONTENT);
+        assertThat(mockResponse).hasStatus(HttpStatus.NO_CONTENT);
         verify(deleteBookUseCase).execute(id, userId);
     }
 
@@ -154,11 +168,12 @@ class BookControllerTest {
         when(updateBookDetailsUseCase.execute(id, userId, data)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
-        assertThat(
-            mockMvcTester.patch().uri("/api/v1/books/" + id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-        )
+        var mockResponse = mockMvcTester.patch().uri("/api/v1/books/" + id)
+            .with(authentication(getAuth()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request));
+
+        assertThat(mockResponse)
             .hasStatus(HttpStatus.OK)
             .bodyJson()
             .convertTo(BookResponse.class)
@@ -180,11 +195,12 @@ class BookControllerTest {
         when(createBookUseCase.execute(data, userId)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
-        assertThat(
-            mockMvcTester.post().uri("/api/v1/books")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-        )
+        var mockResponse = mockMvcTester.post().uri("/api/v1/books")
+            .with(authentication(getAuth()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request));
+
+        assertThat(mockResponse)
             .hasStatus(HttpStatus.CREATED)
             .bodyJson()
             .convertTo(BookResponse.class)
@@ -213,11 +229,12 @@ class BookControllerTest {
         when(uploadCoverUseCase.execute(id, userId, data)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
-        assertThat(
-            mockMvcTester.post().uri("/api/v1/books/" + id + "/cover")
-                .multipart()
-                .file(mockMultipartFile)
-        )
+        var mockResponse = mockMvcTester.post().uri("/api/v1/books/" + id + "/cover")
+            .with(authentication(getAuth()))
+            .multipart()
+            .file(mockMultipartFile);
+
+        assertThat(mockResponse)
             .hasStatus(HttpStatus.OK)
             .bodyJson()
             .convertTo(BookResponse.class)
@@ -226,9 +243,10 @@ class BookControllerTest {
 
     @Test
     void deleteCover_ShouldReturnNoContent() {
-        var response = mockMvcTester.delete().uri("/api/v1/books/" + id + "/cover");
+        var mockResponse = mockMvcTester.delete().uri("/api/v1/books/" + id + "/cover")
+            .with(authentication(getAuth()));
 
-        assertThat(response).hasStatus(HttpStatus.NO_CONTENT);
+        assertThat(mockResponse).hasStatus(HttpStatus.NO_CONTENT);
         verify(deleteCoverUseCase).execute(id, userId);
     }
 
@@ -245,7 +263,10 @@ class BookControllerTest {
         );
         when(getBookCoverUseCase.execute(id, userId)).thenReturn(imageFile);
 
-        assertThat(mockMvcTester.get().uri("/api/v1/books/" + id + "/cover"))
+        var mockResponse = mockMvcTester.get().uri("/api/v1/books/" + id + "/cover")
+            .with(authentication(getAuth()));
+
+        assertThat(mockResponse)
             .hasStatus(HttpStatus.OK)
             .hasContentType(MediaType.parseMediaType(contentType))
             .hasHeader(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + coverFileName + "\"")
