@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -105,6 +106,16 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             "Application error",
             ex.getErrorCode()
+        );
+    }
+
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public ProblemDetail handleInsufficientAuthenticationException(InsufficientAuthenticationException ex) {
+        return buildProblemDetail(
+            HttpStatus.UNAUTHORIZED,
+            ex.getMessage(),
+            "Authentication required",
+            WebErrorCode.MISSING_TOKEN
         );
     }
 

@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.util.unit.DataSize;
@@ -78,6 +79,11 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/app")
         void app() {
             throw new AppException(CommonErrorCode.VALIDATION_ERROR, "App error") {};
+        }
+
+        @GetMapping("/test/missing-token")
+        void insufficientAuthentication() {
+            throw new InsufficientAuthenticationException("Missing token");
         }
 
         @GetMapping("/test/type-mismatch/{id}")
@@ -181,6 +187,16 @@ class GlobalExceptionHandlerTest {
         json.extractingPath("$.detail").isEqualTo("App error");
         json.extractingPath("$.title").isEqualTo("Application error");
         json.extractingPath("$.code").isEqualTo(CommonErrorCode.VALIDATION_ERROR.name());
+    }
+
+    @Test
+    void handleInsufficientAuthenticationException() {
+        var response = mockMvcTester.get().uri("/test/missing-token");
+        assertThat(response).hasStatus(HttpStatus.UNAUTHORIZED);
+        var json = assertThat(response).bodyJson();
+        json.extractingPath("$.detail").isEqualTo("Missing token");
+        json.extractingPath("$.title").isEqualTo("Authentication required");
+        json.extractingPath("$.code").isEqualTo(WebErrorCode.MISSING_TOKEN.name());
     }
 
     @Test
