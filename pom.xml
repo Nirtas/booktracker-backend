@@ -47,6 +47,7 @@
         <commons-validator.version>1.10.1</commons-validator.version>
         <nimbus-jose-jwt.version>10.8</nimbus-jose-jwt.version>
         <spring-security-crypto.version>7.0.3</spring-security-crypto.version>
+        <spring-security-test.version>7.0.3</spring-security-test.version>
     </properties>
     <dependencies>
 
@@ -193,6 +194,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>${spring-security-test.version}</version>
             <scope>test</scope>
         </dependency>
 
