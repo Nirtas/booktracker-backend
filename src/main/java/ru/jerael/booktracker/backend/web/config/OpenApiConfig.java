@@ -18,7 +18,7 @@ public class OpenApiConfig {
                 new Info()
                     .title("BookTracker API")
                     .description("Backend for tracking your reading progress")
-                    .version("0.1.1")
+                    .version("0.2.0")
                     .license(new License().name("MIT license").url("https://opensource.org/licenses/MIT"))
             )
             .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))

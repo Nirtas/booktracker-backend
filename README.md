@@ -15,25 +15,28 @@
 # BookTracker
 
 Backend for tracking your reading progress, built with **Clean Architecture** principles. This server manages book data,
-genres, and secure cover storage.
+genres, users and secure cover storage.
 
 ## Tech Stack
 
 - **Framework:** Spring Boot 4 (Java 17)
+- **Security:** Spring Security, Argon2id hashing, JWT (Nimbus JOSE + JWT)
 - **Database:** PostgreSQL
 - **Migrations:** Liquibase (YAML)
 - **File Storage:** MinIO (S3 compatible)
 - **Documentation:** OpenAPI / Swagger UI
 - **Deployment:** Docker & Docker Compose
+- **SMTP** for email delivery
 
 ## Architecture
 
 The project follows **Clean Architecture** to ensure maintainability and testability:
 
-- **Web:** REST Controllers, DTOs, and Web Mappers.
-- **Application:** Orchestration of business logic through use cases.
-- **Domain:** Pure business logic, Entities and Repository interfaces.
-- **Data:** Infrastructure implementations (JPA Repositories, S3 Storage, Image Processor).
+- **Web:** REST Controllers, DTOs, Security Filters and Web Mappers.
+- **Application:** Orchestration of business logic through use cases and domain services.
+- **Domain:** Pure business logic, Entities, Repository interfaces and Validation rules.
+- **Data:** Infrastructure implementations (JPA Repositories, S3 Storage, Image Processor, Password Hasher, Identity
+  Token Provider).
 
 ## Setup & Development
 
@@ -48,7 +51,7 @@ The project follows **Clean Architecture** to ensure maintainability and testabi
    ```bash
    cp .env.example .env
    ```
-2. Fill in your credentials and properties in the `.env` file (DB, MinIO credentials).
+2. Fill in your credentials and properties in the `.env` file (DB, MinIO, Argon2, SMTP, JWT).
 
 ### Launch Options
 
@@ -72,23 +75,32 @@ docker compose -f docker-compose.prod.yml up --build -d
 
 Once the server is running and Swagger enabled in `.env` file (`ENABLE_SWAGGER_UI=true`), explore the API and test
 endpoints via Swagger UI:
-`http://localhost:8080/swagger-ui.html`
+`http://localhost:8080/swagger-ui/index.html`
 
 ### Quick API Reference
 
 All endpoints are prefixed with `/api/v1`.
 
-| Method     | Endpoint            | Description         |
-|------------|---------------------|---------------------|
+| Method     | Endpoint                     | Auth Required | Description              |
+|------------|------------------------------|---------------|--------------------------|
+| **Auth**   |
+| `POST`     | `/auth/register`             | No            | Register new user        |
+| `POST`     | `/auth/confirm-registration` | No            | Confirm registration     |
+| `POST`     | `/auth/login`                | No            | Login                    |
+| `POST`     | `/auth/refresh`              | No            | Refresh tokens           |
+| `POST`     | `/auth/logout`               | No            | Logout                   |
+| `POST`     | `/auth/resend-code`          | No            | Resend verification code |
+| **Users**  |
+| `GET`      | `/users/me`                  | **Yes**       | Get current user details |
 | **Books**  |
-| `GET`      | `/books`            | Get all books       |
-| `GET`      | `/books/{id}`       | Get book by id      |
-| `DELETE`   | `/books/{id}`       | Delete book by id   |
-| `PATCH`    | `/books/{id}`       | Update book details |
-| `POST`     | `/books`            | Create book         |
-| `POST`     | `/books/{id}/cover` | Upload book cover   |
-| `DELETE`   | `/books/{id}/cover` | Delete book cover   |
-| `GET`      | `/books/{id}/cover` | Get book cover      |
+| `GET`      | `/books`                     | **Yes**       | Get user's books         |
+| `GET`      | `/books/{id}`                | **Yes**       | Get book by id           |
+| `DELETE`   | `/books/{id}`                | **Yes**       | Delete book by id        |
+| `PATCH`    | `/books/{id}`                | **Yes**       | Update book details      |
+| `POST`     | `/books`                     | **Yes**       | Create book              |
+| `POST`     | `/books/{id}/cover`          | **Yes**       | Upload book cover        |
+| `DELETE`   | `/books/{id}/cover`          | **Yes**       | Delete book cover        |
+| `GET`      | `/books/{id}/cover`          | **Yes**       | Get book cover           |
 | **Genres** |
-| `GET`      | `/genres`           | Get all genres      |
-| `GET`      | `/genres/{id}`      | Get genre by id     |
+| `GET`      | `/genres`                    | **Yes**       | Get all genres           |
+| `GET`      | `/genres/{id}`               | **Yes**       | Get genre by id          |
