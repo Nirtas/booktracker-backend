@@ -43,7 +43,7 @@ class UploadCoverUseCaseImplTest {
     private final InputStream content = InputStream.nullInputStream();
     private final long contentSize = 0L;
 
-    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
     private final String author = "author";
     private final BookStatus status = BookStatus.WANT_TO_READ;

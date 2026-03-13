@@ -31,7 +31,7 @@ class CreateBookUseCaseImplTest {
     @InjectMocks
     private CreateBookUseCaseImpl useCase;
 
-    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e"); // TODO: REMOVE THIS
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
 
     @Test
     void execute_WhenAllGenresFound_ShouldCreateBookWithAllGenres() {
