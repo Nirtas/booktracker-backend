@@ -38,6 +38,245 @@
 - **Data:** Реализация инфраструктуры (JPA репозитории, S3 хранилище, обработчик изображений, хэшер паролей, поставщик
   токенов идентификации).
 
+## Диаграммы
+
+<details>
+<summary><b>ER-диаграмма</b></summary>
+
+```mermaid
+erDiagram
+    users ||--o{ books : владеет
+    users ||--o{ refresh_tokens : имеет
+    users ||--o{ email_verifications : инициирует
+    books ||--o{ book_genres : имеет
+    genres ||--o{ book_genres : "ассоциируется с"
+
+    users {
+        uuid user_id PK
+        varchar email
+        varchar password_hash
+        boolean is_verified
+        timestamptz created_at
+    }
+
+    books {
+        uuid book_id PK
+        uuid user_id FK
+        varchar title
+        varchar author
+        text cover_file_name
+        text status
+        timestamptz created_at
+    }
+
+    genres {
+        int genre_id PK
+        varchar genre_name
+    }
+
+    book_genres {
+        uuid book_id PK, FK
+        int genre_id PK, FK
+    }
+
+    refresh_tokens {
+        uuid id PK
+        uuid user_id FK
+        varchar token_hash
+        timestamptz expires_at
+    }
+
+    email_verifications {
+        uuid id PK
+        uuid user_id FK
+        varchar email
+        varchar verification_type
+        varchar token
+        timestamptz expires_at
+        timestamptz created_at
+    }
+```
+
+</details>
+
+<details>
+<summary><b>Сценарий 1: Регистрация пользователя (без верификации)</b></summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+    participant AC as AuthController
+    participant CUUC as CreateUserUseCase
+    participant UV as UserValidator
+    participant PH as PasswordHasher
+    participant UR as UserRepository
+    participant EVS as EmailVerificationService
+    participant EVR as EmailVerificationRepository
+    participant SS as SmtpService
+    participant VTG as VerificationTokenGenerator
+
+    C->>AC: POST /auth/register (UserCreationRequest)
+    Note over AC: Маппинг в UserCreation
+    AC->>CUUC: execute(UserCreation)
+    
+    CUUC->>UV: validateCreation(UserCreation)
+    
+    alt Валидация провалена
+        UV-->>CUUC: throw ValidationException
+        CUUC-->>AC: throw ValidationException
+        AC-->>C: 400 Bad Request
+    end
+    
+    CUUC->>UR: findByEmail(email)
+    
+    alt Пользователь найден
+        UR-->>CUUC: User
+        CUUC-->>AC: throw AlreadyExistsException
+        AC-->>C: 409 Conflict
+    end
+
+    CUUC->>PH: hash(password)
+    PH-->>CUUC: passwordHash
+    
+    Note over CUUC: Создание модели<br>User (isVerified=false)
+    
+    CUUC->>UR: save(newUser)
+    Note over UR: Сохранение в базе данных
+    UR-->>CUUC: createdUser (с новым id)
+
+    Note over CUUC: Создание модели<br>EmailVerificationInitiation<br>с типом REGISTRATION
+
+    CUUC->>EVS: initiate(EmailVerificationInitiation)
+    EVS->>EVR: findByUserIdAndType(userId, VerificationType)
+
+    alt Верификация найдена
+        EVR-->>EVS: EmailVerification
+
+        alt Прошло меньше минуты с момента создания
+            EVS-->>CUUC: throw TooManyRequests
+            CUUC-->>AC: throw TooManyRequests
+            AC-->>C: 429 Too Many Requests
+        else Код еще действителен
+            Note over EVS: Повторная отправка этого кода
+            EVS->>SS: sendEmail(email, VerificationMailMessage)
+            EVS-->>CUUC: expiresAt
+            CUUC-->>AC: UserCreationResult
+            Note over AC: Маппинг в UserCreationResponse
+            AC-->>C: UserCreationResponse
+        end
+
+        EVS->>EVR: deleteByUserIdAndType(userId, VerificationType)
+    end
+
+    EVS->>VTG: generate
+    VTG-->>EVS: VerificationToken
+    Note over EVS: Создание модели<br>EmailVerification
+    EVS->>EVR: save(emailVerification)
+    EVS->>SS: sendEmail(email, VerificationMailMessage)
+    EVS-->>CUUC: expiresAt
+
+    CUUC-->>AC: UserCreationResult
+    Note over AC: Маппинг в UserCreationResponse
+    AC-->>C: UserCreationResponse
+```
+
+</details>
+
+<details>
+<summary><b>Сценарий 2: Подтверждение почты</b></summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+    participant AC as AuthController
+    participant CRUC as ConfirmRegistrationUseCase
+    participant AV as AuthValidator
+    participant UR as UserRepository
+    participant EVS as EmailVerificationService
+    participant EVR as EmailVerificationRepository
+    participant VTV as VerificationTokenValidator
+    participant ATS as AuthTokenService
+    participant ITP as IdentityTokenProvider
+    participant PH as PasswordHasher
+    participant RTR as RefreshTokenRepository
+
+    C->>AC: POST /auth/confirm-registration (ConfirmRegistrationRequest)
+    Note over AC: Маппинг в ConfirmRegistration
+    AC->>CRUC: execute(ConfirmRegistration)
+
+    CRUC->>AV: validateRegistrationConfirmation(ConfirmRegistration)
+
+    alt Валидация провалена
+        AV-->>CRUC: throw ValidationException
+        CRUC-->>AC: throw ValidationException
+        AC-->>C: 400 Bad Request
+    end
+
+    CRUC->>UR: findById(userId)
+
+    alt Пользователь не найден
+        UR-->>CRUC: Пользователь не найден
+        CRUC-->>AC: throw NotFoundException
+        AC-->>C: 404 Not Found
+    end
+
+    alt Пользователь уже верифицирован
+        CRUC-->>AC: throw ValidationException
+        AC-->>C: 400 Bad Request
+    end
+
+    Note over CRUC: Создание модели<br>EmailVerificationConfirmation<br>с типом REGISTRATION
+
+    CRUC->>EVS: confirm(EmailVerificationConfirmation)
+    EVS->>EVR: findByUserIdAndType(userId, VerificationType)
+
+    alt Верификация не найдена
+        EVR-->>EVS: Верификация не найдена
+        EVS-->>CRUC: throw NotFoundException
+        CRUC-->>AC: throw NotFoundException
+        AC-->>C: 404 Not Found
+    end
+
+    EVS->>VTV: validate(EmailVerification, code)
+
+    alt Валидация провалена
+        VTV-->>EVS: throw ValidationException
+        EVS-->>CRUC: throw ValidationException
+        CRUC-->>AC: throw ValidationException
+        AC-->>C: 400 Bad Request
+    end
+
+    EVS->>EVR: deleteByUserIdAndType(userId, VerificationType)
+    EVS-->>CRUC: EmailVerification
+
+    Note over CRUC: Создание модели User<br>с isVerified = true
+
+    CRUC->>UR: save(verifiedUser)
+    CRUC->>ATS: issueTokens(userId)
+
+    Note over ATS: Создание модели<br>IdentityTokenClaims<br>с содержимым для access токена
+    ATS->>ITP: encode(IdentityTokenClaims)
+    ITP-->>ATS: accessToken (String)
+    
+    Note over ATS: Создание модели<br>IdentityTokenClaims<br>с содержимым для refresh токена
+    ATS->>ITP: encode(IdentityTokenClaims)
+    ITP-->>ATS: refreshToken (String)
+    
+    ATS->>PH: hash(refreshToken)
+    PH-->>ATS: tokenHash
+    Note over ATS: Создание модели RefreshToken<br>с tokenHash
+    ATS->>RTR: save(RefreshToken)
+    ATS-->>CRUC: TokenPair(accessToken, refreshToken)
+
+    CRUC-->>AC: TokenPair(accessToken, refreshToken)
+    Note over AC: Маппинг в AuthResponse
+    AC-->>C: AuthResponse(accessToken, refreshToken)
+```
+
+</details>
+
 ## Настройка и разработка
 
 ### Требования
