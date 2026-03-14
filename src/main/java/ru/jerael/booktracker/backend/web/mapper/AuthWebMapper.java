@@ -29,7 +29,7 @@ public class AuthWebMapper {
         if (request == null) return null;
 
         return new UserLogin(
-            request.email(),
+            request.email().toLowerCase(),
             request.password()
         );
     }

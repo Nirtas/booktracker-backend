@@ -24,7 +24,7 @@ public class UserWebMapper {
         if (request == null) return null;
 
         return new UserCreation(
-            request.email(),
+            request.email().toLowerCase(),
             request.password()
         );
     }
