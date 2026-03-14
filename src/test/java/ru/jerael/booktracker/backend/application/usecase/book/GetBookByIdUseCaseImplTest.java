@@ -28,6 +28,8 @@ class GetBookByIdUseCaseImplTest {
     @InjectMocks
     private GetBookByIdUseCaseImpl useCase;
 
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
+
     @Test
     void execute_WhenBookExists_ShouldReturnBook() {
         UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
@@ -39,19 +41,19 @@ class GetBookByIdUseCaseImplTest {
         Genre genre2 = new Genre(2, "adventure");
         Set<Genre> genres = Set.of(genre1, genre2);
         Book book = new Book(id, title, author, null, status, createdAt, genres);
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
 
-        Book result = useCase.execute(id);
+        Book result = useCase.execute(id, userId);
 
         assertEquals(book, result);
-        verify(bookRepository).findById(id);
+        verify(bookRepository).findByIdAndUserId(id, userId);
     }
 
     @Test
     void execute_WhenBookDoesNotExists_ShouldThrowNotFoundException() {
         UUID id = UUID.fromString("12345678-1234-1234-1234-123456789012");
-        when(bookRepository.findById(id)).thenReturn(Optional.empty());
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> useCase.execute(id));
+        assertThrows(NotFoundException.class, () -> useCase.execute(id, userId));
     }
 }

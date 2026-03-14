@@ -22,3 +22,5 @@ app:
     url-expiry: 1h
     buckets:
       covers: covers
+  smtp:
+    from: test@example.com

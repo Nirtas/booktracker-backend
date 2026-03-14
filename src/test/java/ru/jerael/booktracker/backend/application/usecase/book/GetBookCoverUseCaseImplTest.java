@@ -33,6 +33,7 @@ class GetBookCoverUseCaseImplTest {
     private GetBookCoverUseCaseImpl useCase;
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
     private final String author = "author";
     private final BookStatus status = BookStatus.READING;
@@ -49,32 +50,32 @@ class GetBookCoverUseCaseImplTest {
             content.length
         );
         Book book = new Book(id, title, author, coverFileName, status, createdAt, Collections.emptySet());
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
         when(bookCoverStorage.download(coverFileName)).thenReturn(imageFile);
 
-        ImageFile result = useCase.execute(id);
+        ImageFile result = useCase.execute(id, userId);
 
         assertEquals(imageFile, result);
-        verify(bookRepository).findById(id);
+        verify(bookRepository).findByIdAndUserId(id, userId);
         verify(bookCoverStorage).download(coverFileName);
     }
 
     @Test
     void execute_WhenBookDoesNotExists_ShouldThrowNotFoundException() {
         UUID id = UUID.fromString("12345678-1234-1234-1234-123456789012");
-        when(bookRepository.findById(id)).thenReturn(Optional.empty());
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> useCase.execute(id));
+        assertThrows(NotFoundException.class, () -> useCase.execute(id, userId));
     }
 
     @Test
     void execute_WhenCoverDoesNotExists_ShouldThrowNotFoundException() {
         Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
 
-        assertThrows(NotFoundException.class, () -> useCase.execute(id));
+        assertThrows(NotFoundException.class, () -> useCase.execute(id, userId));
 
-        verify(bookRepository).findById(id);
+        verify(bookRepository).findByIdAndUserId(id, userId);
         verify(bookCoverStorage, never()).download(any());
     }
 }

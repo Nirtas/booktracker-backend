@@ -31,6 +31,8 @@ class CreateBookUseCaseImplTest {
     @InjectMocks
     private CreateBookUseCaseImpl useCase;
 
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
+
     @Test
     void execute_WhenAllGenresFound_ShouldCreateBookWithAllGenres() {
         UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
@@ -46,7 +48,7 @@ class CreateBookUseCaseImplTest {
         Set<Genre> genres = Set.of(genre1, genre2);
 
         when(genreRepository.findAllById(genreIds)).thenReturn(genres);
-        when(bookRepository.save(any())).thenAnswer(invocationOnMock -> {
+        when(bookRepository.save(any(), eq(userId))).thenAnswer(invocationOnMock -> {
             Book book = invocationOnMock.getArgument(0);
             return new Book(
                 id,
@@ -59,7 +61,7 @@ class CreateBookUseCaseImplTest {
             );
         });
 
-        Book result = useCase.execute(data);
+        Book result = useCase.execute(data, userId);
 
         assertNotNull(result);
         assertEquals(id, result.id());
@@ -70,7 +72,7 @@ class CreateBookUseCaseImplTest {
         verify(genreRepository).findAllById(genreIds);
 
         ArgumentCaptor<Book> bookArgumentCaptor = ArgumentCaptor.forClass(Book.class);
-        verify(bookRepository).save(bookArgumentCaptor.capture());
+        verify(bookRepository).save(bookArgumentCaptor.capture(), eq(userId));
 
         Book capturedBook = bookArgumentCaptor.getValue();
         assertNull(capturedBook.id());
@@ -87,7 +89,7 @@ class CreateBookUseCaseImplTest {
         Genre genre1 = new Genre(1, "action");
         when(genreRepository.findAllById(genreIds)).thenReturn(Set.of(genre1));
 
-        assertThrows(NotFoundException.class, () -> useCase.execute(data));
-        verify(bookRepository, never()).save(any());
+        assertThrows(NotFoundException.class, () -> useCase.execute(data, userId));
+        verify(bookRepository, never()).save(any(), eq(userId));
     }
 }

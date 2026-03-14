@@ -30,6 +30,7 @@ class DeleteCoverUseCaseImplTest {
     private DeleteCoverUseCaseImpl useCase;
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
     private final String author = "author";
     private final BookStatus status = BookStatus.WANT_TO_READ;
@@ -37,9 +38,9 @@ class DeleteCoverUseCaseImplTest {
 
     @Test
     void execute_WhenBookDoesNotExists_ShouldThrowNotFoundException() {
-        when(bookRepository.findById(id)).thenReturn(Optional.empty());
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> useCase.execute(id));
+        assertThrows(NotFoundException.class, () -> useCase.execute(id, userId));
 
         verifyNoInteractions(bookCoverStorage);
     }
@@ -48,23 +49,23 @@ class DeleteCoverUseCaseImplTest {
     void execute_WhenCoverExists_ShouldDeleteFromStorageAndSaveBookWithNullCover() {
         String coverFileName = "cover.jpg";
         Book book = new Book(id, title, author, coverFileName, status, createdAt, Collections.emptySet());
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
 
-        useCase.execute(id);
+        useCase.execute(id, userId);
 
         Book updatedBook = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
         verify(bookCoverStorage).delete(coverFileName);
-        verify(bookRepository).save(updatedBook);
+        verify(bookRepository).save(updatedBook, userId);
     }
 
     @Test
     void execute_WhenCoverDoesNotExists_ShouldExitWithoutUpdate() {
         Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
 
-        useCase.execute(id);
+        useCase.execute(id, userId);
 
         verify(bookCoverStorage, never()).delete(any());
-        verify(bookRepository, never()).save(any());
+        verify(bookRepository, never()).save(any(), eq(userId));
     }
 }

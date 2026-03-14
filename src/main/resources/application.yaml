@@ -25,9 +25,22 @@ spring:
     resources:
       add-mappings: false
 
+  jackson:
+    default-property-inclusion: non_empty
+
   servlet:
     multipart:
       max-file-size: ${MAX_FILE_SIZE:10MB}
+
+  mail:
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties.mail.smtp:
+      auth: ${SMTP_ENABLE_AUTH}
+      starttls:
+        enable: ${SMTP_ENABLE_TLS}
 
 springdoc:
   api-docs:
@@ -50,3 +63,21 @@ app:
     quality: ${IMAGE_QUALITY:0.8}
     max-width: ${IMAGE_MAX_WIDTH:1080}
     max-height: ${IMAGE_MAX_HEIGHT:1080}
+  argon2:
+    salt-length: ${ARGON2_SALT_LENGTH:16}
+    hash-length: ${ARGON2_HASH_LENGTH:32}
+    parallelism: ${ARGON2_PARALLELISM:1}
+    memory: ${ARGON2_MEMORY:16384}
+    iterations: ${ARGON2_ITERATIONS:2}
+  otp:
+    length: ${OTP_CODE_LENGTH:6}
+    expiry: ${OTP_CODE_EXPIRY:10m}
+  smtp:
+    from: ${spring.mail.username}
+  jwt:
+    secret: ${JWT_SECRET}
+  auth:
+    token:
+      access-expiry: ${AUTH_ACCESS_TOKEN_EXPIRY:10m}
+      refresh-expiry: ${AUTH_REFRESH_TOKEN_EXPIRY:30d}
+      issuer: ${AUTH_TOKEN_ISSUER}

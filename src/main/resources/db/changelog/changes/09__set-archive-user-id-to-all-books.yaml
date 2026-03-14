@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 09__set-archive-user-id-to-all-books
+      author: Jerael
+      comment: set archive user id to all existing books
+      preconditions:
+        - onFail: MARK_RAN
+          columnExists:
+            tableName: books
+            columnName: user_id
+      changes:
+        - update:
+            tableName: books
+            where: user_id IS NULL
+            columns:
+              - column:
+                  name: user_id
+                  value: 2c5781ea-1bc2-4561-a83d-26106df2526e

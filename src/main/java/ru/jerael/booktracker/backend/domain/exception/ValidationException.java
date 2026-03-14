@@ -1,23 +1,27 @@
 package ru.jerael.booktracker.backend.domain.exception;
 
+import ru.jerael.booktracker.backend.domain.exception.code.CommonErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.code.ErrorCode;
+import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
+import java.util.List;
 import java.util.Map;
 
 public class ValidationException extends AppException {
-    private final String field;
-    private final Map<String, Object> params;
+    private final List<ValidationError> errors;
 
+    public ValidationException(List<ValidationError> errors) {
+        super(CommonErrorCode.VALIDATION_ERROR, "Validation failed");
+        this.errors = errors;
+    }
+
+    // TODO: remove this in next versions
+    @Deprecated(forRemoval = true)
     public ValidationException(ErrorCode errorCode, String message, String field, Map<String, Object> params) {
         super(errorCode, message);
-        this.field = field;
-        this.params = params;
+        this.errors = List.of(new ValidationError(errorCode.name(), field, message, params));
     }
 
-    public String getField() {
-        return field;
-    }
-
-    public Map<String, Object> getParams() {
-        return params;
+    public List<ValidationError> getErrors() {
+        return errors;
     }
 }

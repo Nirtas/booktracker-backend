@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10__set-user_id-not-null-in-books
+      author: Jerael
+      comment: set user_id field not null in books
+      preconditions:
+        - onFail: HALT
+          columnExists:
+            tableName: books
+            columnName: user_id
+      changes:
+        - addNotNullConstraint:
+            tableName: books
+            columnName: user_id
+            columnDataType: uuid

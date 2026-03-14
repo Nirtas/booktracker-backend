@@ -18,10 +18,11 @@ public class DeleteBookUseCaseImpl implements DeleteBookUseCase {
 
     @Override
     @Transactional
-    public void execute(UUID id) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> BookExceptionFactory.bookNotFound(id));
+    public void execute(UUID id, UUID userId) {
+        Book book =
+            bookRepository.findByIdAndUserId(id, userId).orElseThrow(() -> BookExceptionFactory.bookNotFound(id));
         String coverFileName = book.coverFileName();
-        bookRepository.deleteById(id);
+        bookRepository.deleteByIdAndUserId(id, userId);
         if (coverFileName != null) {
             bookCoverStorage.delete(coverFileName);
         }

@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.util.unit.DataSize;
@@ -18,14 +19,12 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import ru.jerael.booktracker.backend.domain.exception.AppException;
+import ru.jerael.booktracker.backend.domain.exception.code.*;
+import ru.jerael.booktracker.backend.domain.exception.factory.*;
 import ru.jerael.booktracker.backend.web.config.WebProperties;
 import ru.jerael.booktracker.backend.web.exception.code.WebErrorCode;
 import ru.jerael.booktracker.backend.web.exception.factory.FileWebExceptionFactory;
-import ru.jerael.booktracker.backend.domain.exception.AppException;
-import ru.jerael.booktracker.backend.domain.exception.code.BookErrorCode;
-import ru.jerael.booktracker.backend.domain.exception.code.CommonErrorCode;
-import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
-import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -52,6 +51,21 @@ class GlobalExceptionHandlerTest {
             throw BookExceptionFactory.bookNotFound(id);
         }
 
+        @GetMapping("/test/too-many-requests")
+        void tooManyRequests() {
+            throw EmailVerificationExceptionFactory.tooManyRequests();
+        }
+
+        @GetMapping("/test/unauthenticated")
+        void unauthenticated() {
+            throw IdentityTokenExceptionFactory.invalidSignature();
+        }
+
+        @GetMapping("/test/already-exists")
+        void alreadyExists() {
+            throw UserExceptionFactory.emailAlreadyExists("test@example.com");
+        }
+
         @GetMapping("/test/validation")
         void validation() {
             throw FileValidationExceptionFactory.emptyFileName("cover");
@@ -65,6 +79,11 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/app")
         void app() {
             throw new AppException(CommonErrorCode.VALIDATION_ERROR, "App error") {};
+        }
+
+        @GetMapping("/test/missing-token")
+        void insufficientAuthentication() {
+            throw new InsufficientAuthenticationException("Missing token");
         }
 
         @GetMapping("/test/type-mismatch/{id}")
@@ -111,6 +130,36 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void handleTooManyRequestsException() {
+        var response = mockMvcTester.get().uri("/test/too-many-requests");
+        assertThat(response).hasStatus(HttpStatus.TOO_MANY_REQUESTS);
+        var json = assertThat(response).bodyJson();
+        json.extractingPath("$.detail").isEqualTo("Please wait before requesting another code");
+        json.extractingPath("$.title").isEqualTo("Rate limit exceeded");
+        json.extractingPath("$.code").isEqualTo(EmailVerificationErrorCode.TOO_MANY_REQUESTS.name());
+    }
+
+    @Test
+    void handleUnauthenticatedException() {
+        var response = mockMvcTester.get().uri("/test/unauthenticated");
+        assertThat(response).hasStatus(HttpStatus.UNAUTHORIZED);
+        var json = assertThat(response).bodyJson();
+        json.extractingPath("$.detail").isEqualTo("Token signature is invalid");
+        json.extractingPath("$.title").isEqualTo("Authentication failed");
+        json.extractingPath("$.code").isEqualTo(IdentityTokenErrorCode.INVALID_SIGNATURE.name());
+    }
+
+    @Test
+    void handleAlreadyExistsException() {
+        var response = mockMvcTester.get().uri("/test/already-exists");
+        assertThat(response).hasStatus(HttpStatus.CONFLICT);
+        var json = assertThat(response).bodyJson();
+        json.extractingPath("$.detail").isEqualTo("User with email test@example.com already exists");
+        json.extractingPath("$.title").isEqualTo("Already exists");
+        json.extractingPath("$.code").isEqualTo(UserErrorCode.EMAIL_ALREADY_EXISTS.name());
+    }
+
+    @Test
     void handleValidationException() {
         var response = mockMvcTester.get().uri("/test/validation");
         assertThat(response).hasStatus(HttpStatus.BAD_REQUEST);
@@ -138,6 +187,16 @@ class GlobalExceptionHandlerTest {
         json.extractingPath("$.detail").isEqualTo("App error");
         json.extractingPath("$.title").isEqualTo("Application error");
         json.extractingPath("$.code").isEqualTo(CommonErrorCode.VALIDATION_ERROR.name());
+    }
+
+    @Test
+    void handleInsufficientAuthenticationException() {
+        var response = mockMvcTester.get().uri("/test/missing-token");
+        assertThat(response).hasStatus(HttpStatus.UNAUTHORIZED);
+        var json = assertThat(response).bodyJson();
+        json.extractingPath("$.detail").isEqualTo("Missing token");
+        json.extractingPath("$.title").isEqualTo("Authentication required");
+        json.extractingPath("$.code").isEqualTo(WebErrorCode.MISSING_TOKEN.name());
     }
 
     @Test

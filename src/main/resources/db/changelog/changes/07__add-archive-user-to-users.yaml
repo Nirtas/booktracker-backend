@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 07__add-archive-user-to-users-table
+      author: Jerael
+      comment: add archive user to users table
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            sqlCheck:
+              expectedResult: 1
+              sql: SELECT COUNT(*) FROM users WHERE user_id = '2c5781ea-1bc2-4561-a83d-26106df2526e'
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: user_id
+                  value: 2c5781ea-1bc2-4561-a83d-26106df2526e
+              - column:
+                  name: email
+                  value: archive@example.com
+              - column:
+                  name: password_hash
+                  value: $argon2id$v=19$m=16,t=2,p=1$S2ZKYVBOdEt4OFJlODl1VQ$RWSvEp4uX/dyy4viKCnJLJBMPQGgydKkB8OOd+ZiTrc
+              - column:
+                  name: is_verified
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueDate: now()

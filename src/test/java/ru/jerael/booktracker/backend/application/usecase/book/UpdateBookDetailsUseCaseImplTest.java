@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +38,7 @@ class UpdateBookDetailsUseCaseImplTest {
     private UpdateBookDetailsUseCaseImpl useCase;
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
     private final String author = "author";
     private final BookStatus status = BookStatus.WANT_TO_READ;
@@ -47,10 +49,10 @@ class UpdateBookDetailsUseCaseImplTest {
     void execute_WhenGenreNotFound_ShouldThrowException() {
         Set<Integer> genreIds = Set.of(1, 5555);
         BookDetailsUpdate data = new BookDetailsUpdate(null, null, null, genreIds);
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
         when(genreRepository.findAllById(genreIds)).thenReturn(Set.of(new Genre(1, "action")));
 
-        String message = assertThrows(NotFoundException.class, () -> useCase.execute(id, data)).getMessage();
+        String message = assertThrows(NotFoundException.class, () -> useCase.execute(id, userId, data)).getMessage();
 
         assertThat(message).contains("5555");
     }
@@ -59,16 +61,16 @@ class UpdateBookDetailsUseCaseImplTest {
     void execute_ShouldUpdateOnlyProvidedFields() {
         Genre genre = new Genre(1, "action");
         BookDetailsUpdate data = new BookDetailsUpdate(" new title ", null, null, Set.of(1));
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
         when(genreRepository.findAllById(Set.of(1))).thenReturn(Set.of(genre));
-        when(bookRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+        when(bookRepository.save(any(), eq(userId))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
-        Book updatedBook = useCase.execute(id, data);
+        Book updatedBook = useCase.execute(id, userId, data);
 
         assertEquals("new title", updatedBook.title());
         assertEquals(author, updatedBook.author());
         assertEquals(status, updatedBook.status());
         assertThat(updatedBook.genres()).containsExactly(genre);
-        verify(bookRepository).save(any());
+        verify(bookRepository).save(any(), eq(userId));
     }
 }

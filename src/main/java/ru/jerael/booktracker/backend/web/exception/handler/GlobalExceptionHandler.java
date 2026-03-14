@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,18 +18,14 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import ru.jerael.booktracker.backend.web.config.WebProperties;
-import ru.jerael.booktracker.backend.web.exception.code.WebErrorCode;
-import ru.jerael.booktracker.backend.web.exception.model.FieldErrorDetail;
-import ru.jerael.booktracker.backend.web.exception.util.WebErrorUtils;
-import ru.jerael.booktracker.backend.domain.exception.AppException;
-import ru.jerael.booktracker.backend.domain.exception.InternalException;
-import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
-import ru.jerael.booktracker.backend.domain.exception.ValidationException;
+import ru.jerael.booktracker.backend.domain.exception.*;
 import ru.jerael.booktracker.backend.domain.exception.code.CommonErrorCode;
 import ru.jerael.booktracker.backend.domain.exception.code.ErrorCode;
+import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
+import ru.jerael.booktracker.backend.web.config.WebProperties;
+import ru.jerael.booktracker.backend.web.exception.code.WebErrorCode;
+import ru.jerael.booktracker.backend.web.exception.util.WebErrorUtils;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +45,36 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ProblemDetail handleTooManyRequestsException(TooManyRequestsException ex) {
+        return buildProblemDetail(
+            HttpStatus.TOO_MANY_REQUESTS,
+            ex.getMessage(),
+            "Rate limit exceeded",
+            ex.getErrorCode()
+        );
+    }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ProblemDetail handleUnauthenticatedException(UnauthenticatedException ex) {
+        return buildProblemDetail(
+            HttpStatus.UNAUTHORIZED,
+            ex.getMessage(),
+            "Authentication failed",
+            ex.getErrorCode()
+        );
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ProblemDetail handleAlreadyExistsException(AlreadyExistsException ex) {
+        return buildProblemDetail(
+            HttpStatus.CONFLICT,
+            ex.getMessage(),
+            "Already exists",
+            ex.getErrorCode()
+        );
+    }
+
     @ExceptionHandler(ValidationException.class)
     public ProblemDetail handleValidationException(ValidationException ex) {
         ProblemDetail problemDetail = buildProblemDetail(
@@ -56,19 +83,7 @@ public class GlobalExceptionHandler {
             "Validation failed",
             CommonErrorCode.VALIDATION_ERROR
         );
-
-        Map<String, Object> params = new HashMap<>();
-        if (ex.getParams() != null && !ex.getParams().isEmpty()) {
-            params = ex.getParams();
-        }
-        FieldErrorDetail detail = new FieldErrorDetail(
-            ex.getField(),
-            ex.getErrorCode().name(),
-            ex.getMessage(),
-            params
-        );
-        problemDetail.setProperty("errors", List.of(detail));
-
+        problemDetail.setProperty("errors", ex.getErrors());
         return problemDetail;
     }
 
@@ -91,6 +106,16 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             "Application error",
             ex.getErrorCode()
+        );
+    }
+
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public ProblemDetail handleInsufficientAuthenticationException(InsufficientAuthenticationException ex) {
+        return buildProblemDetail(
+            HttpStatus.UNAUTHORIZED,
+            ex.getMessage(),
+            "Authentication required",
+            WebErrorCode.MISSING_TOKEN
         );
     }
 
@@ -161,15 +186,15 @@ public class GlobalExceptionHandler {
             CommonErrorCode.VALIDATION_ERROR
         );
 
-        List<FieldErrorDetail> errors = new ArrayList<>();
+        List<ValidationError> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            FieldErrorDetail detail = new FieldErrorDetail(
-                error.getField(),
+            ValidationError validationError = new ValidationError(
                 WebErrorUtils.toSnakeCase(error.getCode()),
+                error.getField(),
                 error.getDefaultMessage(),
                 WebErrorUtils.extractParams(error)
             );
-            errors.add(detail);
+            errors.add(validationError);
         }
         problemDetail.setProperty("errors", errors);
 

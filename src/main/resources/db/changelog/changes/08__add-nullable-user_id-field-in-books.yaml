@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 08__add-nullable-user_id-field-in-books-table
+      author: Jerael
+      comment: add nullable user_id field in books table
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            columnExists:
+              tableName: books
+              columnName: user_id
+      changes:
+        - addColumn:
+            tableName: books
+            columns:
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseTableName: books
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: user_id
+            constraintName: fk_books_user_id
+            onDelete: CASCADE
