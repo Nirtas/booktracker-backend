@@ -51,3 +51,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/25__add-unknown-publisher-to-publishers.yaml
   - include:
       file: classpath:/db/changelog/changes/26__migrate-authors.yaml
+  - include:
+      file: classpath:/db/changelog/changes/27__link-books-to-authors.yaml

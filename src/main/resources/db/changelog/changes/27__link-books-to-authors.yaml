@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 27__link-books-to-authors
+      author: Jerael
+      comment: link books to authors
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO book_authors (book_id, author_id)
+              SELECT b.id, a.id
+              FROM books AS b
+              JOIN authors a ON b.author = a.full_name;
