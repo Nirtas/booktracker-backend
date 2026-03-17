@@ -39,3 +39,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/19__notes-schema.yaml
   - include:
       file: classpath:/db/changelog/changes/20__reading_attempts-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/21__reading_sessions-schema.yaml
