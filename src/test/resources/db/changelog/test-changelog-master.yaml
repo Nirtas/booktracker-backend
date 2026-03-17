@@ -21,3 +21,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/11__email_verifications-schema.yaml
   - include:
       file: classpath:/db/changelog/changes/12__refresh_tokens-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/13__rename-book_id-field-and-update-fk.yaml

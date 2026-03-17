@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 13__rename-book_id-to-id-and-update-fk
+      author: Jerael
+      comment: rename book_id to id in books table and update foreign key in book_genres table
+      changes:
+        - renameColumn:
+            tableName: books
+            oldColumnName: book_id
+            newColumnName: id
+        - dropForeignKeyConstraint:
+            baseTableName: book_genres
+            constraintName: fk_book_genres_book_id
+        - addForeignKeyConstraint:
+            baseTableName: book_genres
+            baseColumnNames: book_id
+            referencedTableName: books
+            referencedColumnNames: id
+            constraintName: fk_book_genres_book_id
+            onDelete: CASCADE
