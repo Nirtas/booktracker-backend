@@ -55,3 +55,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/27__link-books-to-authors.yaml
   - include:
       file: classpath:/db/changelog/changes/28__add-attempts-for-books-to-reading_attempts.yaml
+  - include:
+      file: classpath:/db/changelog/changes/29__fill-publisher_id-and-language_code-in-books.yaml
