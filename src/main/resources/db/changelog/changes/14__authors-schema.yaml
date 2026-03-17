@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 14__create-authors-table
+      author: Jerael
+      comment: create authors table
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: authors
+      changes:
+        - createTable:
+            tableName: authors
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_authors_full_name
+        - addPrimaryKey:
+            tableName: authors
+            columnNames: id
+            constraintName: pk_authors
