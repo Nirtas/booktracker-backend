@@ -10,4 +10,5 @@ public class Tables {
     public final String USERS = "users";
     public final String EMAIL_VERIFICATIONS = "email_verifications";
     public final String REFRESH_TOKENS = "refresh_tokens";
+    public final String AUTHORS = "authors";
 }
