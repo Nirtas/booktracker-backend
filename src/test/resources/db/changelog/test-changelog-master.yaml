@@ -31,3 +31,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/16__publishers-schema.yaml
   - include:
       file: classpath:/db/changelog/changes/17__languages-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/19__notes-schema.yaml
