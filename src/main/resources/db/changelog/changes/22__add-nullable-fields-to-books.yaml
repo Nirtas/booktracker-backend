@@ -1,0 +1,82 @@
+databaseChangeLog:
+  - changeSet:
+      id: 22__add-nullable-fields-to-books-table
+      author: Jerael
+      comment: add nullable fields to books table
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            columnExists:
+              tableName: books
+              columnName: description
+      changes:
+        - addColumn:
+            tableName: books
+            columns:
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: true
+              - column:
+                  name: publisher_id
+                  type: uuid
+                  constraints:
+                    nullable: true
+              - column:
+                  name: language_code
+                  type: varchar(2)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: published_on
+                  type: date
+                  constraints:
+                    nullable: true
+              - column:
+                  name: total_pages
+                  type: integer
+                  constraints:
+                    nullable: true
+              - column:
+                  name: isbn_10
+                  type: varchar(10)
+                  constraints:
+                    nullable: true
+                    unique: true
+                    uniqueConstraintName: uq_books_isbn_10
+              - column:
+                  name: isbn_13
+                  type: varchar(13)
+                  constraints:
+                    nullable: true
+                    unique: true
+                    uniqueConstraintName: uq_books_isbn_13
+        - addForeignKeyConstraint:
+            baseTableName: books
+            baseColumnNames: publisher_id
+            referencedTableName: publishers
+            referencedColumnNames: id
+            constraintName: fk_books_publisher_id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: books
+            baseColumnNames: language_code
+            referencedTableName: languages
+            referencedColumnNames: code
+            constraintName: fk_books_language_code
+            onDelete: CASCADE
+        - createIndex:
+            indexName: idx_books_publisher_id
+            using: btree
+            tableName: books
+            columns:
+              - column:
+                  name: publisher_id
+        - createIndex:
+            indexName: idx_books_language_code
+            using: btree
+            tableName: books
+            columns:
+              - column:
+                  name: language_code
