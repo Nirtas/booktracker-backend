@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 26__migrate-authors
+      author: Jerael
+      comment: migrate authors
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO authors (id, full_name)
+              SELECT gen_random_uuid(), author
+              FROM books
+              WHERE author <> '';

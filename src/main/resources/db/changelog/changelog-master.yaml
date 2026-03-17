@@ -49,3 +49,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/24__set-finished_at-nullable-in-reading_sessions.yaml
   - include:
       file: classpath:/db/changelog/changes/25__add-unknown-publisher-to-publishers.yaml
+  - include:
+      file: classpath:/db/changelog/changes/26__migrate-authors.yaml
