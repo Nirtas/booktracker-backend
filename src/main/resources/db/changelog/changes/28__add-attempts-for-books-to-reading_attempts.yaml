@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 28__add-attempts-for-books-to-reading_attempts
+      author: Jerael
+      comment: add attempts for books to reading_attempts
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO reading_attempts (id, book_id, status, started_at)
+              SELECT gen_random_uuid(), id, status, created_at
+              FROM books;
