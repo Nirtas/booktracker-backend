@@ -14,4 +14,5 @@ public class Tables {
     public final String PUBLISHERS = "publishers";
     public final String LANGUAGES = "languages";
     public final String NOTES = "notes";
+    public final String READING_ATTEMPTS = "reading_attempts";
 }
