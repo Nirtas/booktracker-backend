@@ -43,3 +43,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/23__set-finished_at-nullable-in-reading_attempts.yaml
   - include:
       file: classpath:/db/changelog/changes/24__set-finished_at-nullable-in-reading_sessions.yaml
+  - include:
+      file: classpath:/db/changelog/changes/30__drop-unique-constraint-for-isbn.yaml

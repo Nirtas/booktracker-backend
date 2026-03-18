@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 30__drop-unique-constraint-for-isbn-in-books
+      author: Jerael
+      comment: drop unique constraints for isbn in books
+      changes:
+        - dropUniqueConstraint:
+            tableName: books
+            constraintName: uq_books_isbn_10
+        - dropUniqueConstraint:
+            tableName: books
+            constraintName: uq_books_isbn_13
