@@ -13,10 +13,7 @@ import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,7 +40,25 @@ class UpdateBookDetailsUseCaseImplTest {
     private final String author = "author";
     private final BookStatus status = BookStatus.WANT_TO_READ;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
-    Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
+    private final Book book = new Book(
+        id,
+        title,
+        author,
+        null,
+        status,
+        createdAt,
+        Collections.emptySet(),
+        Set.of(),
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        List.of(),
+        List.of()
+    );
 
     @Test
     void execute_WhenGenreNotFound_ShouldThrowException() {

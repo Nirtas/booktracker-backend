@@ -12,6 +12,7 @@ import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
                 .collect(Collectors.toSet());
             throw GenreExceptionFactory.genresNotFound(missingIds);
         }
+        // TODO: provide real data when BookCreation will be updated
         Book newBook = new Book(
             null,
             data.title(),
@@ -40,7 +42,17 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
             null,
             data.status() != null ? data.status() : BookStatus.WANT_TO_READ,
             Instant.now(),
-            genres
+            genres,
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
         );
         return bookRepository.save(newBook, userId);
     }

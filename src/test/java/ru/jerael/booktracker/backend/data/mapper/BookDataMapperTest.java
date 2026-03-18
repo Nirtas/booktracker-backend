@@ -9,6 +9,7 @@ import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -16,7 +17,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BookDataMapperTest {
     private final GenreDataMapper genreDataMapper = new GenreDataMapper();
-    private final BookDataMapper bookDataMapper = new BookDataMapper(genreDataMapper);
+    private final AuthorDataMapper authorDataMapper = new AuthorDataMapper();
+    private final PublisherDataMapper publisherDataMapper = new PublisherDataMapper();
+    private final LanguageDataMapper languageDataMapper = new LanguageDataMapper();
+    private final ReadingSessionDataMapper readingSessionDataMapper = new ReadingSessionDataMapper();
+    private final ReadingAttemptDataMapper readingAttemptDataMapper =
+        new ReadingAttemptDataMapper(readingSessionDataMapper);
+    private final NoteDataMapper noteDataMapper = new NoteDataMapper();
+    private final BookDataMapper bookDataMapper = new BookDataMapper(
+        genreDataMapper, authorDataMapper, publisherDataMapper,
+        languageDataMapper, readingAttemptDataMapper, noteDataMapper
+    );
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final String title = "title";
@@ -27,7 +38,25 @@ class BookDataMapperTest {
     private final Genre genre1 = new Genre(1, "action");
     private final Genre genre2 = new Genre(2, "adventure");
     private final Set<Genre> genres = Set.of(genre1, genre2);
-    private final Book book = new Book(id, title, author, coverFileName, status, createdAt, genres);
+    private final Book book = new Book(
+        id,
+        title,
+        author,
+        coverFileName,
+        status,
+        createdAt,
+        genres,
+        Set.of(),
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        List.of(),
+        List.of()
+    );
 
     @Test
     void entity_toDomain() {

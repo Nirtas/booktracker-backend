@@ -8,8 +8,7 @@ import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository;
-import ru.jerael.booktracker.backend.data.mapper.BookDataMapper;
-import ru.jerael.booktracker.backend.data.mapper.GenreDataMapper;
+import ru.jerael.booktracker.backend.data.mapper.*;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
@@ -23,7 +22,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({BookRepositoryImpl.class, GenreRepositoryImpl.class, GenreDataMapper.class, BookDataMapper.class})
+@Import({
+    BookRepositoryImpl.class,
+    GenreRepositoryImpl.class,
+    GenreDataMapper.class,
+    AuthorDataMapper.class,
+    PublisherDataMapper.class,
+    LanguageDataMapper.class,
+    ReadingSessionDataMapper.class,
+    ReadingAttemptDataMapper.class,
+    NoteDataMapper.class,
+    BookDataMapper.class
+})
 class BookRepositoryImplTest {
 
     @Autowired
@@ -122,7 +132,17 @@ class BookRepositoryImplTest {
             null,
             BookStatus.WANT_TO_READ,
             Instant.now(),
-            genres
+            genres,
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
         );
 
         Book createdBook = bookRepository.save(book, userId);
@@ -146,7 +166,6 @@ class BookRepositoryImplTest {
 
         BookEntity savedBook = jpaBookRepository.save(bookEntity);
         UUID id = savedBook.getId();
-
         Book book = new Book(
             id,
             "new title",
@@ -154,7 +173,17 @@ class BookRepositoryImplTest {
             "new_cover.jpg",
             savedBook.getStatus(),
             savedBook.getCreatedAt(),
-            Collections.emptySet()
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
         );
 
         Book updatedBook = bookRepository.save(book, userId);
@@ -188,7 +217,17 @@ class BookRepositoryImplTest {
             null,
             BookStatus.WANT_TO_READ,
             Instant.now(),
-            genres
+            genres,
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
         );
 
         Book createdBook = bookRepository.save(book, userId);

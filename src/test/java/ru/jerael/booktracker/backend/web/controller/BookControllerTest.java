@@ -104,7 +104,25 @@ class BookControllerTest {
 
     @Test
     void getAll_ShouldReturnListOfBookResponses() {
-        Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
+        Book book = new Book(
+            id,
+            title,
+            author,
+            null,
+            status,
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         BookResponse bookResponse =
             new BookResponse(id, title, author, null, status.getValue(), createdAt, Collections.emptySet());
         PageResult<Book> pageResult = new PageResult<>(List.of(book), 10, 0, 1, 1);
@@ -161,7 +179,25 @@ class BookControllerTest {
             null
         );
         BookDetailsUpdate data = new BookDetailsUpdate("new title", null, BookStatus.READING, null);
-        Book book = new Book(id, "new title", author, null, BookStatus.READING, createdAt, Collections.emptySet());
+        Book book = new Book(
+            id,
+            "new title",
+            author,
+            null,
+            BookStatus.READING,
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         BookResponse bookResponse =
             new BookResponse(id, "new title", author, null, "reading", createdAt, Collections.emptySet());
         when(bookWebMapper.toDomain(request)).thenReturn(data);
@@ -188,7 +224,25 @@ class BookControllerTest {
     void create_ShouldCreateBook() {
         BookCreationRequest request = new BookCreationRequest(title, author, status.getValue(), Set.of(1, 2));
         BookCreation data = new BookCreation(title, author, null, Set.of(1, 2));
-        Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
+        Book book = new Book(
+            id,
+            title,
+            author,
+            null,
+            status,
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         BookResponse bookResponse =
             new BookResponse(id, title, author, null, status.getValue(), createdAt, Collections.emptySet());
         when(bookWebMapper.toDomain(request)).thenReturn(data);
@@ -222,7 +276,25 @@ class BookControllerTest {
             "content".getBytes()
         );
         UploadCover data = new UploadCover(MediaType.IMAGE_JPEG_VALUE, null, 0L);
-        Book book = new Book(id, title, author, coverFileName, status, createdAt, null);
+        Book book = new Book(
+            id,
+            title,
+            author,
+            coverFileName,
+            status,
+            createdAt,
+            null,
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         BookResponse bookResponse =
             new BookResponse(id, title, author, coverFileName, status.getValue(), createdAt, null);
         when(uploadCoverWebMapper.toDomain(mockMultipartFile)).thenReturn(data);

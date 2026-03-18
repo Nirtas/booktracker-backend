@@ -11,6 +11,7 @@ import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -40,7 +41,25 @@ class GetBookByIdUseCaseImplTest {
         Genre genre1 = new Genre(1, "action");
         Genre genre2 = new Genre(2, "adventure");
         Set<Genre> genres = Set.of(genre1, genre2);
-        Book book = new Book(id, title, author, null, status, createdAt, genres);
+        Book book = new Book(
+            id,
+            title,
+            author,
+            null,
+            status,
+            createdAt,
+            genres,
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
 
         Book result = useCase.execute(id, userId);

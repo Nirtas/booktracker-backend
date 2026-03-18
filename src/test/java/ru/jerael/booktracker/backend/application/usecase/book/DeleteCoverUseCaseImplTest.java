@@ -11,9 +11,7 @@ import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -48,19 +46,73 @@ class DeleteCoverUseCaseImplTest {
     @Test
     void execute_WhenCoverExists_ShouldDeleteFromStorageAndSaveBookWithNullCover() {
         String coverFileName = "cover.jpg";
-        Book book = new Book(id, title, author, coverFileName, status, createdAt, Collections.emptySet());
+        Book book = new Book(
+            id,
+            title,
+            author,
+            coverFileName,
+            status,
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
 
         useCase.execute(id, userId);
 
-        Book updatedBook = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
+        Book updatedBook = new Book(
+            id,
+            title,
+            author,
+            null,
+            status,
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         verify(bookCoverStorage).delete(coverFileName);
         verify(bookRepository).save(updatedBook, userId);
     }
 
     @Test
     void execute_WhenCoverDoesNotExists_ShouldExitWithoutUpdate() {
-        Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
+        Book book = new Book(
+            id,
+            title,
+            author,
+            null,
+            status,
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
 
         useCase.execute(id, userId);

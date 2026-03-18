@@ -30,7 +30,17 @@ public class DeleteCoverUseCaseImpl implements DeleteCoverUseCase {
             null,
             book.status(),
             book.createdAt(),
-            book.genres()
+            book.genres(),
+            book.authors(),
+            book.description(),
+            book.publisher(),
+            book.language(),
+            book.publishedOn(),
+            book.totalPages(),
+            book.isbn10(),
+            book.isbn13(),
+            book.attempts(),
+            book.notes()
         );
         bookRepository.save(updatedBook, userId);
         bookCoverStorage.delete(book.coverFileName());

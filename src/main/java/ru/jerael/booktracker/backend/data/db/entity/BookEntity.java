@@ -72,7 +72,7 @@ public class BookEntity {
     private LocalDate publishedOn;
 
     @Column(name = "total_pages")
-    private int totalPages;
+    private Integer totalPages;
 
     @Column(name = "isbn_10", length = 10)
     private String isbn10;

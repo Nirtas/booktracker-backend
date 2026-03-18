@@ -33,7 +33,25 @@ class BookWebMapperTest {
     private final Genre genre1 = new Genre(1, "action");
     private final Genre genre2 = new Genre(2, "adventure");
     private final Set<Genre> genres = Set.of(genre1, genre2);
-    private final Book book = new Book(id, title, author, coverFileName, status, createdAt, genres);
+    private final Book book = new Book(
+        id,
+        title,
+        author,
+        coverFileName,
+        status,
+        createdAt,
+        genres,
+        Set.of(),
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        List.of(),
+        List.of()
+    );
 
     @Test
     void toResponse() {
@@ -54,7 +72,25 @@ class BookWebMapperTest {
     @Test
     void toResponses() {
         UUID id2 = UUID.fromString("31d3f5e3-7faf-4678-a3cf-4657d8875a82");
-        Book book2 = new Book(id2, "asd", author, coverFileName, status, createdAt, genres);
+        Book book2 = new Book(
+            id2,
+            "asd",
+            author,
+            coverFileName,
+            status,
+            createdAt,
+            genres,
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         List<Book> books = List.of(book, book2);
         when(linkBuilder.buildCoverUrl(id)).thenReturn("url1");
         when(linkBuilder.buildCoverUrl(id2)).thenReturn("url2");
