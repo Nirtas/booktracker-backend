@@ -23,3 +23,37 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/11__email_verifications-schema.yaml
   - include:
       file: classpath:/db/changelog/changes/12__refresh_tokens-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/13__rename-book_id-field-and-update-fk.yaml
+  - include:
+      file: classpath:/db/changelog/changes/14__authors-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/15__book_authors-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/16__publishers-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/17__languages-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/18__languages-data.yaml
+  - include:
+      file: classpath:/db/changelog/changes/19__notes-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/20__reading_attempts-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/21__reading_sessions-schema.yaml
+  - include:
+      file: classpath:/db/changelog/changes/22__add-nullable-fields-to-books.yaml
+  - include:
+      file: classpath:/db/changelog/changes/23__set-finished_at-nullable-in-reading_attempts.yaml
+  - include:
+      file: classpath:/db/changelog/changes/24__set-finished_at-nullable-in-reading_sessions.yaml
+  - include:
+      file: classpath:/db/changelog/changes/25__add-unknown-publisher-to-publishers.yaml
+  - include:
+      file: classpath:/db/changelog/changes/26__migrate-authors.yaml
+  - include:
+      file: classpath:/db/changelog/changes/27__link-books-to-authors.yaml
+  - include:
+      file: classpath:/db/changelog/changes/28__add-attempts-for-books-to-reading_attempts.yaml
+  - include:
+      file: classpath:/db/changelog/changes/29__fill-publisher_id-and-language_code-in-books.yaml

@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 23__set-finished_at-nullable-in-reading_attempts
+      author: Jerael
+      comment: set finished_at nullable in reading_attempts
+      preconditions:
+        - onFail: HALT
+          columnExists:
+            tableName: reading_attempts
+            columnName: finished_at
+      changes:
+        - dropNotNullConstraint:
+            tableName: reading_attempts
+            columnName: finished_at
+            columnDataType: timestamp with time zone

@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 15__create-book_authors-table
+      author: Jerael
+      comment: create book_authors table
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: book_authors
+      changes:
+        - createTable:
+            tableName: book_authors
+            columns:
+              - column:
+                  name: book_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: author_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: book_authors
+            columnNames: book_id, author_id
+            constraintName: pk_book_authors
+        - addForeignKeyConstraint:
+            baseTableName: book_authors
+            baseColumnNames: book_id
+            referencedTableName: books
+            referencedColumnNames: id
+            constraintName: fk_book_authors_book_id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: book_authors
+            baseColumnNames: author_id
+            referencedTableName: authors
+            referencedColumnNames: id
+            constraintName: fk_book_authors_author_id
+            onDelete: CASCADE

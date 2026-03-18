@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 18__load-languages-data
+      author: Jerael
+      comment: insert seed data into languages table
+      preconditions:
+        - onFail: MARK_RAN
+          tableIsEmpty:
+            tableName: languages
+      changes:
+        - loadData:
+            tableName: languages
+            file: ../data/languages.csv
+            relativeToChangelogFile: true
+            columns:
+              - column:
+                  header: code
+                  name: code
+                  type: STRING
+              - column:
+                  header: name
+                  name: name
+                  type: STRING

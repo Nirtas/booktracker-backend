@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20__create-reading_attempts-table
+      author: Jerael
+      comment: create reading_attempts table
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: reading_attempts
+      changes:
+        - createTable:
+            tableName: reading_attempts
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: book_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: started_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: finished_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: reading_attempts
+            columnNames: id
+            constraintName: pk_reading_attempts
+        - addForeignKeyConstraint:
+            baseTableName: reading_attempts
+            baseColumnNames: book_id
+            referencedTableName: books
+            referencedColumnNames: id
+            constraintName: fk_reading_attempts_book_id
+            onDelete: CASCADE
+        - createIndex:
+            indexName: idx_reading_attempts_book_id
+            using: btree
+            tableName: reading_attempts
+            columns:
+              - column:
+                  name: book_id
+        - createIndex:
+            indexName: idx_reading_attempts_book_status
+            using: btree
+            tableName: reading_attempts
+            columns:
+              - column:
+                  name: book_id
+              - column:
+                  name: status

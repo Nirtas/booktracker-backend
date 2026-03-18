@@ -19,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class BookEntity {
     @Id
-    @Column(name = "book_id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 

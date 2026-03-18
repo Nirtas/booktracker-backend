@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 16__create-publishers-table
+      author: Jerael
+      comment: create publishers table
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: publishers
+      changes:
+        - createTable:
+            tableName: publishers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_publishers_name
+        - addPrimaryKey:
+            tableName: publishers
+            columnNames: id
+            constraintName: pk_publishers

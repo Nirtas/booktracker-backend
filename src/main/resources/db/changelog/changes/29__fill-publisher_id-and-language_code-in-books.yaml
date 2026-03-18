@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 29__fill-publisher_id-and-language_code-in-books
+      author: Jerael
+      comment: fill publisher_id and language_code in books
+      changes:
+        - sql:
+            sql: |
+              UPDATE books
+              SET
+                language_code = 'en',
+                publisher_id  = (
+                  SELECT id
+                  FROM publishers
+                  WHERE name = 'Unknown Publisher'
+                )
+              WHERE language_code IS NULL;
