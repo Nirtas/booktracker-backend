@@ -8,9 +8,8 @@ import ru.jerael.booktracker.backend.data.db.constant.Tables;
 import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
 
 @Entity
 @Table(name = Tables.BOOKS)
@@ -49,4 +48,51 @@ public class BookEntity {
         inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private Set<GenreEntity> genres = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = Tables.BOOK_AUTHORS,
+        joinColumns = @JoinColumn(name = "book_id"),
+        inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private Set<AuthorEntity> authors = new HashSet<>();
+
+    @Column(name = "description", length = BookRules.DESCRIPTION_MAX_LENGTH)
+    private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publisher_id")
+    private PublisherEntity publisher;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "language_code")
+    private LanguageEntity language;
+
+    @Column(name = "published_on")
+    private LocalDate publishedOn;
+
+    @Column(name = "total_pages")
+    private int totalPages;
+
+    @Column(name = "isbn_10", length = 10)
+    private String isbn10;
+
+    @Column(name = "isbn_13", length = 13)
+    private String isbn13;
+
+    @OneToMany(
+        mappedBy = "book",
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<ReadingAttemptEntity> attempts = new ArrayList<>();
+
+    @OneToMany(
+        mappedBy = "book",
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<NoteEntity> notes = new ArrayList<>();
 }
