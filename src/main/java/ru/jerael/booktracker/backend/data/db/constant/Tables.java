@@ -12,4 +12,5 @@ public class Tables {
     public final String REFRESH_TOKENS = "refresh_tokens";
     public final String AUTHORS = "authors";
     public final String PUBLISHERS = "publishers";
+    public final String LANGUAGES = "languages";
 }
