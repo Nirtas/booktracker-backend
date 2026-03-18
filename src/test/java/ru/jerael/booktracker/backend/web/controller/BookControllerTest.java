@@ -123,8 +123,26 @@ class BookControllerTest {
             List.of(),
             List.of()
         );
-        BookResponse bookResponse =
-            new BookResponse(id, title, author, null, status.getValue(), createdAt, Collections.emptySet());
+        BookResponse bookResponse = new BookResponse(
+            id,
+            title,
+            author,
+            null,
+            status.getValue(),
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
+
         PageResult<Book> pageResult = new PageResult<>(List.of(book), 10, 0, 1, 1);
         when(getBooksUseCase.execute(any(PageQuery.class), eq(userId))).thenReturn(pageResult);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
@@ -198,8 +216,25 @@ class BookControllerTest {
             List.of(),
             List.of()
         );
-        BookResponse bookResponse =
-            new BookResponse(id, "new title", author, null, "reading", createdAt, Collections.emptySet());
+        BookResponse bookResponse = new BookResponse(
+            id,
+            "new title",
+            author,
+            null,
+            "reading",
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         when(bookWebMapper.toDomain(request)).thenReturn(data);
         when(updateBookDetailsUseCase.execute(id, userId, data)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
@@ -243,8 +278,25 @@ class BookControllerTest {
             List.of(),
             List.of()
         );
-        BookResponse bookResponse =
-            new BookResponse(id, title, author, null, status.getValue(), createdAt, Collections.emptySet());
+        BookResponse bookResponse = new BookResponse(
+            id,
+            title,
+            author,
+            null,
+            status.getValue(),
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         when(bookWebMapper.toDomain(request)).thenReturn(data);
         when(createBookUseCase.execute(data, userId)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
@@ -295,8 +347,25 @@ class BookControllerTest {
             List.of(),
             List.of()
         );
-        BookResponse bookResponse =
-            new BookResponse(id, title, author, coverFileName, status.getValue(), createdAt, null);
+        BookResponse bookResponse = new BookResponse(
+            id,
+            title,
+            author,
+            coverFileName,
+            status.getValue(),
+            createdAt,
+            null,
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         when(uploadCoverWebMapper.toDomain(mockMultipartFile)).thenReturn(data);
         when(uploadCoverUseCase.execute(id, userId, data)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);

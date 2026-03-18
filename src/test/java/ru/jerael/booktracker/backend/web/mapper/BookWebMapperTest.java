@@ -21,8 +21,17 @@ import static org.mockito.Mockito.when;
 
 class BookWebMapperTest {
     private final GenreWebMapper genreWebMapper = new GenreWebMapper();
+    private final AuthorWebMapper authorWebMapper = new AuthorWebMapper();
+    private final PublisherWebMapper publisherWebMapper = new PublisherWebMapper();
+    private final LanguageWebMapper languageWebMapper = new LanguageWebMapper();
+    private final ReadingSessionWebMapper readingSessionWebMapper = new ReadingSessionWebMapper();
+    private final ReadingAttemptWebMapper readingAttemptWebMapper =
+        new ReadingAttemptWebMapper(readingSessionWebMapper);
+    private final NoteWebMapper noteWebMapper = new NoteWebMapper();
     private final LinkBuilder linkBuilder = mock(LinkBuilder.class);
-    private final BookWebMapper bookWebMapper = new BookWebMapper(genreWebMapper, linkBuilder);
+    private final BookWebMapper bookWebMapper =
+        new BookWebMapper(genreWebMapper, authorWebMapper, publisherWebMapper, languageWebMapper,
+            readingAttemptWebMapper, noteWebMapper, linkBuilder);
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final String title = "title";
