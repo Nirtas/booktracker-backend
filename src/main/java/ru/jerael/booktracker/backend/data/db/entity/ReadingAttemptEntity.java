@@ -8,6 +8,8 @@ import ru.jerael.booktracker.backend.data.db.constant.Tables;
 import ru.jerael.booktracker.backend.domain.constant.ReadingAttemptRules;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Table(name = Tables.READING_ATTEMPTS)
@@ -34,4 +36,12 @@ public class ReadingAttemptEntity {
 
     @Column(name = "finished_at")
     private Instant finishedAt;
+
+    @OneToMany(
+        mappedBy = "readingAttempt",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    private List<ReadingSessionEntity> sessions = new ArrayList<>();
 }

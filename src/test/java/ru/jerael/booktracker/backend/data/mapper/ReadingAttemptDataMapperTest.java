@@ -5,13 +5,17 @@ import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.entity.ReadingAttemptEntity;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.reading_attempt.ReadingAttempt;
+import ru.jerael.booktracker.backend.domain.model.reading_session.ReadingSession;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ReadingAttemptDataMapperTest {
-    private final ReadingAttemptDataMapper readingAttemptDataMapper = new ReadingAttemptDataMapper();
+    private final ReadingSessionDataMapper readingSessionDataMapper = new ReadingSessionDataMapper();
+    private final ReadingAttemptDataMapper readingAttemptDataMapper =
+        new ReadingAttemptDataMapper(readingSessionDataMapper);
 
     private final UUID userId = UUID.fromString("57702775-4f01-4849-97e5-8c7456e01b5b");
     private final UUID id = UUID.fromString("4f38de27-b492-4b27-96ea-32331bc82598");
@@ -19,10 +23,14 @@ class ReadingAttemptDataMapperTest {
     private final BookStatus status = BookStatus.READING;
     private final Instant startedAt = Instant.now().minusSeconds(1000);
     private final Instant finishedAt = Instant.now();
+    private final List<ReadingSession> sessions = List.of(
+        new ReadingSession(UUID.randomUUID(), id, 5, 10, startedAt, finishedAt),
+        new ReadingSession(UUID.randomUUID(), id, 15, 20, startedAt, finishedAt)
+    );
 
     @Test
     void toEntity() {
-        ReadingAttempt readingAttempt = new ReadingAttempt(id, bookId, status, startedAt, finishedAt);
+        ReadingAttempt readingAttempt = new ReadingAttempt(id, bookId, status, startedAt, finishedAt, sessions);
 
         ReadingAttemptEntity entity = readingAttemptDataMapper.toEntity(readingAttempt);
 
@@ -31,6 +39,7 @@ class ReadingAttemptDataMapperTest {
         assertEquals(status, entity.getStatus());
         assertEquals(startedAt, entity.getStartedAt());
         assertEquals(finishedAt, entity.getFinishedAt());
+        assertEquals(2, entity.getSessions().size());
     }
 
     @Test
@@ -51,6 +60,7 @@ class ReadingAttemptDataMapperTest {
         entity.setStatus(status);
         entity.setStartedAt(startedAt);
         entity.setFinishedAt(finishedAt);
+        entity.setSessions(sessions.stream().map(readingSessionDataMapper::toEntity).toList());
 
         ReadingAttempt result = readingAttemptDataMapper.toDomain(entity);
 
@@ -59,5 +69,6 @@ class ReadingAttemptDataMapperTest {
         assertEquals(status, result.status());
         assertEquals(startedAt, result.startedAt());
         assertEquals(finishedAt, result.finishedAt());
+        assertEquals(2, result.sessions().size());
     }
 }

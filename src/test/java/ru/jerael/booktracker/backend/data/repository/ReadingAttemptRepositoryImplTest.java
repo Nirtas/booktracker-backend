@@ -11,8 +11,10 @@ import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.db.repository.JpaReadingAttemptRepository;
 import ru.jerael.booktracker.backend.data.db.repository.JpaUserRepository;
 import ru.jerael.booktracker.backend.data.mapper.ReadingAttemptDataMapper;
+import ru.jerael.booktracker.backend.data.mapper.ReadingSessionDataMapper;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.reading_attempt.ReadingAttempt;
+import ru.jerael.booktracker.backend.domain.model.reading_session.ReadingSession;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-@Import({ReadingAttemptRepositoryImpl.class, ReadingAttemptDataMapper.class})
+@Import({ReadingAttemptRepositoryImpl.class, ReadingAttemptDataMapper.class, ReadingSessionDataMapper.class})
 class ReadingAttemptRepositoryImplTest {
 
     @Autowired
@@ -36,12 +38,13 @@ class ReadingAttemptRepositoryImplTest {
     @Autowired
     private JpaUserRepository jpaUserRepository;
 
-    private final UUID userId = UUID.fromString("57702775-4f01-4849-97e5-8c7456e01b5b");
-    private final UUID id = UUID.fromString("4f38de27-b492-4b27-96ea-32331bc82598");
-    private final UUID bookId = UUID.fromString("baf246c3-5f17-495f-a8be-f724dcc8d485");
     private final BookStatus status = BookStatus.READING;
     private final Instant startedAt = Instant.now().minusSeconds(1000);
     private final Instant finishedAt = Instant.now();
+    private final List<ReadingSession> sessions = List.of(
+        new ReadingSession(null, null, 5, 10, startedAt, finishedAt),
+        new ReadingSession(null, null, 15, 20, startedAt, finishedAt)
+    );
 
     @Test
     void findAllByBookId_ShouldReturnListOfReadingAttemptsOfBook() {
@@ -93,6 +96,8 @@ class ReadingAttemptRepositoryImplTest {
         assertEquals(book.getId(), result.bookId());
         assertEquals(status, result.status());
         assertNotNull(result.startedAt());
+        assertEquals(2, result.sessions().size());
+        assertNotNull(result.sessions().get(0).id());
     }
 
     @Test
@@ -147,7 +152,8 @@ class ReadingAttemptRepositoryImplTest {
             bookId,
             status,
             startedAt,
-            finishedAt
+            finishedAt,
+            sessions
         );
     }
 }
