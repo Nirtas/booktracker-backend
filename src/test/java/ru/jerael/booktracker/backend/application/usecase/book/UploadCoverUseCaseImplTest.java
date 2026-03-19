@@ -18,9 +18,7 @@ import ru.jerael.booktracker.backend.domain.service.image.ImageProcessor;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -48,7 +46,25 @@ class UploadCoverUseCaseImplTest {
     private final String author = "author";
     private final BookStatus status = BookStatus.WANT_TO_READ;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
-    private final Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
+    private final Book book = new Book(
+        id,
+        title,
+        author,
+        null,
+        status,
+        createdAt,
+        Collections.emptySet(),
+        Set.of(),
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        List.of(),
+        List.of()
+    );
 
     @Test
     void execute_WhenBookDoesNotExists_ShouldThrowNotFoundException() {
@@ -101,7 +117,25 @@ class UploadCoverUseCaseImplTest {
     void execute_WhenOldCoverExists_ShouldDeleteOldCover() {
         String oldCoverFileName = "old_cover.jpg";
         String newCoverFileName = id + ".jpg";
-        Book book = new Book(id, title, author, oldCoverFileName, status, createdAt, Collections.emptySet());
+        Book book = new Book(
+            id,
+            title,
+            author,
+            oldCoverFileName,
+            status,
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         ProcessedImage processedImage = new ProcessedImage("image/jpeg", "jpg", content, contentSize);
         UploadCover data = new UploadCover("image/jpeg", content, contentSize);
 
@@ -118,7 +152,25 @@ class UploadCoverUseCaseImplTest {
     @Test
     void execute_WhenDeleteOldCoverFails_ShouldReturnUpdatedBook() {
         String oldCoverFileName = "old_cover.jpg";
-        Book book = new Book(id, title, author, oldCoverFileName, status, createdAt, Collections.emptySet());
+        Book book = new Book(
+            id,
+            title,
+            author,
+            oldCoverFileName,
+            status,
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         ProcessedImage processedImage = new ProcessedImage("image/jpeg", "jpg", content, contentSize);
         UploadCover data = new UploadCover("image/jpeg", content, contentSize);
 

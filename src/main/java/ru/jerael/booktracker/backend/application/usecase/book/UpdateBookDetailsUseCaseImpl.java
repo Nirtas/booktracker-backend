@@ -39,6 +39,7 @@ public class UpdateBookDetailsUseCaseImpl implements UpdateBookDetailsUseCase {
             }
         }
 
+        // TODO: provide real data when BookDetailsUpdate will be updated
         Book updatedBook = new Book(
             book.id(),
             data.title() != null ? data.title().trim() : book.title(),
@@ -46,7 +47,17 @@ public class UpdateBookDetailsUseCaseImpl implements UpdateBookDetailsUseCase {
             book.coverFileName(),
             data.status() != null ? data.status() : book.status(),
             book.createdAt(),
-            updatedGenres
+            updatedGenres,
+            book.authors(),
+            book.description(),
+            book.publisher(),
+            book.language(),
+            book.publishedOn(),
+            book.totalPages(),
+            book.isbn10(),
+            book.isbn13(),
+            book.attempts(),
+            book.notes()
         );
         return bookRepository.save(updatedBook, userId);
     }

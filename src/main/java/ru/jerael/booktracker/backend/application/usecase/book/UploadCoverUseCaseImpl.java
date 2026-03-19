@@ -58,7 +58,17 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
             newCoverFileName,
             book.status(),
             book.createdAt(),
-            book.genres()
+            book.genres(),
+            book.authors(),
+            book.description(),
+            book.publisher(),
+            book.language(),
+            book.publishedOn(),
+            book.totalPages(),
+            book.isbn10(),
+            book.isbn13(),
+            book.attempts(),
+            book.notes()
         );
         Book savedBook = bookRepository.save(updatedBook, userId);
         if (oldCoverFileName != null && !oldCoverFileName.equals(newCoverFileName)) {

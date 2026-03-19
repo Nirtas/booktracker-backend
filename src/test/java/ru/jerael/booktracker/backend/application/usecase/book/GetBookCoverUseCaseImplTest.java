@@ -13,9 +13,7 @@ import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -49,7 +47,25 @@ class GetBookCoverUseCaseImplTest {
             new ByteArrayInputStream(content),
             content.length
         );
-        Book book = new Book(id, title, author, coverFileName, status, createdAt, Collections.emptySet());
+        Book book = new Book(
+            id,
+            title,
+            author,
+            coverFileName,
+            status,
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
         when(bookCoverStorage.download(coverFileName)).thenReturn(imageFile);
 
@@ -70,7 +86,25 @@ class GetBookCoverUseCaseImplTest {
 
     @Test
     void execute_WhenCoverDoesNotExists_ShouldThrowNotFoundException() {
-        Book book = new Book(id, title, author, null, status, createdAt, Collections.emptySet());
+        Book book = new Book(
+            id,
+            title,
+            author,
+            null,
+            status,
+            createdAt,
+            Collections.emptySet(),
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of()
+        );
         when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
 
         assertThrows(NotFoundException.class, () -> useCase.execute(id, userId));

@@ -11,11 +11,17 @@ import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.web.util.LinkBuilder;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class BookWebMapper {
     private final GenreWebMapper genreWebMapper;
+    private final AuthorWebMapper authorWebMapper;
+    private final PublisherWebMapper publisherWebMapper;
+    private final LanguageWebMapper languageWebMapper;
+    private final ReadingAttemptWebMapper readingAttemptWebMapper;
+    private final NoteWebMapper noteWebMapper;
     private final LinkBuilder linkBuilder;
 
     public BookResponse toResponse(Book book) {
@@ -33,7 +39,17 @@ public class BookWebMapper {
             coverUrl,
             book.status().getValue(),
             book.createdAt(),
-            genreWebMapper.toResponses(book.genres())
+            genreWebMapper.toResponses(book.genres()),
+            book.authors().stream().map(authorWebMapper::toResponse).collect(Collectors.toSet()),
+            book.description(),
+            publisherWebMapper.toResponse(book.publisher()),
+            languageWebMapper.toResponse(book.language()),
+            book.publishedOn(),
+            book.totalPages(),
+            book.isbn10(),
+            book.isbn13(),
+            book.attempts().stream().map(readingAttemptWebMapper::toResponse).toList(),
+            book.notes().stream().map(noteWebMapper::toResponse).toList()
         );
     }
 

@@ -14,6 +14,7 @@ import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,7 +58,17 @@ class CreateBookUseCaseImplTest {
                 book.coverFileName(),
                 book.status(),
                 book.createdAt(),
-                book.genres()
+                book.genres(),
+                Set.of(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                List.of(),
+                List.of()
             );
         });
 
