@@ -94,7 +94,7 @@ class BookControllerTest {
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
-    private final String author = "author";
+    private final String author = "Author Name";
     private final BookStatus status = BookStatus.READING;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
 
@@ -252,46 +252,24 @@ class BookControllerTest {
 
     @Test
     void create_ShouldCreateBook() {
-        BookCreationRequest request = new BookCreationRequest(title, author, status.getValue(), Set.of(1, 2));
-        BookCreation data = new BookCreation(title, author, null, Set.of(1, 2));
+        BookCreationRequest request = new BookCreationRequest(
+            title, status.getValue(), Set.of(1, 2), Set.of(author), null, null,
+            null, null, null, null, null
+        );
+        BookCreation data = new BookCreation(
+            userId, title, null, Set.of(1, 2), Set.of(author), null, null,
+            null, null, null, null, null
+        );
         Book book = new Book(
-            id,
-            userId,
-            title,
-            null,
-            createdAt,
-            Collections.emptySet(),
-            Set.of(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            List.of(),
-            List.of()
+            id, userId, title, null, createdAt, Set.of(), Set.of(), null, null,
+            null, null, null, null, null, List.of(), List.of()
         );
         BookResponse bookResponse = new BookResponse(
-            id,
-            title,
-            null,
-            status.getValue(),
-            createdAt,
-            Collections.emptySet(),
-            Set.of(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            List.of(),
-            List.of()
+            id, title, null, status.getValue(), createdAt, Set.of(), Set.of(), null, null,
+            null, null, null, null, null, List.of(), List.of()
         );
-        when(bookWebMapper.toDomain(request)).thenReturn(data);
-        when(createBookUseCase.execute(data, userId)).thenReturn(book);
+        when(bookWebMapper.toDomain(request, userId)).thenReturn(data);
+        when(createBookUseCase.execute(data)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
         var mockResponse = mockMvcTester.post().uri("/api/v1/books")

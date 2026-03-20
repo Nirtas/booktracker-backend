@@ -11,6 +11,7 @@ import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.web.util.LinkBuilder;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -58,14 +59,22 @@ public class BookWebMapper {
         return books.stream().map(this::toResponse).toList();
     }
 
-    public BookCreation toDomain(BookCreationRequest request) {
+    public BookCreation toDomain(BookCreationRequest request, UUID userId) {
         if (request == null) return null;
 
         return new BookCreation(
+            userId,
             request.title().trim(),
-            request.author().trim(),
             BookStatus.fromString(request.status()),
-            request.genreIds()
+            request.genreIds(),
+            request.authorNames(),
+            request.description(),
+            request.publisherName(),
+            request.languageCode(),
+            request.publishedOn(),
+            request.totalPages(),
+            request.isbn10(),
+            request.isbn13()
         );
     }
 

@@ -39,10 +39,22 @@ class CreateBookUseCaseImplTest {
         UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
 
         String title = "title";
-        String author = "author";
         BookStatus status = BookStatus.WANT_TO_READ;
         Set<Integer> genreIds = Set.of(1, 2);
-        BookCreation data = new BookCreation(title, author, status, genreIds);
+        BookCreation data = new BookCreation(
+            userId,
+            title,
+            status,
+            genreIds,
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
 
         Genre genre1 = new Genre(1, "action");
         Genre genre2 = new Genre(2, "adventure");
@@ -71,7 +83,7 @@ class CreateBookUseCaseImplTest {
             );
         });
 
-        Book result = useCase.execute(data, userId);
+        Book result = useCase.execute(data);
 
         assertNotNull(result);
         assertEquals(id, result.id());
@@ -92,14 +104,26 @@ class CreateBookUseCaseImplTest {
     @Test
     void execute_WhenOneOrMoreGenresNotFound_ShouldThrowNotFoundException() {
         String title = "title";
-        String author = "author";
         Set<Integer> genreIds = Set.of(1, 2);
-        BookCreation data = new BookCreation(title, author, null, genreIds);
+        BookCreation data = new BookCreation(
+            userId,
+            title,
+            null,
+            genreIds,
+            Set.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
 
         Genre genre1 = new Genre(1, "action");
         when(genreRepository.findAllById(genreIds)).thenReturn(Set.of(genre1));
 
-        assertThrows(NotFoundException.class, () -> useCase.execute(data, userId));
+        assertThrows(NotFoundException.class, () -> useCase.execute(data));
         verify(bookRepository, never()).save(any(), eq(userId));
     }
 }

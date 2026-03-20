@@ -113,13 +113,14 @@ class BookWebMapperTest {
 
     @Test
     void toDomain_BookCreation() {
-        BookCreationRequest request =
-            new BookCreationRequest(" title ", " author ", "reading", Set.of(1, 2));
+        BookCreationRequest request = new BookCreationRequest(
+            " title ", "reading", Set.of(1, 2), Set.of(), null, null,
+            null, null, null, null, null
+        );
 
-        BookCreation data = bookWebMapper.toDomain(request);
+        BookCreation data = bookWebMapper.toDomain(request, userId);
 
         assertEquals(request.title().trim(), data.title());
-        assertEquals(request.author().trim(), data.author());
         assertEquals(BookStatus.fromString(request.status()), data.status());
         assertTrue(data.genreIds().containsAll(request.genreIds()));
     }
