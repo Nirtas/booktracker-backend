@@ -2,6 +2,7 @@ package ru.jerael.booktracker.backend.data.mapper;
 
 import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.data.db.entity.EmailVerificationEntity;
+import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.domain.model.verification.EmailVerification;
 import ru.jerael.booktracker.backend.domain.model.verification.VerificationType;
 import java.time.Instant;
@@ -23,7 +24,11 @@ class EmailVerificationDataMapperTest {
     void toDomain() {
         EmailVerificationEntity entity = new EmailVerificationEntity();
         entity.setId(id);
-        entity.setUserId(userId);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        entity.setUser(userEntity);
+
         entity.setEmail(email);
         entity.setType(type);
         entity.setToken(token);
@@ -49,7 +54,7 @@ class EmailVerificationDataMapperTest {
         EmailVerificationEntity entity = emailVerificationDataMapper.toEntity(emailVerification);
 
         assertEquals(id, entity.getId());
-        assertEquals(userId, entity.getUserId());
+        assertEquals(userId, entity.getUser().getId());
         assertEquals(email, entity.getEmail());
         assertEquals(type, entity.getType());
         assertEquals(token, entity.getToken());
