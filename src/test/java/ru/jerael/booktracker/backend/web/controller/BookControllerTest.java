@@ -189,12 +189,13 @@ class BookControllerTest {
     @Test
     void updateDetails_ShouldReturnUpdatedBook() {
         BookDetailsUpdateRequest request = new BookDetailsUpdateRequest(
-            "new title",
-            null,
-            "want_to_read",
-            null
+            "new title", "want_to_read", null, Set.of(), null, null,
+            null, null, null, null, null
         );
-        BookDetailsUpdate data = new BookDetailsUpdate("new title", null, BookStatus.WANT_TO_READ, null);
+        BookDetailsUpdate data = new BookDetailsUpdate(
+            id, userId, "new title", BookStatus.WANT_TO_READ, null, Set.of(), null,
+            null, null, null, null, null, null
+        );
         Book book = new Book(
             id,
             userId,
@@ -231,7 +232,7 @@ class BookControllerTest {
             List.of(),
             List.of()
         );
-        when(bookWebMapper.toDomain(request)).thenReturn(data);
+        when(bookWebMapper.toDomain(request, id, userId)).thenReturn(data);
         when(updateBookDetailsUseCase.execute(id, userId, data)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 

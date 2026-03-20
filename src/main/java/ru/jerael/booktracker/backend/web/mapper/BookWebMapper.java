@@ -78,14 +78,23 @@ public class BookWebMapper {
         );
     }
 
-    public BookDetailsUpdate toDomain(BookDetailsUpdateRequest request) {
+    public BookDetailsUpdate toDomain(BookDetailsUpdateRequest request, UUID bookId, UUID userId) {
         if (request == null) return null;
 
         return new BookDetailsUpdate(
+            bookId,
+            userId,
             request.title(),
-            request.author(),
             BookStatus.fromString(request.status()),
-            request.genreIds()
+            request.genreIds(),
+            request.authorNames(),
+            request.description(),
+            request.publisherName(),
+            request.languageCode(),
+            request.publishedOn(),
+            request.totalPages(),
+            request.isbn10(),
+            request.isbn13()
         );
     }
 }
