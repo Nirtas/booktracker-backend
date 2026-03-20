@@ -83,7 +83,7 @@ class CreateBookUseCaseImplTest {
             );
         });
 
-        Book result = useCase.execute(data, userId);
+        Book result = useCase.execute(data);
 
         assertNotNull(result);
         assertEquals(id, result.id());
@@ -123,7 +123,7 @@ class CreateBookUseCaseImplTest {
         Genre genre1 = new Genre(1, "action");
         when(genreRepository.findAllById(genreIds)).thenReturn(Set.of(genre1));
 
-        assertThrows(NotFoundException.class, () -> useCase.execute(data, userId));
+        assertThrows(NotFoundException.class, () -> useCase.execute(data));
         verify(bookRepository, never()).save(any(), eq(userId));
     }
 }

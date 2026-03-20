@@ -269,7 +269,7 @@ class BookControllerTest {
             null, null, null, null, null, List.of(), List.of()
         );
         when(bookWebMapper.toDomain(request, userId)).thenReturn(data);
-        when(createBookUseCase.execute(data, userId)).thenReturn(book);
+        when(createBookUseCase.execute(data)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
         var mockResponse = mockMvcTester.post().uri("/api/v1/books")

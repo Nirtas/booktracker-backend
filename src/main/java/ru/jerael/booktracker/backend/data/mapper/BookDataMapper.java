@@ -3,6 +3,8 @@ package ru.jerael.booktracker.backend.data.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
+import ru.jerael.booktracker.backend.data.db.entity.NoteEntity;
+import ru.jerael.booktracker.backend.data.db.entity.ReadingAttemptEntity;
 import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import java.util.Collections;
@@ -70,10 +72,29 @@ public class BookDataMapper {
         entity.setTotalPages(book.totalPages());
         entity.setIsbn10(book.isbn10());
         entity.setIsbn13(book.isbn13());
-        entity.setAttempts(book.attempts() == null ? List.of() :
-            book.attempts().stream().map(readingAttemptDataMapper::toEntity).toList());
-        entity.setNotes(book.notes() == null ? List.of() :
-            book.notes().stream().map(noteDataMapper::toEntity).toList());
+
+        entity.setAttempts(
+            book.attempts() == null ? List.of() :
+                book.attempts().stream()
+                    .map(readingAttempt -> {
+                        ReadingAttemptEntity attemptEntity = readingAttemptDataMapper.toEntity(readingAttempt);
+                        attemptEntity.setBook(entity);
+                        return attemptEntity;
+                    })
+                    .toList()
+        );
+
+        entity.setNotes(
+            book.notes() == null ? List.of() :
+                book.notes().stream()
+                    .map(note -> {
+                        NoteEntity noteEntity = noteDataMapper.toEntity(note);
+                        noteEntity.setBook(entity);
+                        return noteEntity;
+                    })
+                    .toList()
+        );
+
         return entity;
     }
 }
