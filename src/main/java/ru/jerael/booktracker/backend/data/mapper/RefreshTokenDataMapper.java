@@ -2,6 +2,7 @@ package ru.jerael.booktracker.backend.data.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.data.db.entity.RefreshTokenEntity;
+import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.domain.model.auth.RefreshToken;
 
 @Component
@@ -11,7 +12,11 @@ public class RefreshTokenDataMapper {
 
         RefreshTokenEntity entity = new RefreshTokenEntity();
         entity.setId(refreshToken.id());
-        entity.setUserId(refreshToken.userId());
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(refreshToken.userId());
+        entity.setUser(userEntity);
+
         entity.setTokenHash(refreshToken.tokenHash());
         entity.setExpiresAt(refreshToken.expiresAt());
         return entity;
@@ -22,7 +27,7 @@ public class RefreshTokenDataMapper {
 
         return new RefreshToken(
             entity.getId(),
-            entity.getUserId(),
+            entity.getUser().getId(),
             entity.getTokenHash(),
             entity.getExpiresAt()
         );

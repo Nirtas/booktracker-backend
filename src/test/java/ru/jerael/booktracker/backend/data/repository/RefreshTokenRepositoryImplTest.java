@@ -44,7 +44,7 @@ class RefreshTokenRepositoryImplTest {
         assertEquals(1, entities.size());
 
         RefreshTokenEntity entity = entities.get(0);
-        assertEquals(userId, entity.getUserId());
+        assertEquals(userId, entity.getUser().getId());
         assertEquals(tokenHash, entity.getTokenHash());
         assertEquals(expiresAt, entity.getExpiresAt());
     }
@@ -91,7 +91,11 @@ class RefreshTokenRepositoryImplTest {
 
     private RefreshTokenEntity saveEntity(UUID userId, String hash) {
         RefreshTokenEntity entity = new RefreshTokenEntity();
-        entity.setUserId(userId);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        entity.setUser(userEntity);
+
         entity.setTokenHash(hash);
         entity.setExpiresAt(expiresAt);
         return jpaRefreshTokenRepository.save(entity);
