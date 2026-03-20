@@ -3,6 +3,7 @@ package ru.jerael.booktracker.backend.data.mapper;
 import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.entity.ReadingAttemptEntity;
+import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.reading_attempt.ReadingAttempt;
 import ru.jerael.booktracker.backend.domain.model.reading_session.ReadingSession;
@@ -46,7 +47,11 @@ class ReadingAttemptDataMapperTest {
     void toDomain() {
         BookEntity book = new BookEntity();
         book.setId(bookId);
-        book.setUserId(userId);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        book.setUser(userEntity);
+
         book.setTitle("title");
         book.setCoverFileName(null);
         book.setCreatedAt(Instant.now());

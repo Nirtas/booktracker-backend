@@ -36,6 +36,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
         // TODO: provide real data when BookCreation will be updated
         Book newBook = new Book(
             null,
+            userId,
             data.title(),
             null,
             Instant.now(),

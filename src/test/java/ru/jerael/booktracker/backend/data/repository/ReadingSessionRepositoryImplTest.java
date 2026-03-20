@@ -100,7 +100,11 @@ class ReadingSessionRepositoryImplTest {
 
     private BookEntity saveBook(UUID userId) {
         BookEntity entity = new BookEntity();
-        entity.setUserId(userId);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        entity.setUser(userEntity);
+
         entity.setTitle("title");
         entity.setCoverFileName(null);
         entity.setCreatedAt(Instant.now());

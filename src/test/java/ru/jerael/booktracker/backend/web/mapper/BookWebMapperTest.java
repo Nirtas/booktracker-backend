@@ -34,6 +34,7 @@ class BookWebMapperTest {
             readingAttemptWebMapper, noteWebMapper, linkBuilder);
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
     private final String coverFileName = "cover.jpg";
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
@@ -42,6 +43,7 @@ class BookWebMapperTest {
     private final Set<Genre> genres = Set.of(genre1, genre2);
     private final Book book = new Book(
         id,
+        userId,
         title,
         coverFileName,
         createdAt,
@@ -78,6 +80,7 @@ class BookWebMapperTest {
         UUID id2 = UUID.fromString("31d3f5e3-7faf-4678-a3cf-4657d8875a82");
         Book book2 = new Book(
             id2,
+            userId,
             "asd",
             coverFileName,
             createdAt,

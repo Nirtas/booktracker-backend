@@ -47,6 +47,7 @@ class GetBookCoverUseCaseImplTest {
         );
         Book book = new Book(
             id,
+            userId,
             title,
             coverFileName,
             createdAt,
@@ -84,6 +85,7 @@ class GetBookCoverUseCaseImplTest {
     void execute_WhenCoverDoesNotExists_ShouldThrowNotFoundException() {
         Book book = new Book(
             id,
+            userId,
             title,
             null,
             createdAt,

@@ -41,6 +41,7 @@ class GetBookByIdUseCaseImplTest {
         Set<Genre> genres = Set.of(genre1, genre2);
         Book book = new Book(
             id,
+            userId,
             title,
             null,
             createdAt,

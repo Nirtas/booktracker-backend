@@ -3,6 +3,7 @@ package ru.jerael.booktracker.backend.data.mapper;
 import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.entity.NoteEntity;
+import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.domain.model.note.Note;
 import ru.jerael.booktracker.backend.domain.model.note.NoteType;
 import java.time.Instant;
@@ -41,7 +42,11 @@ class NoteDataMapperTest {
     void toDomain() {
         BookEntity book = new BookEntity();
         book.setId(bookId);
-        book.setUserId(userId);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        book.setUser(userEntity);
+
         book.setTitle("title");
         book.setCoverFileName(null);
         book.setCreatedAt(Instant.now());

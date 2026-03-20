@@ -42,6 +42,7 @@ public class UpdateBookDetailsUseCaseImpl implements UpdateBookDetailsUseCase {
         // TODO: provide real data when BookDetailsUpdate will be updated
         Book updatedBook = new Book(
             book.id(),
+            userId,
             data.title() != null ? data.title().trim() : book.title(),
             book.coverFileName(),
             book.createdAt(),

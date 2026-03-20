@@ -106,6 +106,7 @@ class BookControllerTest {
     void getAll_ShouldReturnListOfBookResponses() {
         Book book = new Book(
             id,
+            userId,
             title,
             null,
             createdAt,
@@ -196,6 +197,7 @@ class BookControllerTest {
         BookDetailsUpdate data = new BookDetailsUpdate("new title", null, BookStatus.WANT_TO_READ, null);
         Book book = new Book(
             id,
+            userId,
             "new title",
             null,
             createdAt,
@@ -254,6 +256,7 @@ class BookControllerTest {
         BookCreation data = new BookCreation(title, author, null, Set.of(1, 2));
         Book book = new Book(
             id,
+            userId,
             title,
             null,
             createdAt,
@@ -319,6 +322,7 @@ class BookControllerTest {
         UploadCover data = new UploadCover(MediaType.IMAGE_JPEG_VALUE, null, 0L);
         Book book = new Book(
             id,
+            userId,
             title,
             coverFileName,
             createdAt,

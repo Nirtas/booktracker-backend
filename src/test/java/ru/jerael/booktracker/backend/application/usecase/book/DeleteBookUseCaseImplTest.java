@@ -45,6 +45,7 @@ class DeleteBookUseCaseImplTest {
         String coverFileName = "cover.jpg";
         Book book = new Book(
             id,
+            userId,
             title,
             coverFileName,
             createdAt,
@@ -72,6 +73,7 @@ class DeleteBookUseCaseImplTest {
     void execute_WhenBookHasNotCover_ShouldDeleteOnlyBook() {
         Book book = new Book(
             id,
+            userId,
             title,
             null,
             createdAt,

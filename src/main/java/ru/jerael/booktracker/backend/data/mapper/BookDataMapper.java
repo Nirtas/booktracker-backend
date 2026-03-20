@@ -3,6 +3,7 @@ package ru.jerael.booktracker.backend.data.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
+import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,7 @@ public class BookDataMapper {
 
         return new Book(
             entity.getId(),
+            entity.getUser().getId(),
             entity.getTitle(),
             entity.getCoverFileName(),
             entity.getCreatedAt(),
@@ -49,6 +51,11 @@ public class BookDataMapper {
 
         BookEntity entity = new BookEntity();
         entity.setId(book.id());
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(book.userId());
+        entity.setUser(userEntity);
+
         entity.setTitle(book.title());
         entity.setCoverFileName(book.coverFileName());
         entity.setCreatedAt(book.createdAt());

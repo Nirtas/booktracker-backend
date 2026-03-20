@@ -52,7 +52,6 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public Book save(Book book, UUID userId) {
         BookEntity entity = bookDataMapper.toEntity(book);
-        entity.setUserId(userId);
         BookEntity savedEntity = jpaBookRepository.save(entity);
         return bookDataMapper.toDomain(savedEntity);
     }
