@@ -35,7 +35,6 @@ public class BookWebMapper {
         return new BookResponse(
             book.id(),
             book.title(),
-            book.author(),
             coverUrl,
             book.status().getValue(),
             book.createdAt(),

@@ -40,7 +40,7 @@ class CreateBookUseCaseImplTest {
 
         String title = "title";
         String author = "author";
-        BookStatus status = BookStatus.READING;
+        BookStatus status = BookStatus.WANT_TO_READ;
         Set<Integer> genreIds = Set.of(1, 2);
         BookCreation data = new BookCreation(title, author, status, genreIds);
 
@@ -54,9 +54,7 @@ class CreateBookUseCaseImplTest {
             return new Book(
                 id,
                 book.title(),
-                book.author(),
                 book.coverFileName(),
-                book.status(),
                 book.createdAt(),
                 book.genres(),
                 Set.of(),

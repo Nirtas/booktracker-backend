@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.jerael.booktracker.backend.data.db.constant.Tables;
 import ru.jerael.booktracker.backend.domain.constant.BookRules;
-import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
@@ -28,15 +27,8 @@ public class BookEntity {
     @Column(name = "title", length = BookRules.TITLE_MAX_LENGTH, nullable = false)
     private String title;
 
-    @Column(name = "author", length = BookRules.AUTHOR_MAX_LENGTH, nullable = false)
-    private String author;
-
     @Column(name = "cover_file_name")
     private String coverFileName;
-
-    @Column(name = "status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private BookStatus status = BookStatus.WANT_TO_READ;
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

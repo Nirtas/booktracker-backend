@@ -35,8 +35,6 @@ class GetBookByIdUseCaseImplTest {
     void execute_WhenBookExists_ShouldReturnBook() {
         UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
         String title = "title";
-        String author = "author";
-        BookStatus status = BookStatus.READING;
         Instant createdAt = Instant.ofEpochMilli(1771249699347L);
         Genre genre1 = new Genre(1, "action");
         Genre genre2 = new Genre(2, "adventure");
@@ -44,9 +42,7 @@ class GetBookByIdUseCaseImplTest {
         Book book = new Book(
             id,
             title,
-            author,
             null,
-            status,
             createdAt,
             genres,
             Set.of(),

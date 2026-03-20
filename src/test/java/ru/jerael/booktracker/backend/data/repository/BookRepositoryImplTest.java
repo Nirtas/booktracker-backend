@@ -11,7 +11,6 @@ import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository;
 import ru.jerael.booktracker.backend.data.mapper.*;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
-import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import ru.jerael.booktracker.backend.domain.model.pagination.SortDirection;
@@ -57,16 +56,12 @@ class BookRepositoryImplTest {
 
         BookEntity book1 = new BookEntity();
         book1.setTitle("title");
-        book1.setAuthor("author");
-        book1.setStatus(BookStatus.READING);
         book1.setCreatedAt(Instant.ofEpochMilli(1771249699347L));
         book1.setGenres(new HashSet<>(genres));
         book1.setUserId(userId);
 
         BookEntity book2 = new BookEntity();
         book2.setTitle("asd");
-        book2.setAuthor("dsa");
-        book2.setStatus(BookStatus.WANT_TO_READ);
         book2.setCreatedAt(Instant.ofEpochMilli(177124961234L));
         book2.setGenres(Collections.emptySet());
         book2.setUserId(userId);
@@ -95,8 +90,6 @@ class BookRepositoryImplTest {
 
         BookEntity book1 = new BookEntity();
         book1.setTitle("title");
-        book1.setAuthor("author");
-        book1.setStatus(BookStatus.READING);
         book1.setCreatedAt(Instant.ofEpochMilli(1771249699347L));
         book1.setGenres(Set.of(savedGenre));
         book1.setUserId(userId);
@@ -128,9 +121,7 @@ class BookRepositoryImplTest {
         Book book = new Book(
             null,
             title,
-            author,
             null,
-            BookStatus.WANT_TO_READ,
             Instant.now(),
             genres,
             Set.of(),
@@ -149,7 +140,6 @@ class BookRepositoryImplTest {
 
         assertNotNull(createdBook.id());
         assertEquals(title, createdBook.title());
-        assertEquals(author, createdBook.author());
         assertEquals(2, createdBook.genres().size());
         assertTrue(jpaBookRepository.existsById(createdBook.id()));
     }
@@ -158,9 +148,7 @@ class BookRepositoryImplTest {
     void save_WhenIdIsPresent_ShouldUpdateExistingBook() {
         BookEntity bookEntity = new BookEntity();
         bookEntity.setTitle("title");
-        bookEntity.setAuthor("author");
         bookEntity.setCoverFileName("old_cover.jpg");
-        bookEntity.setStatus(BookStatus.READING);
         bookEntity.setCreatedAt(Instant.ofEpochMilli(1771249699347L));
         bookEntity.setGenres(Collections.emptySet());
 
@@ -169,9 +157,7 @@ class BookRepositoryImplTest {
         Book book = new Book(
             id,
             "new title",
-            "new author",
             "new_cover.jpg",
-            savedBook.getStatus(),
             savedBook.getCreatedAt(),
             Collections.emptySet(),
             Set.of(),
@@ -193,7 +179,6 @@ class BookRepositoryImplTest {
 
         BookEntity entity = jpaBookRepository.findById(id).orElseThrow();
         assertEquals("new title", entity.getTitle());
-        assertEquals("new author", entity.getAuthor());
     }
 
     @Test
@@ -213,9 +198,7 @@ class BookRepositoryImplTest {
         Book book = new Book(
             null,
             title,
-            author,
             null,
-            BookStatus.WANT_TO_READ,
             Instant.now(),
             genres,
             Set.of(),
@@ -234,7 +217,6 @@ class BookRepositoryImplTest {
 
         assertNotNull(createdBook.id());
         assertEquals(title, createdBook.title());
-        assertEquals(author, createdBook.author());
         assertEquals(2, createdBook.genres().size());
         assertTrue(jpaBookRepository.existsById(createdBook.id()));
 

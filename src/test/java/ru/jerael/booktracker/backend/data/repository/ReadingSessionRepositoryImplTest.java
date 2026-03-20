@@ -102,9 +102,7 @@ class ReadingSessionRepositoryImplTest {
         BookEntity entity = new BookEntity();
         entity.setUserId(userId);
         entity.setTitle("title");
-        entity.setAuthor("author");
         entity.setCoverFileName(null);
-        entity.setStatus(BookStatus.WANT_TO_READ);
         entity.setCreatedAt(Instant.now());
         entity.setGenres(Collections.emptySet());
         return jpaBookRepository.save(entity);

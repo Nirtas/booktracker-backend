@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
-import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
 import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.model.image.ProcessedImage;
@@ -43,15 +42,11 @@ class UploadCoverUseCaseImplTest {
 
     private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
-    private final String author = "author";
-    private final BookStatus status = BookStatus.WANT_TO_READ;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
     private final Book book = new Book(
         id,
         title,
-        author,
         null,
-        status,
         createdAt,
         Collections.emptySet(),
         Set.of(),
@@ -120,9 +115,7 @@ class UploadCoverUseCaseImplTest {
         Book book = new Book(
             id,
             title,
-            author,
             oldCoverFileName,
-            status,
             createdAt,
             Collections.emptySet(),
             Set.of(),
@@ -155,9 +148,7 @@ class UploadCoverUseCaseImplTest {
         Book book = new Book(
             id,
             title,
-            author,
             oldCoverFileName,
-            status,
             createdAt,
             Collections.emptySet(),
             Set.of(),

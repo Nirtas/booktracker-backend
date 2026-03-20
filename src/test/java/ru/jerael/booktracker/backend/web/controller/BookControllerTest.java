@@ -107,9 +107,7 @@ class BookControllerTest {
         Book book = new Book(
             id,
             title,
-            author,
             null,
-            status,
             createdAt,
             Collections.emptySet(),
             Set.of(),
@@ -126,7 +124,6 @@ class BookControllerTest {
         BookResponse bookResponse = new BookResponse(
             id,
             title,
-            author,
             null,
             status.getValue(),
             createdAt,
@@ -193,16 +190,14 @@ class BookControllerTest {
         BookDetailsUpdateRequest request = new BookDetailsUpdateRequest(
             "new title",
             null,
-            "reading",
+            "want_to_read",
             null
         );
-        BookDetailsUpdate data = new BookDetailsUpdate("new title", null, BookStatus.READING, null);
+        BookDetailsUpdate data = new BookDetailsUpdate("new title", null, BookStatus.WANT_TO_READ, null);
         Book book = new Book(
             id,
             "new title",
-            author,
             null,
-            BookStatus.READING,
             createdAt,
             Collections.emptySet(),
             Set.of(),
@@ -219,9 +214,8 @@ class BookControllerTest {
         BookResponse bookResponse = new BookResponse(
             id,
             "new title",
-            author,
             null,
-            "reading",
+            "want_to_read",
             createdAt,
             Collections.emptySet(),
             Set.of(),
@@ -250,7 +244,6 @@ class BookControllerTest {
             .convertTo(BookResponse.class)
             .satisfies(response -> {
                 assertThat(response.title()).isEqualTo(request.title());
-                assertThat(response.author()).isEqualTo(author);
                 assertThat(response.status()).isEqualTo(book.status().getValue());
             });
     }
@@ -262,9 +255,7 @@ class BookControllerTest {
         Book book = new Book(
             id,
             title,
-            author,
             null,
-            status,
             createdAt,
             Collections.emptySet(),
             Set.of(),
@@ -281,7 +272,6 @@ class BookControllerTest {
         BookResponse bookResponse = new BookResponse(
             id,
             title,
-            author,
             null,
             status.getValue(),
             createdAt,
@@ -313,7 +303,6 @@ class BookControllerTest {
             .satisfies(response -> {
                     assertThat(response.id()).isEqualTo(bookResponse.id());
                     assertThat(response.title()).isEqualTo(bookResponse.title());
-                    assertThat(response.author()).isEqualTo(bookResponse.author());
                 }
             );
     }
@@ -331,9 +320,7 @@ class BookControllerTest {
         Book book = new Book(
             id,
             title,
-            author,
             coverFileName,
-            status,
             createdAt,
             null,
             Set.of(),
@@ -350,7 +337,6 @@ class BookControllerTest {
         BookResponse bookResponse = new BookResponse(
             id,
             title,
-            author,
             coverFileName,
             status.getValue(),
             createdAt,

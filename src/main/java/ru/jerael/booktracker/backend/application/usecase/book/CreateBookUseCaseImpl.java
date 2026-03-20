@@ -7,7 +7,6 @@ import ru.jerael.booktracker.backend.domain.exception.factory.GenreExceptionFact
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
-import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
@@ -38,9 +37,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
         Book newBook = new Book(
             null,
             data.title(),
-            data.author(),
             null,
-            data.status() != null ? data.status() : BookStatus.WANT_TO_READ,
             Instant.now(),
             genres,
             Set.of(),
