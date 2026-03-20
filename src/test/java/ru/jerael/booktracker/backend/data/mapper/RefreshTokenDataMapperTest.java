@@ -2,6 +2,7 @@ package ru.jerael.booktracker.backend.data.mapper;
 
 import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.data.db.entity.RefreshTokenEntity;
+import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.domain.model.auth.RefreshToken;
 import java.time.Instant;
 import java.util.UUID;
@@ -22,7 +23,7 @@ class RefreshTokenDataMapperTest {
         RefreshTokenEntity entity = refreshTokenDataMapper.toEntity(refreshToken);
 
         assertEquals(id, entity.getId());
-        assertEquals(userId, entity.getUserId());
+        assertEquals(userId, entity.getUser().getId());
         assertEquals(tokenHash, entity.getTokenHash());
         assertEquals(expiresAt, entity.getExpiresAt());
     }
@@ -31,7 +32,11 @@ class RefreshTokenDataMapperTest {
     void toDomain() {
         RefreshTokenEntity entity = new RefreshTokenEntity();
         entity.setId(id);
-        entity.setUserId(userId);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        entity.setUser(userEntity);
+
         entity.setTokenHash(tokenHash);
         entity.setExpiresAt(expiresAt);
 
