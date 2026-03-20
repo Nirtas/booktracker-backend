@@ -106,7 +106,7 @@ public class BookController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookResponse create(@Valid @RequestBody BookCreationRequest request, @AuthenticationPrincipal UUID userId) {
-        BookCreation data = bookWebMapper.toDomain(request);
+        BookCreation data = bookWebMapper.toDomain(request, userId);
         Book book = createBookUseCase.execute(data, userId);
         return bookWebMapper.toResponse(book);
     }
