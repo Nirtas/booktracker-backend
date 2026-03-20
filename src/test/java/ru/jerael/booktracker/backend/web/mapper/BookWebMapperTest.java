@@ -35,9 +35,7 @@ class BookWebMapperTest {
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final String title = "title";
-    private final String author = "author";
     private final String coverFileName = "cover.jpg";
-    private final BookStatus status = BookStatus.READING;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
     private final Genre genre1 = new Genre(1, "action");
     private final Genre genre2 = new Genre(2, "adventure");
@@ -45,9 +43,7 @@ class BookWebMapperTest {
     private final Book book = new Book(
         id,
         title,
-        author,
         coverFileName,
-        status,
         createdAt,
         genres,
         Set.of(),
@@ -71,9 +67,8 @@ class BookWebMapperTest {
 
         assertEquals(id, bookResponse.id());
         assertEquals(title, bookResponse.title());
-        assertEquals(author, bookResponse.author());
         assertEquals(coverUrl, bookResponse.coverUrl());
-        assertEquals(status.getValue(), bookResponse.status());
+        assertEquals(BookStatus.defaultStatus().getValue(), bookResponse.status());
         assertEquals(createdAt, bookResponse.createdAt());
         assertTrue(bookResponse.genres().containsAll(genreWebMapper.toResponses(genres)));
     }
@@ -84,9 +79,7 @@ class BookWebMapperTest {
         Book book2 = new Book(
             id2,
             "asd",
-            author,
             coverFileName,
-            status,
             createdAt,
             genres,
             Set.of(),

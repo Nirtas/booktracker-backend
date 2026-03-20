@@ -26,9 +26,7 @@ public class DeleteCoverUseCaseImpl implements DeleteCoverUseCase {
         Book updatedBook = new Book(
             book.id(),
             book.title(),
-            book.author(),
             null,
-            book.status(),
             book.createdAt(),
             book.genres(),
             book.authors(),

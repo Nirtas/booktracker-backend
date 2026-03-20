@@ -11,7 +11,6 @@ import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.db.repository.JpaNoteRepository;
 import ru.jerael.booktracker.backend.data.db.repository.JpaUserRepository;
 import ru.jerael.booktracker.backend.data.mapper.NoteDataMapper;
-import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.note.Note;
 import ru.jerael.booktracker.backend.domain.model.note.NoteType;
 import java.time.Instant;
@@ -102,9 +101,7 @@ class NoteRepositoryImplTest {
         BookEntity entity = new BookEntity();
         entity.setUserId(userId);
         entity.setTitle("title");
-        entity.setAuthor("author");
         entity.setCoverFileName(null);
-        entity.setStatus(BookStatus.WANT_TO_READ);
         entity.setCreatedAt(Instant.now());
         entity.setGenres(Collections.emptySet());
         return jpaBookRepository.save(entity);

@@ -9,7 +9,6 @@ import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
-import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import java.time.Instant;
@@ -37,15 +36,11 @@ class UpdateBookDetailsUseCaseImplTest {
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
-    private final String author = "author";
-    private final BookStatus status = BookStatus.WANT_TO_READ;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
     private final Book book = new Book(
         id,
         title,
-        author,
         null,
-        status,
         createdAt,
         Collections.emptySet(),
         Set.of(),
@@ -83,8 +78,6 @@ class UpdateBookDetailsUseCaseImplTest {
         Book updatedBook = useCase.execute(id, userId, data);
 
         assertEquals("new title", updatedBook.title());
-        assertEquals(author, updatedBook.author());
-        assertEquals(status, updatedBook.status());
         assertThat(updatedBook.genres()).containsExactly(genre);
         verify(bookRepository).save(any(), eq(userId));
     }

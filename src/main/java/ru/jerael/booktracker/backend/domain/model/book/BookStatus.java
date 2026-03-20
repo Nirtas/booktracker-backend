@@ -26,4 +26,8 @@ public enum BookStatus {
         }
         throw BookExceptionFactory.invalidStatus(value);
     }
+
+    public static BookStatus defaultStatus() {
+        return BookStatus.WANT_TO_READ;
+    }
 }

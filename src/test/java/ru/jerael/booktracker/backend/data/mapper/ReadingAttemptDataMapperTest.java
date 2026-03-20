@@ -48,9 +48,7 @@ class ReadingAttemptDataMapperTest {
         book.setId(bookId);
         book.setUserId(userId);
         book.setTitle("title");
-        book.setAuthor("author");
         book.setCoverFileName(null);
-        book.setStatus(BookStatus.WANT_TO_READ);
         book.setCreatedAt(Instant.now());
         book.setGenres(Collections.emptySet());
 

@@ -30,8 +30,6 @@ class DeleteCoverUseCaseImplTest {
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
     private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
-    private final String author = "author";
-    private final BookStatus status = BookStatus.WANT_TO_READ;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
 
     @Test
@@ -49,9 +47,7 @@ class DeleteCoverUseCaseImplTest {
         Book book = new Book(
             id,
             title,
-            author,
             coverFileName,
-            status,
             createdAt,
             Collections.emptySet(),
             Set.of(),
@@ -72,9 +68,7 @@ class DeleteCoverUseCaseImplTest {
         Book updatedBook = new Book(
             id,
             title,
-            author,
             null,
-            status,
             createdAt,
             Collections.emptySet(),
             Set.of(),
@@ -97,9 +91,7 @@ class DeleteCoverUseCaseImplTest {
         Book book = new Book(
             id,
             title,
-            author,
             null,
-            status,
             createdAt,
             Collections.emptySet(),
             Set.of(),
