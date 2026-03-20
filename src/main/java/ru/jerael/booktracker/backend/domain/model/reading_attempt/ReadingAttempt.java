@@ -1,6 +1,5 @@
 package ru.jerael.booktracker.backend.domain.model.reading_attempt;
 
-import jakarta.annotation.Nullable;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.model.reading_session.ReadingSession;
 import java.time.Instant;
@@ -12,6 +11,6 @@ public record ReadingAttempt(
     UUID bookId,
     BookStatus status,
     Instant startedAt,
-    @Nullable Instant finishedAt,
+    Instant finishedAt,
     List<ReadingSession> sessions
 ) {}
