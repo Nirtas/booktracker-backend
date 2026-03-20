@@ -39,6 +39,7 @@ class UpdateBookDetailsUseCaseImplTest {
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
     private final Book book = new Book(
         id,
+        userId,
         title,
         null,
         createdAt,

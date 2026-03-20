@@ -46,6 +46,7 @@ class DeleteCoverUseCaseImplTest {
         String coverFileName = "cover.jpg";
         Book book = new Book(
             id,
+            userId,
             title,
             coverFileName,
             createdAt,
@@ -67,6 +68,7 @@ class DeleteCoverUseCaseImplTest {
 
         Book updatedBook = new Book(
             id,
+            userId,
             title,
             null,
             createdAt,
@@ -90,6 +92,7 @@ class DeleteCoverUseCaseImplTest {
     void execute_WhenCoverDoesNotExists_ShouldExitWithoutUpdate() {
         Book book = new Book(
             id,
+            userId,
             title,
             null,
             createdAt,

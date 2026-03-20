@@ -15,6 +15,7 @@ import java.util.UUID;
 
 public record Book(
     UUID id,
+    UUID userId,
     String title,
     String coverFileName,
     Instant createdAt,

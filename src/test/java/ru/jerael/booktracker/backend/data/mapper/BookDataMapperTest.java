@@ -2,6 +2,7 @@ package ru.jerael.booktracker.backend.data.mapper;
 
 import org.junit.jupiter.api.Test;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
+import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import java.time.Instant;
@@ -26,6 +27,7 @@ class BookDataMapperTest {
     );
 
     private final UUID id = UUID.fromString("ee39af7a-a073-4473-878a-1aae34e98bb7");
+    private final UUID userId = UUID.fromString("2c5781ea-1bc2-4561-a83d-26106df2526e");
     private final String title = "title";
     private final String coverFileName = null;
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
@@ -34,6 +36,7 @@ class BookDataMapperTest {
     private final Set<Genre> genres = Set.of(genre1, genre2);
     private final Book book = new Book(
         id,
+        userId,
         title,
         coverFileName,
         createdAt,
@@ -54,6 +57,11 @@ class BookDataMapperTest {
     void entity_toDomain() {
         BookEntity entity = new BookEntity();
         entity.setId(id);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        entity.setUser(userEntity);
+
         entity.setTitle(title);
         entity.setCoverFileName(coverFileName);
         entity.setCreatedAt(createdAt);

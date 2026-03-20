@@ -45,6 +45,7 @@ class UploadCoverUseCaseImplTest {
     private final Instant createdAt = Instant.ofEpochMilli(1771249699347L);
     private final Book book = new Book(
         id,
+        userId,
         title,
         null,
         createdAt,
@@ -114,6 +115,7 @@ class UploadCoverUseCaseImplTest {
         String newCoverFileName = id + ".jpg";
         Book book = new Book(
             id,
+            userId,
             title,
             oldCoverFileName,
             createdAt,
@@ -147,6 +149,7 @@ class UploadCoverUseCaseImplTest {
         String oldCoverFileName = "old_cover.jpg";
         Book book = new Book(
             id,
+            userId,
             title,
             oldCoverFileName,
             createdAt,

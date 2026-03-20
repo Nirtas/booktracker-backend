@@ -53,6 +53,7 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
 
         Book updatedBook = new Book(
             book.id(),
+            userId,
             book.title(),
             newCoverFileName,
             book.createdAt(),

@@ -6,6 +6,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
+import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaBookRepository;
 import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository;
 import ru.jerael.booktracker.backend.data.mapper.*;
@@ -58,13 +59,16 @@ class BookRepositoryImplTest {
         book1.setTitle("title");
         book1.setCreatedAt(Instant.ofEpochMilli(1771249699347L));
         book1.setGenres(new HashSet<>(genres));
-        book1.setUserId(userId);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        book1.setUser(userEntity);
 
         BookEntity book2 = new BookEntity();
         book2.setTitle("asd");
         book2.setCreatedAt(Instant.ofEpochMilli(177124961234L));
         book2.setGenres(Collections.emptySet());
-        book2.setUserId(userId);
+        book2.setUser(userEntity);
 
         List<BookEntity> entities = jpaBookRepository.saveAll(List.of(book1, book2));
         UUID id1 = entities.get(0).getId();
@@ -92,7 +96,10 @@ class BookRepositoryImplTest {
         book1.setTitle("title");
         book1.setCreatedAt(Instant.ofEpochMilli(1771249699347L));
         book1.setGenres(Set.of(savedGenre));
-        book1.setUserId(userId);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        book1.setUser(userEntity);
 
         BookEntity savedBook = jpaBookRepository.save(book1);
         UUID id = savedBook.getId();
@@ -117,9 +124,9 @@ class BookRepositoryImplTest {
             .collect(Collectors.toSet());
 
         String title = "title";
-        String author = "author";
         Book book = new Book(
             null,
+            userId,
             title,
             null,
             Instant.now(),
@@ -156,6 +163,7 @@ class BookRepositoryImplTest {
         UUID id = savedBook.getId();
         Book book = new Book(
             id,
+            userId,
             "new title",
             "new_cover.jpg",
             savedBook.getCreatedAt(),
@@ -194,9 +202,9 @@ class BookRepositoryImplTest {
             .collect(Collectors.toSet());
 
         String title = "title";
-        String author = "author";
         Book book = new Book(
             null,
+            userId,
             title,
             null,
             Instant.now(),

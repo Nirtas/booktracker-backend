@@ -53,6 +53,7 @@ class CreateBookUseCaseImplTest {
             Book book = invocationOnMock.getArgument(0);
             return new Book(
                 id,
+                userId,
                 book.title(),
                 book.coverFileName(),
                 book.createdAt(),
