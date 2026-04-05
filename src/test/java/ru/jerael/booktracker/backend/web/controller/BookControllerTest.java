@@ -233,7 +233,7 @@ class BookControllerTest {
             List.of()
         );
         when(bookWebMapper.toDomain(request, id, userId)).thenReturn(data);
-        when(updateBookDetailsUseCase.execute(id, userId, data)).thenReturn(book);
+        when(updateBookDetailsUseCase.execute(data)).thenReturn(book);
         when(bookWebMapper.toResponse(book)).thenReturn(bookResponse);
 
         var mockResponse = mockMvcTester.patch().uri("/api/v1/books/" + id)
