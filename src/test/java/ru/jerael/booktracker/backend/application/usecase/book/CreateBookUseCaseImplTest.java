@@ -13,6 +13,7 @@ import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
+import ru.jerael.booktracker.backend.domain.validator.BookValidator;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,9 @@ class CreateBookUseCaseImplTest {
 
     @Mock
     private GenreRepository genreRepository;
+
+    @Mock
+    private BookValidator bookValidator;
 
     @InjectMocks
     private CreateBookUseCaseImpl useCase;

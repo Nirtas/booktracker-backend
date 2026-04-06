@@ -16,6 +16,7 @@ import ru.jerael.booktracker.backend.domain.model.reading_attempt.ReadingAttempt
 import ru.jerael.booktracker.backend.domain.model.reading_session.ReadingSession;
 import ru.jerael.booktracker.backend.domain.repository.*;
 import ru.jerael.booktracker.backend.domain.usecase.book.CreateBookUseCase;
+import ru.jerael.booktracker.backend.domain.validator.BookValidator;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -30,10 +31,13 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
     private final AuthorRepository authorRepository;
     private final PublisherRepository publisherRepository;
     private final LanguageRepository languageRepository;
+    private final BookValidator bookValidator;
 
     @Override
     @Transactional
     public Book execute(BookCreation data) {
+        bookValidator.validateCreation(data);
+
         Set<Genre> genres = genreRepository.findAllById(data.genreIds());
         if (genres.size() != data.genreIds().size()) {
             Set<Integer> foundIds = genres.stream().map(Genre::id).collect(Collectors.toSet());
