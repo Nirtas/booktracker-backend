@@ -11,6 +11,7 @@ import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
+import ru.jerael.booktracker.backend.domain.validator.BookValidator;
 import java.time.Instant;
 import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,6 +30,9 @@ class UpdateBookDetailsUseCaseImplTest {
 
     @Mock
     private GenreRepository genreRepository;
+
+    @Mock
+    private BookValidator bookValidator;
 
     @InjectMocks
     private UpdateBookDetailsUseCaseImpl useCase;
@@ -59,11 +63,15 @@ class UpdateBookDetailsUseCaseImplTest {
     @Test
     void execute_WhenGenreNotFound_ShouldThrowException() {
         Set<Integer> genreIds = Set.of(1, 5555);
-        BookDetailsUpdate data = new BookDetailsUpdate(null, null, null, genreIds);
+        BookDetailsUpdate data = new BookDetailsUpdate(
+            id, userId, null, null, genreIds, null, null,
+            null, null, null, null, null, null
+        );
+
         when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
         when(genreRepository.findAllById(genreIds)).thenReturn(Set.of(new Genre(1, "action")));
 
-        String message = assertThrows(NotFoundException.class, () -> useCase.execute(id, userId, data)).getMessage();
+        String message = assertThrows(NotFoundException.class, () -> useCase.execute(data)).getMessage();
 
         assertThat(message).contains("5555");
     }
@@ -71,12 +79,15 @@ class UpdateBookDetailsUseCaseImplTest {
     @Test
     void execute_ShouldUpdateOnlyProvidedFields() {
         Genre genre = new Genre(1, "action");
-        BookDetailsUpdate data = new BookDetailsUpdate(" new title ", null, null, Set.of(1));
+        BookDetailsUpdate data = new BookDetailsUpdate(
+            id, userId, " new title ", null, Set.of(1), null, null,
+            null, null, null, null, null, null
+        );
         when(bookRepository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(book));
         when(genreRepository.findAllById(Set.of(1))).thenReturn(Set.of(genre));
         when(bookRepository.save(any(), eq(userId))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
-        Book updatedBook = useCase.execute(id, userId, data);
+        Book updatedBook = useCase.execute(data);
 
         assertEquals("new title", updatedBook.title());
         assertThat(updatedBook.genres()).containsExactly(genre);

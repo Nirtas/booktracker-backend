@@ -97,8 +97,8 @@ public class BookController {
         @Valid @RequestBody BookDetailsUpdateRequest request,
         @AuthenticationPrincipal UUID userId
     ) {
-        BookDetailsUpdate data = bookWebMapper.toDomain(request);
-        Book book = updateBookDetailsUseCase.execute(id, userId, data);
+        BookDetailsUpdate data = bookWebMapper.toDomain(request, id, userId);
+        Book book = updateBookDetailsUseCase.execute(data);
         return bookWebMapper.toResponse(book);
     }
 

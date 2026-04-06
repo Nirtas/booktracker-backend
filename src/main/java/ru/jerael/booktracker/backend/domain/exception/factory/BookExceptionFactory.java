@@ -30,4 +30,11 @@ public class BookExceptionFactory {
             "Cover for book with id " + id + " was not found"
         );
     }
+
+    public static NotFoundException readingAttemptsNotFound(UUID id) {
+        return new NotFoundException(
+            BookErrorCode.READING_ATTEMPTS_NOT_FOUND,
+            "Book with id " + id + " has no reading attempts"
+        );
+    }
 }

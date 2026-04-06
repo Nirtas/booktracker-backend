@@ -128,16 +128,13 @@ class BookWebMapperTest {
     @Test
     void toDomain_BookDetailsUpdate() {
         BookDetailsUpdateRequest request = new BookDetailsUpdateRequest(
-            " title ",
-            " author ",
-            "reading",
-            Set.of(1, 2)
+            " title ", "reading", Set.of(1, 2), Set.of(), null, null,
+            null, null, null, null, null
         );
 
-        BookDetailsUpdate data = bookWebMapper.toDomain(request);
+        BookDetailsUpdate data = bookWebMapper.toDomain(request, id, userId);
 
         assertEquals(request.title(), data.title());
-        assertEquals(request.author(), data.author());
         assertTrue(data.genreIds().containsAll(request.genreIds()));
     }
 }
