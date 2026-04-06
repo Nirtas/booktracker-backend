@@ -9,6 +9,7 @@ import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookErrorFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.CommonValidationErrorFactory;
 import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
+import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.validator.BookValidator;
 import java.util.ArrayList;
@@ -20,6 +21,22 @@ import java.util.stream.Collectors;
 public class BookValidatorImpl implements BookValidator {
     @Override
     public void validateUpdate(BookDetailsUpdate data) {
+        List<ValidationError> errors = new ArrayList<>();
+        errors.addAll(validateTitle(data.title()));
+        errors.addAll(validateAuthorNames(data.authorNames()));
+        errors.addAll(validateDescription(data.description()));
+        errors.addAll(validatePublisherName(data.publisherName()));
+        errors.addAll(validateLanguageCode(data.languageCode()));
+        errors.addAll(validateTotalPages(data.totalPages()));
+        errors.addAll(validateIsbn10(data.isbn10()));
+        errors.addAll(validateIsbn13(data.isbn13()));
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+    }
+
+    @Override
+    public void validateCreation(BookCreation data) {
         List<ValidationError> errors = new ArrayList<>();
         errors.addAll(validateTitle(data.title()));
         errors.addAll(validateAuthorNames(data.authorNames()));
