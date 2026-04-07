@@ -17,7 +17,7 @@ public class LanguageRepositoryImpl implements LanguageRepository {
 
     @Override
     public List<Language> findAll() {
-        return jpaLanguageRepository.findAll().stream().map(languageDataMapper::toDomain).toList();
+        return jpaLanguageRepository.findAllByOrderByNameAsc().stream().map(languageDataMapper::toDomain).toList();
     }
 
     @Override
