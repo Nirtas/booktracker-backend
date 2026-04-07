@@ -6,6 +6,7 @@ import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
+import ru.jerael.booktracker.backend.domain.util.StringNormalizer;
 import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
@@ -70,7 +71,7 @@ public class BookWebMapper {
             request.authorNames(),
             request.description(),
             request.publisherName(),
-            request.languageCode(),
+            StringNormalizer.normalize(request.languageCode()),
             request.publishedOn(),
             request.totalPages(),
             cleanUpIsbn(request.isbn10()),
@@ -90,7 +91,7 @@ public class BookWebMapper {
             request.authorNames(),
             request.description(),
             request.publisherName(),
-            request.languageCode(),
+            StringNormalizer.normalize(request.languageCode()),
             request.publishedOn(),
             request.totalPages(),
             cleanUpIsbn(request.isbn10()),
