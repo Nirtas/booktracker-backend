@@ -27,6 +27,7 @@ public class BookValidatorImpl implements BookValidator {
         errors.addAll(validateDescription(data.description()));
         errors.addAll(validatePublisherName(data.publisherName()));
         errors.addAll(validateLanguageCode(data.languageCode()));
+        errors.addAll(validatePublishedOn(data.publishedOn()));
         errors.addAll(validateTotalPages(data.totalPages()));
         errors.addAll(validateIsbn10(data.isbn10()));
         errors.addAll(validateIsbn13(data.isbn13()));
@@ -43,6 +44,7 @@ public class BookValidatorImpl implements BookValidator {
         errors.addAll(validateDescription(data.description()));
         errors.addAll(validatePublisherName(data.publisherName()));
         errors.addAll(validateLanguageCode(data.languageCode()));
+        errors.addAll(validatePublishedOn(data.publishedOn()));
         errors.addAll(validateTotalPages(data.totalPages()));
         errors.addAll(validateIsbn10(data.isbn10()));
         errors.addAll(validateIsbn13(data.isbn13()));
@@ -128,6 +130,21 @@ public class BookValidatorImpl implements BookValidator {
                 CommonValidationErrorFactory.fieldTooLong(
                     "languageCode",
                     LanguageRules.LANGUAGE_CODE_LENGTH
+                )
+            );
+        }
+        return errors;
+    }
+
+    private List<ValidationError> validatePublishedOn(Integer publishedOn) {
+        List<ValidationError> errors = new ArrayList<>();
+        if (publishedOn == null) return errors;
+        if (publishedOn < BookRules.PUBLISHED_ON_MIN || publishedOn > BookRules.PUBLISHED_ON_MAX) {
+            errors.add(
+                CommonValidationErrorFactory.fieldOutOfRange(
+                    "publishedOn",
+                    BookRules.PUBLISHED_ON_MIN,
+                    BookRules.PUBLISHED_ON_MAX
                 )
             );
         }

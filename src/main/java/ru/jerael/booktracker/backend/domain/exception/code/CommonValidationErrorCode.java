@@ -4,5 +4,6 @@ public enum CommonValidationErrorCode implements ErrorCode {
     FIELD_CANNOT_BE_EMPTY,
     FIELD_TOO_LONG,
     FIELD_TOO_SHORT,
-    INVALID_LENGTH
+    INVALID_LENGTH,
+    FIELD_OUT_OF_RANGE
 }

@@ -1,6 +1,5 @@
 package ru.jerael.booktracker.backend.domain.model.book;
 
-import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
@@ -13,7 +12,7 @@ public record BookCreation(
     String description,
     String publisherName,
     String languageCode,
-    LocalDate publishedOn,
+    Integer publishedOn,
     Integer totalPages,
     String isbn10,
     String isbn13

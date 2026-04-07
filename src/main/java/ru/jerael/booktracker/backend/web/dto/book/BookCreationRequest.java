@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import ru.jerael.booktracker.backend.domain.constant.AuthorRules;
 import ru.jerael.booktracker.backend.domain.constant.BookRules;
-import java.time.LocalDate;
 import java.util.Set;
 
 public record BookCreationRequest(
@@ -33,7 +32,7 @@ public record BookCreationRequest(
     String languageCode,
 
     @Nullable
-    LocalDate publishedOn,
+    Integer publishedOn,
 
     @Nullable
     Integer totalPages,

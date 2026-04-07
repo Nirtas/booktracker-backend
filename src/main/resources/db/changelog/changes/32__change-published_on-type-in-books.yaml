@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 32__change-published_on-type-in-books
+      author: Jerael
+      comment: change published_on type from full date to year (integer)
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE books
+              ADD COLUMN published_year integer;
+              
+              UPDATE books
+              SET published_year = EXTRACT(YEAR FROM published_on);
+              
+              ALTER TABLE books
+              DROP COLUMN published_on;
+              
+              ALTER TABLE books
+              RENAME COLUMN published_year TO published_on;

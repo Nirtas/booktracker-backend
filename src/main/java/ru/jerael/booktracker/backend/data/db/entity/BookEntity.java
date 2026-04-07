@@ -7,7 +7,6 @@ import lombok.Setter;
 import ru.jerael.booktracker.backend.data.db.constant.Tables;
 import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -62,7 +61,7 @@ public class BookEntity {
     private LanguageEntity language;
 
     @Column(name = "published_on")
-    private LocalDate publishedOn;
+    private Integer publishedOn;
 
     @Column(name = "total_pages")
     private Integer totalPages;

@@ -47,3 +47,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/30__drop-unique-constraint-for-isbn.yaml
   - include:
       file: classpath:/db/changelog/changes/31__drop-deprecated-fields-in-books.yaml
+  - include:
+      file: classpath:/db/changelog/changes/32__change-published_on-type-in-books.yaml
