@@ -73,8 +73,8 @@ public class BookWebMapper {
             request.languageCode(),
             request.publishedOn(),
             request.totalPages(),
-            request.isbn10(),
-            request.isbn13()
+            cleanUpIsbn(request.isbn10()),
+            cleanUpIsbn(request.isbn13())
         );
     }
 
@@ -93,8 +93,14 @@ public class BookWebMapper {
             request.languageCode(),
             request.publishedOn(),
             request.totalPages(),
-            request.isbn10(),
-            request.isbn13()
+            cleanUpIsbn(request.isbn10()),
+            cleanUpIsbn(request.isbn13())
         );
+    }
+
+    private String cleanUpIsbn(String isbn) {
+        if (isbn == null) return null;
+
+        return isbn.replaceAll("[^0-9]", "");
     }
 }
