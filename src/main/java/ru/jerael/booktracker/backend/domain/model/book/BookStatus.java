@@ -5,7 +5,7 @@ import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFacto
 public enum BookStatus {
     WANT_TO_READ("want_to_read"),
     READING("reading"),
-    READ("read");
+    COMPLETED("completed");
 
     private final String value;
 
