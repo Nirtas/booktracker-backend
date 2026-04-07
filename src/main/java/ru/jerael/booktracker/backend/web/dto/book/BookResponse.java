@@ -9,7 +9,6 @@ import ru.jerael.booktracker.backend.web.dto.note.NoteResponse;
 import ru.jerael.booktracker.backend.web.dto.publisher.PublisherResponse;
 import ru.jerael.booktracker.backend.web.dto.reading_attempt.ReadingAttemptResponse;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -34,7 +33,7 @@ public record BookResponse(
     String description,
     PublisherResponse publisher,
     LanguageResponse language,
-    LocalDate publishedOn,
+    Integer publishedOn,
     Integer totalPages,
     String isbn10,
     String isbn13,

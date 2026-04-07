@@ -2,12 +2,13 @@ package ru.jerael.booktracker.backend.web.dto.book;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import ru.jerael.booktracker.backend.domain.constant.AuthorRules;
 import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import ru.jerael.booktracker.backend.domain.constant.ValidationRegex;
-import java.time.LocalDate;
 import java.util.Set;
 
 public record BookDetailsUpdateRequest(
@@ -37,7 +38,9 @@ public record BookDetailsUpdateRequest(
     String languageCode,
 
     @Nullable
-    LocalDate publishedOn,
+    @Min(BookRules.PUBLISHED_ON_MIN)
+    @Max(BookRules.PUBLISHED_ON_MAX)
+    Integer publishedOn,
 
     @Nullable
     Integer totalPages,

@@ -7,7 +7,6 @@ import ru.jerael.booktracker.backend.domain.model.note.Note;
 import ru.jerael.booktracker.backend.domain.model.publisher.Publisher;
 import ru.jerael.booktracker.backend.domain.model.reading_attempt.ReadingAttempt;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +23,7 @@ public record Book(
     String description,
     Publisher publisher,
     Language language,
-    LocalDate publishedOn,
+    Integer publishedOn,
     Integer totalPages,
     String isbn10,
     String isbn13,
