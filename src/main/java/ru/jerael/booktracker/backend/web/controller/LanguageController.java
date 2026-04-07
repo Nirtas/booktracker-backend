@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.jerael.booktracker.backend.domain.model.language.Language;
 import ru.jerael.booktracker.backend.domain.usecase.language.GetLanguageByCodeUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.language.GetLanguagesUseCase;
+import ru.jerael.booktracker.backend.domain.util.StringNormalizer;
 import ru.jerael.booktracker.backend.web.dto.language.LanguageResponse;
 import ru.jerael.booktracker.backend.web.mapper.LanguageWebMapper;
 import java.util.List;
@@ -33,7 +34,7 @@ public class LanguageController {
     @Operation(summary = "Get language by code")
     @GetMapping("/{code}")
     public LanguageResponse getByCode(@PathVariable String code) {
-        String normalizedCode = languageWebMapper.normalize(code);
+        String normalizedCode = StringNormalizer.normalize(code);
         Language language = getLanguageByCodeUseCase.execute(normalizedCode);
         return languageWebMapper.toResponse(language);
     }
