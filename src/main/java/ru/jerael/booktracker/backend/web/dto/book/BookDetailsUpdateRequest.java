@@ -2,8 +2,6 @@ package ru.jerael.booktracker.backend.web.dto.book;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import ru.jerael.booktracker.backend.domain.constant.AuthorRules;
@@ -38,8 +36,6 @@ public record BookDetailsUpdateRequest(
     String languageCode,
 
     @Nullable
-    @Min(BookRules.PUBLISHED_ON_MIN)
-    @Max(BookRules.PUBLISHED_ON_MAX)
     Integer publishedOn,
 
     @Nullable

@@ -59,4 +59,13 @@ public class CommonValidationErrorFactory {
             Map.of("items", items, "max", max)
         );
     }
+
+    public static ValidationError fieldOutOfRange(String field, int min, int max) {
+        return new ValidationError(
+            CommonValidationErrorCode.FIELD_OUT_OF_RANGE.name(),
+            field,
+            "Field must be between " + min + " and " + max,
+            Map.of("min", min, "max", max)
+        );
+    }
 }
