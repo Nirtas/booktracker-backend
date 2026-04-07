@@ -11,6 +11,7 @@ import ru.jerael.booktracker.backend.domain.model.author.Author;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
+import ru.jerael.booktracker.backend.domain.model.book.BookStatusTransition;
 import ru.jerael.booktracker.backend.domain.model.language.Language;
 import ru.jerael.booktracker.backend.domain.model.publisher.Publisher;
 import ru.jerael.booktracker.backend.domain.model.reading_attempt.ReadingAttempt;
@@ -22,6 +23,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -110,27 +112,32 @@ public class UpdateBookDetailsUseCaseImpl implements UpdateBookDetailsUseCase {
         }
 
         ReadingAttempt lastAttempt = attempts.get(attempts.size() - 1);
-        if (lastAttempt.status() == newStatus) return attempts;
-
-        if (lastAttempt.status() == BookStatus.COMPLETED) {
-            ReadingAttempt newAttempt = new ReadingAttempt(
-                null, book.id(), newStatus, Instant.now(), null, List.of()
-            );
-            attempts.add(newAttempt);
-        } else {
-            ReadingAttempt updatedAttempt = lastAttempt.withStatus(newStatus);
-            if (newStatus == BookStatus.COMPLETED) {
-                updatedAttempt = updatedAttempt.withFinishedAt(Instant.now());
-                if (updatedAttempt.sessions().isEmpty() && book.totalPages() != null) {
-                    ReadingSession finalSession = new ReadingSession(
-                        null, null, 0, book.totalPages(), Instant.now(), Instant.now()
-                    );
-                    updatedAttempt = updatedAttempt.withSessions(List.of(finalSession));
-                }
-            }
-            attempts.set(attempts.size() - 1, updatedAttempt);
+        BookStatusTransition transition = lastAttempt.status().getTransition(newStatus);
+        switch (transition) {
+            case UPDATE -> attempts.set(attempts.size() - 1, updateAttempt(lastAttempt, book, newStatus));
+            case NEW_ATTEMPT -> attempts.add(createAttempt(book.id(), newStatus));
+            case INVALID -> throw BookExceptionFactory.invalidStatusTransition(lastAttempt.status(), newStatus);
+            case IGNORE -> {}
         }
 
         return attempts;
+    }
+
+    private ReadingAttempt updateAttempt(ReadingAttempt attempt, Book book, BookStatus newStatus) {
+        ReadingAttempt updatedAttempt = attempt.withStatus(newStatus);
+        if (newStatus == BookStatus.COMPLETED) {
+            updatedAttempt = updatedAttempt.withFinishedAt(Instant.now());
+            if (updatedAttempt.sessions().isEmpty() && book.totalPages() != null) {
+                ReadingSession finalSession = new ReadingSession(
+                    null, null, 0, book.totalPages(), Instant.now(), Instant.now()
+                );
+                updatedAttempt = updatedAttempt.withSessions(List.of(finalSession));
+            }
+        }
+        return updatedAttempt;
+    }
+
+    private ReadingAttempt createAttempt(UUID bookId, BookStatus status) {
+        return new ReadingAttempt(null, bookId, status, Instant.now(), null, List.of());
     }
 }
