@@ -21,10 +21,4 @@ public class LanguageWebMapper {
 
         return languages.stream().map(this::toResponse).toList();
     }
-
-    public String normalize(String code) {
-        if (code == null) return null;
-
-        return code.trim().toLowerCase();
-    }
 }
