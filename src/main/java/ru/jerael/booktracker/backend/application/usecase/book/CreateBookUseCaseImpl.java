@@ -86,7 +86,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
         ReadingAttempt initialAttempt = new ReadingAttempt(
             null,
             null,
-            data.status(),
+            data.status() != null ? data.status() : BookStatus.defaultStatus(),
             Instant.now(),
             data.status() == BookStatus.COMPLETED ? Instant.now() : null,
             initialSessions
