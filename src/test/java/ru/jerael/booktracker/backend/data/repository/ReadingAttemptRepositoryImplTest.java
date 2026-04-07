@@ -55,7 +55,7 @@ class ReadingAttemptRepositoryImplTest {
         ReadingAttemptEntity entity1 = buildReadingAttemptEntity(book1, BookStatus.READING);
         jpaReadingAttemptRepository.save(entity1);
 
-        ReadingAttemptEntity entity2 = buildReadingAttemptEntity(book1, BookStatus.READ);
+        ReadingAttemptEntity entity2 = buildReadingAttemptEntity(book1, BookStatus.COMPLETED);
         jpaReadingAttemptRepository.save(entity2);
 
         ReadingAttemptEntity entity3 = buildReadingAttemptEntity(book2, BookStatus.WANT_TO_READ);
@@ -74,7 +74,7 @@ class ReadingAttemptRepositoryImplTest {
         ReadingAttemptEntity entity1 = buildReadingAttemptEntity(book, BookStatus.READING);
         jpaReadingAttemptRepository.save(entity1);
 
-        ReadingAttemptEntity entity2 = buildReadingAttemptEntity(book, BookStatus.READ);
+        ReadingAttemptEntity entity2 = buildReadingAttemptEntity(book, BookStatus.COMPLETED);
         jpaReadingAttemptRepository.save(entity2);
 
         List<ReadingAttempt> attempts =

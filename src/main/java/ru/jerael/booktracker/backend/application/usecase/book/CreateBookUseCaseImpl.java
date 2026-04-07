@@ -71,7 +71,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
         }
 
         List<ReadingSession> initialSessions = List.of();
-        if (data.status() == BookStatus.READ && data.totalPages() != null) {
+        if (data.status() == BookStatus.COMPLETED && data.totalPages() != null) {
             initialSessions = List.of(
                 new ReadingSession(null,
                     null,
@@ -88,7 +88,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
             null,
             data.status(),
             Instant.now(),
-            data.status() == BookStatus.READ ? Instant.now() : null,
+            data.status() == BookStatus.COMPLETED ? Instant.now() : null,
             initialSessions
         );
 

@@ -112,14 +112,14 @@ public class UpdateBookDetailsUseCaseImpl implements UpdateBookDetailsUseCase {
         ReadingAttempt lastAttempt = attempts.get(attempts.size() - 1);
         if (lastAttempt.status() == newStatus) return attempts;
 
-        if (lastAttempt.status() == BookStatus.READ) {
+        if (lastAttempt.status() == BookStatus.COMPLETED) {
             ReadingAttempt newAttempt = new ReadingAttempt(
                 null, book.id(), newStatus, Instant.now(), null, List.of()
             );
             attempts.add(newAttempt);
         } else {
             ReadingAttempt updatedAttempt = lastAttempt.withStatus(newStatus);
-            if (newStatus == BookStatus.READ) {
+            if (newStatus == BookStatus.COMPLETED) {
                 updatedAttempt = updatedAttempt.withFinishedAt(Instant.now());
                 if (updatedAttempt.sessions().isEmpty() && book.totalPages() != null) {
                     ReadingSession finalSession = new ReadingSession(
