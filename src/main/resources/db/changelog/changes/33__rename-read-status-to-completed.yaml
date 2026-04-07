@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 33__rename-read-status-to-completed
+      author: Jerael
+      comment: rename read status to completed
+      changes:
+        - update:
+            tableName: reading_attempts
+            where: status='READ'
+            columns:
+              - column:
+                  name: status
+                  value: COMPLETED
