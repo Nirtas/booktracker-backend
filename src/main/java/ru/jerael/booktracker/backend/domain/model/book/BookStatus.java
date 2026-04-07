@@ -31,4 +31,17 @@ public enum BookStatus {
     public static BookStatus defaultStatus() {
         return BookStatus.WANT_TO_READ;
     }
+
+    public BookStatusTransition getTransition(BookStatus target) {
+        if (this == target) {
+            return BookStatusTransition.IGNORE;
+        }
+        if (this == COMPLETED) {
+            if (target == DROPPED) {
+                return BookStatusTransition.INVALID;
+            }
+            return BookStatusTransition.NEW_ATTEMPT;
+        }
+        return BookStatusTransition.UPDATE;
+    }
 }
