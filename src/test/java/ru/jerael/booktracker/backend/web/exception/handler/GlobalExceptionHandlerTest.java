@@ -22,6 +22,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.jerael.booktracker.backend.domain.exception.AppException;
 import ru.jerael.booktracker.backend.domain.exception.code.*;
 import ru.jerael.booktracker.backend.domain.exception.factory.*;
+import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.web.config.WebProperties;
 import ru.jerael.booktracker.backend.web.exception.code.WebErrorCode;
 import ru.jerael.booktracker.backend.web.exception.factory.FileWebExceptionFactory;
@@ -49,6 +50,11 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/not-found")
         void notFound() {
             throw BookExceptionFactory.bookNotFound(id);
+        }
+
+        @GetMapping("/test/unprocessable-content")
+        void unprocessableContent() {
+            throw BookExceptionFactory.invalidStatusTransition(BookStatus.COMPLETED, BookStatus.DROPPED);
         }
 
         @GetMapping("/test/too-many-requests")
@@ -127,6 +133,17 @@ class GlobalExceptionHandlerTest {
         json.extractingPath("$.detail").isEqualTo("Book with id " + id + " was not found");
         json.extractingPath("$.title").isEqualTo("Resource not found");
         json.extractingPath("$.code").isEqualTo(BookErrorCode.BOOK_NOT_FOUND.name());
+    }
+
+    @Test
+    void handleUnprocessableContentException() {
+        var response = mockMvcTester.get().uri("/test/unprocessable-content");
+        assertThat(response).hasStatus(HttpStatus.UNPROCESSABLE_CONTENT);
+        var json = assertThat(response).bodyJson();
+        json.extractingPath("$.detail")
+            .isEqualTo("Transition from " + BookStatus.COMPLETED + " to " + BookStatus.DROPPED + " is not allowed");
+        json.extractingPath("$.title").isEqualTo("Business rule violation");
+        json.extractingPath("$.code").isEqualTo(BookErrorCode.INVALID_BOOK_STATUS_TRANSITION.name());
     }
 
     @Test
