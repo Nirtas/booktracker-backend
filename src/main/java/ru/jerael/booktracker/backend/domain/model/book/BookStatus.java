@@ -5,7 +5,8 @@ import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFacto
 public enum BookStatus {
     WANT_TO_READ("want_to_read"),
     READING("reading"),
-    COMPLETED("completed");
+    COMPLETED("completed"),
+    DROPPED("dropped");
 
     private final String value;
 
@@ -29,5 +30,18 @@ public enum BookStatus {
 
     public static BookStatus defaultStatus() {
         return BookStatus.WANT_TO_READ;
+    }
+
+    public BookStatusTransition getTransition(BookStatus target) {
+        if (this == target) {
+            return BookStatusTransition.IGNORE;
+        }
+        if (this == COMPLETED) {
+            if (target == DROPPED) {
+                return BookStatusTransition.INVALID;
+            }
+            return BookStatusTransition.NEW_ATTEMPT;
+        }
+        return BookStatusTransition.UPDATE;
     }
 }

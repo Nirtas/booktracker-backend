@@ -1,6 +1,7 @@
 package ru.jerael.booktracker.backend.domain.exception.factory;
 
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException;
+import ru.jerael.booktracker.backend.domain.exception.UnprocessableContentException;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.code.BookErrorCode;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
@@ -35,6 +36,14 @@ public class BookExceptionFactory {
         return new NotFoundException(
             BookErrorCode.READING_ATTEMPTS_NOT_FOUND,
             "Book with id " + id + " has no reading attempts"
+        );
+    }
+
+    public static UnprocessableContentException invalidStatusTransition(BookStatus from, BookStatus to) {
+        return new UnprocessableContentException(
+            BookErrorCode.INVALID_BOOK_STATUS_TRANSITION,
+            "Transition from " + from + " to " + to + " is not allowed",
+            "status"
         );
     }
 }
