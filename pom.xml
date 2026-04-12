@@ -49,6 +49,7 @@
         <spring-security-crypto.version>7.0.3</spring-security-crypto.version>
         <spring-security-test.version>7.0.3</spring-security-test.version>
         <kotlin.version>2.3.20</kotlin.version>
+        <mockk-jvm.version>1.14.9</mockk-jvm.version>
     </properties>
     <dependencies>
 
@@ -201,6 +202,12 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <version>${spring-security-test.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk-jvm</artifactId>
+            <version>${mockk-jvm.version}</version>
             <scope>test</scope>
         </dependency>
 
