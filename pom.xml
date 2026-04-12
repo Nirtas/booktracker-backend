@@ -48,6 +48,7 @@
         <nimbus-jose-jwt.version>10.8</nimbus-jose-jwt.version>
         <spring-security-crypto.version>7.0.3</spring-security-crypto.version>
         <spring-security-test.version>7.0.3</spring-security-test.version>
+        <kotlin.version>2.3.20</kotlin.version>
     </properties>
     <dependencies>
 
@@ -230,6 +231,24 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>test-compile</id>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
