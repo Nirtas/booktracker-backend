@@ -50,6 +50,7 @@
         <spring-security-test.version>7.0.3</spring-security-test.version>
         <kotlin.version>2.3.20</kotlin.version>
         <mockk-jvm.version>1.14.9</mockk-jvm.version>
+        <springmockk.version>5.0.1</springmockk.version>
     </properties>
     <dependencies>
 
@@ -208,6 +209,12 @@
             <groupId>io.mockk</groupId>
             <artifactId>mockk-jvm</artifactId>
             <version>${mockk-jvm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ninja-squad</groupId>
+            <artifactId>springmockk</artifactId>
+            <version>${springmockk.version}</version>
             <scope>test</scope>
         </dependency>
 
