@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication
 import org.springframework.test.web.servlet.assertj.MockMvcTester
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory
@@ -22,6 +21,7 @@ import ru.jerael.booktracker.backend.domain.model.book.BookStatus
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult
 import ru.jerael.booktracker.backend.domain.service.token.AuthTokenService
 import ru.jerael.booktracker.backend.domain.usecase.book.*
+import ru.jerael.booktracker.backend.factory.auth.AuthWebFactory
 import ru.jerael.booktracker.backend.factory.book.BookDomainFactory
 import ru.jerael.booktracker.backend.factory.book.BookWebFactory
 import ru.jerael.booktracker.backend.factory.file.FileFactory
@@ -88,10 +88,6 @@ class BookControllerTest {
     private val userId: UUID = UUID.randomUUID()
     private val bookId: UUID = UUID.randomUUID()
     
-    private fun getAuth(): UsernamePasswordAuthenticationToken {
-        return UsernamePasswordAuthenticationToken(userId, null, emptyList())
-    }
-    
     @Test
     fun `getAll should return list of BookResponses`() {
         val book = BookDomainFactory.createBook(userId = userId)
@@ -102,7 +98,7 @@ class BookControllerTest {
         every { bookWebMapper.toResponse(book) } returns bookResponse
         
         val mockResponse = mockMvcTester.get().uri("/api/v1/books?page=0&size=10")
-            .with(authentication(getAuth())).exchange()
+            .with(authentication(AuthWebFactory.createAuthToken(userId = userId))).exchange()
         
         assertThat(mockResponse)
             .hasStatus(HttpStatus.OK)
@@ -122,7 +118,8 @@ class BookControllerTest {
     fun `when Book not found, getById should return 404 Not Found`() {
         every { getBookByIdUseCase.execute(bookId, userId) } throws BookExceptionFactory.bookNotFound(bookId)
         
-        val mockResponse = mockMvcTester.get().uri("/api/v1/books/$bookId").with(authentication(getAuth()))
+        val mockResponse = mockMvcTester.get().uri("/api/v1/books/$bookId")
+            .with(authentication(AuthWebFactory.createAuthToken(userId = userId)))
         
         assertThat(mockResponse)
             .hasStatus(HttpStatus.NOT_FOUND)
@@ -138,7 +135,7 @@ class BookControllerTest {
         every { deleteBookUseCase.execute(bookId, userId) } just Runs
         
         val mockResponse = mockMvcTester.delete().uri("/api/v1/books/$bookId")
-            .with(authentication(getAuth()))
+            .with(authentication(AuthWebFactory.createAuthToken(userId = userId)))
         
         assertThat(mockResponse).hasStatus(HttpStatus.NO_CONTENT)
         
@@ -165,7 +162,7 @@ class BookControllerTest {
         every { bookWebMapper.toResponse(book) } returns bookResponse
         
         val mockResponse = mockMvcTester.patch().uri("/api/v1/books/$bookId")
-            .with(authentication(getAuth()))
+            .with(authentication(AuthWebFactory.createAuthToken(userId = userId)))
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
         
@@ -196,7 +193,7 @@ class BookControllerTest {
         every { bookWebMapper.toResponse(book) } returns bookResponse
         
         val mockResponse = mockMvcTester.post().uri("/api/v1/books")
-            .with(authentication(getAuth()))
+            .with(authentication(AuthWebFactory.createAuthToken(userId = userId)))
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
         
@@ -232,7 +229,7 @@ class BookControllerTest {
         every { bookWebMapper.toResponse(book) } returns bookResponse
         
         val mockResponse = mockMvcTester.post().uri("/api/v1/books/$bookId/cover")
-            .with(authentication(getAuth()))
+            .with(authentication(AuthWebFactory.createAuthToken(userId = userId)))
             .multipart()
             .file(file)
         
@@ -252,7 +249,7 @@ class BookControllerTest {
         every { deleteCoverUseCase.execute(bookId, userId) } just Runs
         
         val mockResponse = mockMvcTester.delete().uri("/api/v1/books/$bookId/cover")
-            .with(authentication(getAuth()))
+            .with(authentication(AuthWebFactory.createAuthToken(userId = userId)))
         
         assertThat(mockResponse).hasStatus(HttpStatus.NO_CONTENT)
         
@@ -268,7 +265,7 @@ class BookControllerTest {
         every { getBookCoverUseCase.execute(bookId, userId) } returns file
         
         val mockResponse = mockMvcTester.get().uri("/api/v1/books/$bookId/cover")
-            .with(authentication(getAuth()))
+            .with(authentication(AuthWebFactory.createAuthToken(userId = userId)))
         
         assertThat(mockResponse)
             .hasStatus(HttpStatus.OK)

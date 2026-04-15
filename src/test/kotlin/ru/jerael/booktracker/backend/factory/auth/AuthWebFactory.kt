@@ -1,5 +1,6 @@
 package ru.jerael.booktracker.backend.factory.auth
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import ru.jerael.booktracker.backend.domain.model.verification.VerificationType
 import ru.jerael.booktracker.backend.web.dto.auth.*
 import java.time.Instant
@@ -52,5 +53,11 @@ object AuthWebFactory {
         expiresAt: Instant = Instant.now().plusSeconds(600)
     ): ResendVerificationResponse {
         return ResendVerificationResponse(userId, email, expiresAt)
+    }
+    
+    fun createAuthToken(
+        userId: UUID = UUID.randomUUID()
+    ): UsernamePasswordAuthenticationToken {
+        return UsernamePasswordAuthenticationToken(userId, null, emptyList())
     }
 }
