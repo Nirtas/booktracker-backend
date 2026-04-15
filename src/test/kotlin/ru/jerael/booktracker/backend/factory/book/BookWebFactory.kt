@@ -55,19 +55,30 @@ object BookWebFactory {
     fun createBookResponse(
         id: UUID = UUID.randomUUID(),
         title: String? = "Title",
-        coverUrl: String? = null,
-        status: String? = null,
+        coverUrl: String? = "cover.jpg",
+        status: String? = BookStatus.defaultStatus().value,
         createdAt: Instant = Instant.now(),
-        genres: Set<GenreResponse> = emptySet(),
-        authors: Set<AuthorResponse> = emptySet(),
-        description: String? = null,
-        publisher: PublisherResponse? = null,
-        language: LanguageResponse? = null,
+        genres: Set<GenreResponse> = setOf(
+            GenreResponse(1, "action"),
+            GenreResponse(2, "adventure")
+        ),
+        authors: Set<AuthorResponse> = setOf(
+            AuthorResponse(UUID.randomUUID(), "Author A"),
+            AuthorResponse(UUID.randomUUID(), "Author B")
+        ),
+        description: String? = "Description",
+        publisher: PublisherResponse? = PublisherResponse(UUID.randomUUID(), "Publisher A"),
+        language: LanguageResponse? = LanguageResponse("en", "English"),
         publishedOn: Int? = 2025,
         totalPages: Int? = 300,
-        isbn10: String? = null,
-        isbn13: String? = null,
-        attempts: List<ReadingAttemptResponse> = emptyList(),
+        isbn10: String? = "1234567890",
+        isbn13: String? = "1234567890123",
+        attempts: List<ReadingAttemptResponse> = listOf(
+            ReadingAttemptResponse(
+                UUID.randomUUID(), BookStatus.defaultStatus().value,
+                Instant.now(), null, emptyList()
+            )
+        ),
         notes: List<NoteResponse> = emptyList()
     ): BookResponse {
         return BookResponse(
