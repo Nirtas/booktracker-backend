@@ -215,7 +215,7 @@ class BookControllerTest {
         val coverUrl = "http://localhost:8080/api/v1/books/$bookId/cover"
         
         val file = FileFactory.createMockMultipartFile(originalFileName = fileName)
-        val data = BookDomainFactory.createUploadCover(
+        val data = BookDomainFactory.createUploadCoverPayload(
             contentType = file.contentType,
             content = file.inputStream,
             size = file.size
@@ -224,8 +224,8 @@ class BookControllerTest {
         val bookResponse = BookWebFactory.createBookResponse(id = bookId, coverUrl = coverUrl)
         
         every { fileValidator.validate(file, any()) } just Runs
-        every { uploadCoverWebMapper.toDomain(file) } returns data
-        every { uploadCoverUseCase.execute(bookId, userId, data) } returns book
+        every { uploadCoverWebMapper.toDomain(file, bookId, userId) } returns data
+        every { uploadCoverUseCase.execute(data) } returns book
         every { bookWebMapper.toResponse(book) } returns bookResponse
         
         val mockResponse = mockMvcTester.post().uri("/api/v1/books/$bookId/cover")
@@ -241,7 +241,7 @@ class BookControllerTest {
                 assertEquals(coverUrl, response.coverUrl)
             })
         
-        verify { uploadCoverUseCase.execute(bookId, userId, data) }
+        verify { uploadCoverUseCase.execute(data) }
     }
     
     @Test

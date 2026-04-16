@@ -10,7 +10,7 @@ import ru.jerael.booktracker.backend.domain.constant.ImageRules;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
-import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.book.UploadCoverPayload;
 import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.model.image.ProcessedImage;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
@@ -29,7 +29,10 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
 
     @Override
     @Transactional
-    public Book execute(UUID bookId, UUID userId, UploadCover data) {
+    public Book execute(UploadCoverPayload data) {
+        UUID bookId = data.bookId();
+        UUID userId = data.userId();
+
         Book book =
             bookRepository.findByIdAndUserId(bookId, userId)
                 .orElseThrow(() -> BookExceptionFactory.bookNotFound(bookId));
