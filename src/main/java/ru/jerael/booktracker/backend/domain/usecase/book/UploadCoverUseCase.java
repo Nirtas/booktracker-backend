@@ -1,9 +1,8 @@
 package ru.jerael.booktracker.backend.domain.usecase.book;
 
 import ru.jerael.booktracker.backend.domain.model.book.Book;
-import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
-import java.util.UUID;
+import ru.jerael.booktracker.backend.domain.model.book.UploadCoverPayload;
 
 public interface UploadCoverUseCase {
-    Book execute(UUID bookId, UUID userId, UploadCover data);
+    Book execute(UploadCoverPayload data);
 }

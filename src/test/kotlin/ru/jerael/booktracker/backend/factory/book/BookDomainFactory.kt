@@ -88,11 +88,13 @@ object BookDomainFactory {
         )
     }
     
-    fun createUploadCover(
+    fun createUploadCoverPayload(
+        bookId: UUID = UUID.randomUUID(),
+        userId: UUID = UUID.randomUUID(),
         contentType: String? = "image/jpeg",
         content: InputStream? = "cover content".toByteArray().inputStream(),
         size: Long = "cover content".length.toLong()
-    ): UploadCover {
-        return UploadCover(contentType, content, size)
+    ): UploadCoverPayload {
+        return UploadCoverPayload(bookId, userId, contentType, content, size)
     }
 }
