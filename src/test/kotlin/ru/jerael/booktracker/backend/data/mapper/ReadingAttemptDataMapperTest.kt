@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import ru.jerael.booktracker.backend.factory.reading_attempt.ReadingAttemptDomainFactory
 import ru.jerael.booktracker.backend.factory.reading_attempt.ReadingAttemptEntityFactory
+import java.util.*
 
 class ReadingAttemptDataMapperTest {
     private val readingSessionDataMapper = ReadingSessionDataMapper()
@@ -29,7 +30,7 @@ class ReadingAttemptDataMapperTest {
     
     @Test
     fun `toDomain should map ReadingAttemptEntity to ReadingAttempt`() {
-        val entity = ReadingAttemptEntityFactory.createReadingAttemptEntity()
+        val entity = ReadingAttemptEntityFactory.createReadingAttemptEntity(id = UUID.randomUUID())
         
         val attempt = mapper.toDomain(entity)
         

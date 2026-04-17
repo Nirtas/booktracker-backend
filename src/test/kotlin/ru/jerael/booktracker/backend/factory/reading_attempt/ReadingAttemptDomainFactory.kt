@@ -8,7 +8,7 @@ import java.util.*
 
 object ReadingAttemptDomainFactory {
     fun createReadingAttempt(
-        id: UUID = UUID.randomUUID(),
+        id: UUID? = UUID.randomUUID(),
         bookId: UUID = UUID.randomUUID(),
         status: BookStatus = BookStatus.defaultStatus(),
         startedAt: Instant = Instant.now(),
