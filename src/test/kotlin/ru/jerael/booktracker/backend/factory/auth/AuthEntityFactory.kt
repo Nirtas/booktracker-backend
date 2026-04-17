@@ -7,7 +7,7 @@ import java.util.*
 
 object AuthEntityFactory {
     fun createRefreshTokenEntity(
-        id: UUID? = UUID.randomUUID(),
+        id: UUID? = null,
         user: UserEntity? = UserEntity().apply { this.id = UUID.randomUUID() },
         tokenHash: String = "token hash",
         expiresAt: Instant = Instant.now().plusSeconds(6000)
