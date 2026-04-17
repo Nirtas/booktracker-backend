@@ -7,7 +7,7 @@ import java.util.*
 
 object EmailVerificationDomainFactory {
     fun createEmailVerification(
-        id: UUID = UUID.randomUUID(),
+        id: UUID? = UUID.randomUUID(),
         userId: UUID = UUID.randomUUID(),
         email: String = "test@example.com",
         type: VerificationType = VerificationType.REGISTRATION,
