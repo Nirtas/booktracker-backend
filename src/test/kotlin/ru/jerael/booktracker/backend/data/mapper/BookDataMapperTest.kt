@@ -6,8 +6,12 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import ru.jerael.booktracker.backend.domain.model.language.Language
+import ru.jerael.booktracker.backend.domain.model.publisher.Publisher
 import ru.jerael.booktracker.backend.factory.book.BookDomainFactory
 import ru.jerael.booktracker.backend.factory.book.BookEntityFactory
+import ru.jerael.booktracker.backend.factory.user.UserEntityFactory
+import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class BookDataMapperTest {
@@ -24,13 +28,15 @@ class BookDataMapperTest {
     
     @Test
     fun `toDomain should map BookEntity to Book`() {
-        val entity = BookEntityFactory.createBookEntity()
+        val userId = UUID.randomUUID()
+        val user = UserEntityFactory.createUserEntity(id = userId)
+        val entity = BookEntityFactory.createBookEntity(id = UUID.randomUUID(), user = user)
         
         val domain = mapper.toDomain(entity)
         
         with(domain) {
             assertEquals(entity.id, id)
-            assertEquals(entity.user.id, userId)
+            assertEquals(userId, this.userId)
             assertEquals(entity.title, title)
             assertEquals(entity.coverFileName, coverFileName)
             assertEquals(entity.createdAt, createdAt)
@@ -64,7 +70,10 @@ class BookDataMapperTest {
     
     @Test
     fun `toEntity should map Book to BookEntity`() {
-        val book = BookDomainFactory.createBook()
+        val book = BookDomainFactory.createBook(
+            publisher = Publisher(UUID.randomUUID(), "Publisher A"),
+            language = Language("en", "English"),
+        )
         
         val entity = mapper.toEntity(book)
         

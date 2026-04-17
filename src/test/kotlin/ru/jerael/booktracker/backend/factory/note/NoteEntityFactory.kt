@@ -8,8 +8,8 @@ import java.util.*
 
 object NoteEntityFactory {
     fun createNoteEntity(
-        id: UUID = UUID.randomUUID(),
-        book: BookEntity = BookEntity().apply { this.id = UUID.randomUUID() },
+        id: UUID? = UUID.randomUUID(),
+        book: BookEntity? = BookEntity().apply { this.id = UUID.randomUUID() },
         type: NoteType = NoteType.TEXT,
         textContent: String? = "text",
         fileName: String? = null,

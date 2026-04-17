@@ -1,44 +1,26 @@
 package ru.jerael.booktracker.backend.factory.book
 
 import ru.jerael.booktracker.backend.data.db.entity.*
-import ru.jerael.booktracker.backend.domain.model.book.BookStatus
 import java.time.Instant
 import java.util.*
 
 object BookEntityFactory {
     fun createBookEntity(
-        id: UUID = UUID.randomUUID(),
-        user: UserEntity = UserEntity().apply { this.id = UUID.randomUUID() },
+        id: UUID? = null,
+        user: UserEntity? = null,
         title: String = "Title",
         coverFileName: String? = "cover.jpg",
         createdAt: Instant = Instant.now(),
-        genres: Set<GenreEntity> = setOf(
-            GenreEntity().apply { this.id = 1; this.name = "Genre 1" },
-            GenreEntity().apply { this.id = 2; this.name = "Genre 2" }
-        ),
-        authors: Set<AuthorEntity> = setOf(
-            AuthorEntity().apply { this.id = UUID.randomUUID(); this.fullName = "Author A" },
-            AuthorEntity().apply { this.id = UUID.randomUUID(); this.fullName = "Author B" }
-        ),
+        genres: Set<GenreEntity> = emptySet(),
+        authors: Set<AuthorEntity> = emptySet(),
         description: String? = "Description",
-        publisher: PublisherEntity? = PublisherEntity().apply {
-            this.id = UUID.randomUUID(); this.name = "Publisher A"
-        },
-        language: LanguageEntity? = LanguageEntity().apply { this.code = "en"; this.name = "English" },
+        publisher: PublisherEntity? = null,
+        language: LanguageEntity? = null,
         publishedOn: Int? = 2025,
         totalPages: Int? = 300,
-        isbn10: String? = "123-456-789-0",
-        isbn13: String? = "123-456-789-012-3",
-        attempts: List<ReadingAttemptEntity> = listOf(
-            ReadingAttemptEntity().apply {
-                this.id = UUID.randomUUID()
-                this.book = BookEntity().apply { this.id = UUID.randomUUID() }
-                this.status = BookStatus.defaultStatus()
-                this.startedAt = Instant.now()
-                this.finishedAt = null
-                this.sessions = emptyList()
-            }
-        ),
+        isbn10: String? = "1234567890",
+        isbn13: String? = "1234567890123",
+        attempts: List<ReadingAttemptEntity> = emptyList(),
         notes: List<NoteEntity> = emptyList()
     ): BookEntity {
         return BookEntity().apply {
@@ -48,6 +30,7 @@ object BookEntityFactory {
             this.totalPages = totalPages; this.isbn10 = isbn10; this.isbn13 = isbn13
             this.attempts = attempts
             this.notes = notes
+            this.attempts.forEach { it.book = this }
         }
     }
 }

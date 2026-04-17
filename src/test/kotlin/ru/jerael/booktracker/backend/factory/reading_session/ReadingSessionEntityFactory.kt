@@ -7,8 +7,8 @@ import java.util.*
 
 object ReadingSessionEntityFactory {
     fun createReadingSessionEntity(
-        id: UUID = UUID.randomUUID(),
-        readingAttempt: ReadingAttemptEntity = ReadingAttemptEntity().apply { this.id = UUID.randomUUID() },
+        id: UUID? = UUID.randomUUID(),
+        readingAttempt: ReadingAttemptEntity? = ReadingAttemptEntity().apply { this.id = UUID.randomUUID() },
         startPage: Int = 20,
         endPage: Int = 40,
         startedAt: Instant = Instant.now().minusSeconds(600),
