@@ -7,7 +7,7 @@ import java.util.*
 
 object NoteDomainFactory {
     fun createNote(
-        id: UUID = UUID.randomUUID(),
+        id: UUID? = UUID.randomUUID(),
         bookId: UUID = UUID.randomUUID(),
         type: NoteType = NoteType.TEXT,
         textContent: String? = "text",

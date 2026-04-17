@@ -8,7 +8,7 @@ import java.util.*
 
 object NoteEntityFactory {
     fun createNoteEntity(
-        id: UUID? = UUID.randomUUID(),
+        id: UUID? = null,
         book: BookEntity? = BookEntity().apply { this.id = UUID.randomUUID() },
         type: NoteType = NoteType.TEXT,
         textContent: String? = "text",

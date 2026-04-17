@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import ru.jerael.booktracker.backend.factory.note.NoteDomainFactory
 import ru.jerael.booktracker.backend.factory.note.NoteEntityFactory
+import java.util.*
 
 class NoteDataMapperTest {
     private val mapper = NoteDataMapper()
@@ -27,7 +28,7 @@ class NoteDataMapperTest {
     
     @Test
     fun `toDomain should map NoteEntity to Note`() {
-        val entity = NoteEntityFactory.createNoteEntity()
+        val entity = NoteEntityFactory.createNoteEntity(id = UUID.randomUUID())
         
         val note = mapper.toDomain(entity)
         
