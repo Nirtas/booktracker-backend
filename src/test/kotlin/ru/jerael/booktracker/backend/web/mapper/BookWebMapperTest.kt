@@ -29,7 +29,7 @@ class BookWebMapperTest {
     
     @Test
     fun `toResponse should map Book to BookResponse`() {
-        val book = BookDomainFactory.createBook()
+        val book = BookDomainFactory.createBook(coverFileName = "cover.jpg")
         val coverUrl = "http://localhost:8080/api/v1/books/${book.id}/cover"
         every { linkBuilder.buildCoverUrl(book.id) } returns coverUrl
         
@@ -71,8 +71,8 @@ class BookWebMapperTest {
     
     @Test
     fun `toResponses should map Books to BookResponses`() {
-        val book = BookDomainFactory.createBook()
-        val book2 = BookDomainFactory.createBook(userId = book.userId, title = "asd")
+        val book = BookDomainFactory.createBook(coverFileName = "cover.jpg")
+        val book2 = BookDomainFactory.createBook(userId = book.userId, title = "asd", coverFileName = "cover.jpg")
         every { linkBuilder.buildCoverUrl(book.id) } returns "url1"
         every { linkBuilder.buildCoverUrl(book2.id) } returns "url2"
         

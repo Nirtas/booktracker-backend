@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import ru.jerael.booktracker.backend.domain.model.language.Language
+import ru.jerael.booktracker.backend.domain.model.publisher.Publisher
 import ru.jerael.booktracker.backend.factory.book.BookDomainFactory
 import ru.jerael.booktracker.backend.factory.book.BookEntityFactory
 import ru.jerael.booktracker.backend.factory.user.UserEntityFactory
@@ -68,7 +70,10 @@ class BookDataMapperTest {
     
     @Test
     fun `toEntity should map Book to BookEntity`() {
-        val book = BookDomainFactory.createBook()
+        val book = BookDomainFactory.createBook(
+            publisher = Publisher(UUID.randomUUID(), "Publisher A"),
+            language = Language("en", "English"),
+        )
         
         val entity = mapper.toEntity(book)
         

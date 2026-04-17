@@ -16,29 +16,18 @@ object BookDomainFactory {
         id: UUID? = UUID.randomUUID(),
         userId: UUID = UUID.randomUUID(),
         title: String? = "Title",
-        coverFileName: String? = "cover.jpg",
+        coverFileName: String? = null,
         createdAt: Instant = Instant.now(),
-        genres: Set<Genre> = setOf(
-            Genre(1, "action"),
-            Genre(2, "adventure")
-        ),
-        authors: Set<Author> = setOf(
-            Author(UUID.randomUUID(), "Author A"),
-            Author(UUID.randomUUID(), "Author B")
-        ),
-        description: String? = "Description",
-        publisher: Publisher? = Publisher(UUID.randomUUID(), "Publisher A"),
-        language: Language? = Language("en", "English"),
+        genres: Set<Genre> = emptySet(),
+        authors: Set<Author> = emptySet(),
+        description: String? = null,
+        publisher: Publisher? = null,
+        language: Language? = null,
         publishedOn: Int? = 2025,
         totalPages: Int? = 300,
-        isbn10: String? = "1234567890",
-        isbn13: String? = "1234567890123",
-        attempts: List<ReadingAttempt> = listOf(
-            ReadingAttempt(
-                UUID.randomUUID(), null, BookStatus.defaultStatus(),
-                Instant.now(), null, emptyList()
-            )
-        ),
+        isbn10: String? = null,
+        isbn13: String? = null,
+        attempts: List<ReadingAttempt> = emptyList(),
         notes: List<Note> = emptyList()
     ): Book {
         return Book(
