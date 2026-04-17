@@ -6,7 +6,7 @@ import java.util.*
 
 object ReadingSessionDomainFactory {
     fun createReadingSession(
-        id: UUID = UUID.randomUUID(),
+        id: UUID? = UUID.randomUUID(),
         attemptId: UUID = UUID.randomUUID(),
         startPage: Int = 20,
         endPage: Int = 40,
