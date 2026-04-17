@@ -13,13 +13,6 @@ object AuthDomainFactory {
         return ConfirmRegistration(userId, token)
     }
     
-    fun createGeneratedToken(
-        value: String = "token",
-        expiresAt: Instant = Instant.now().plusSeconds(600)
-    ): GeneratedToken {
-        return GeneratedToken(value, expiresAt)
-    }
-    
     fun createIdentityTokenClaims(
         userId: UUID = UUID.randomUUID(),
         type: IdentityTokenType = IdentityTokenType.REFRESH,
