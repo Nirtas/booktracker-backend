@@ -5,7 +5,7 @@ import java.util.*
 
 object PublisherDomainFactory {
     fun createPublisher(
-        id: UUID = UUID.randomUUID(),
+        id: UUID? = UUID.randomUUID(),
         name: String = "Publisher A"
     ): Publisher {
         return Publisher(id, name)

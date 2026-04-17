@@ -5,7 +5,7 @@ import java.util.*
 
 object PublisherEntityFactory {
     fun createPublisherEntity(
-        id: UUID? = UUID.randomUUID(),
+        id: UUID? = null,
         name: String = "Publisher A"
     ): PublisherEntity {
         return PublisherEntity().apply { this.id = id; this.name = name }
