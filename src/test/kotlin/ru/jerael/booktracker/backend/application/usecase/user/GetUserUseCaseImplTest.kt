@@ -24,7 +24,7 @@ class GetUserUseCaseImplTest {
     @Test
     fun `when user exists, execute should return user`() {
         val userId = UUID.randomUUID()
-        val user = UserDomainFactory.createUser(userId = userId)
+        val user = UserDomainFactory.createUser(id = userId)
         
         every { userRepository.findById(userId) } returns Optional.of(user)
         

@@ -8,13 +8,13 @@ import java.util.*
 
 object UserDomainFactory {
     fun createUser(
-        userId: UUID = UUID.randomUUID(),
+        id: UUID? = UUID.randomUUID(),
         email: String = "test@example.com",
         passwordHash: String = "password hash",
         isVerified: Boolean = false,
         createdAt: Instant = Instant.now()
     ): User {
-        return User(userId, email, passwordHash, isVerified, createdAt)
+        return User(id, email, passwordHash, isVerified, createdAt)
     }
     
     fun createUserCreation(
