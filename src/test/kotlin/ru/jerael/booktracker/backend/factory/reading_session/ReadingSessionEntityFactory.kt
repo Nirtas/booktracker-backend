@@ -7,12 +7,12 @@ import java.util.*
 
 object ReadingSessionEntityFactory {
     fun createReadingSessionEntity(
-        id: UUID? = UUID.randomUUID(),
+        id: UUID? = null,
         readingAttempt: ReadingAttemptEntity? = ReadingAttemptEntity().apply { this.id = UUID.randomUUID() },
         startPage: Int = 20,
         endPage: Int = 40,
         startedAt: Instant = Instant.now().minusSeconds(600),
-        finishedAt: Instant = Instant.now()
+        finishedAt: Instant? = Instant.now()
     ): ReadingSessionEntity {
         return ReadingSessionEntity().apply {
             this.id = id; this.readingAttempt = readingAttempt; this.startPage = startPage
