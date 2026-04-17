@@ -9,7 +9,7 @@ import java.util.*
 
 object ReadingAttemptEntityFactory {
     fun createReadingAttemptEntity(
-        id: UUID? = UUID.randomUUID(),
+        id: UUID? = null,
         book: BookEntity = BookEntity().apply { this.id = UUID.randomUUID() },
         status: BookStatus = BookStatus.defaultStatus(),
         startedAt: Instant = Instant.now(),
