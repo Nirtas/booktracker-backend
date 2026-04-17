@@ -31,8 +31,8 @@ object BookDomainFactory {
         language: Language? = Language("en", "English"),
         publishedOn: Int? = 2025,
         totalPages: Int? = 300,
-        isbn10: String? = "123-456-789-0",
-        isbn13: String? = "123-456-789-012-3",
+        isbn10: String? = "1234567890",
+        isbn13: String? = "1234567890123",
         attempts: List<ReadingAttempt> = listOf(
             ReadingAttempt(
                 UUID.randomUUID(), null, BookStatus.defaultStatus(),
@@ -49,7 +49,7 @@ object BookDomainFactory {
     
     fun createBookCreation(
         userId: UUID = UUID.randomUUID(),
-        title: String? = " title ",
+        title: String? = "title",
         status: BookStatus = BookStatus.defaultStatus(),
         genreIds: Set<Int> = setOf(1, 2),
         authorNames: Set<String> = setOf("Author A", "Author B"),
@@ -58,8 +58,8 @@ object BookDomainFactory {
         languageCode: String? = "en",
         publishedOn: Int? = 2025,
         totalPages: Int? = 300,
-        isbn10: String? = "123-456-789-0",
-        isbn13: String? = "123-456-789-012-3"
+        isbn10: String? = "1234567890",
+        isbn13: String? = "1234567890123"
     ): BookCreation {
         return BookCreation(
             userId, title, status, genreIds, authorNames, description,
@@ -81,6 +81,27 @@ object BookDomainFactory {
         totalPages: Int? = null,
         isbn10: String? = null,
         isbn13: String? = null
+    ): BookDetailsUpdate {
+        return BookDetailsUpdate(
+            bookId, userId, title, status, genreIds, authorNames, description,
+            publisherName, languageCode, publishedOn, totalPages, isbn10, isbn13
+        )
+    }
+    
+    fun createBookDetailsUpdateFilled(
+        bookId: UUID = UUID.randomUUID(),
+        userId: UUID = UUID.randomUUID(),
+        title: String? = "title",
+        status: BookStatus? = BookStatus.defaultStatus(),
+        genreIds: Set<Int>? = setOf(1, 2),
+        authorNames: Set<String>? = setOf("Author A", "Author B"),
+        description: String? = "Description",
+        publisherName: String? = "Publisher A",
+        languageCode: String? = "en",
+        publishedOn: Int? = 2025,
+        totalPages: Int? = 300,
+        isbn10: String? = "1234567890",
+        isbn13: String? = "1234567890123"
     ): BookDetailsUpdate {
         return BookDetailsUpdate(
             bookId, userId, title, status, genreIds, authorNames, description,
