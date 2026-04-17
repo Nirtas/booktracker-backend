@@ -1,2 +1,7 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+
+src/test/**/*.kt linguist-detectable=true
+src/test/**/*.kt linguist-vendored=false
+src/test/**/*.kt linguist-documentation=false
+src/test/**/*.kt linguist-generated=false
