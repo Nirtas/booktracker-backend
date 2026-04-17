@@ -7,7 +7,7 @@ import java.util.*
 
 object AuthDomainFactory {
     fun createConfirmRegistration(
-        userId: UUID = UUID.randomUUID(),
+        userId: UUID? = UUID.randomUUID(),
         token: String = "123456"
     ): ConfirmRegistration {
         return ConfirmRegistration(userId, token)
@@ -52,8 +52,8 @@ object AuthDomainFactory {
     }
     
     fun createResendVerification(
-        userId: UUID = UUID.randomUUID(),
-        type: VerificationType = VerificationType.REGISTRATION
+        userId: UUID? = UUID.randomUUID(),
+        type: VerificationType? = VerificationType.REGISTRATION
     ): ResendVerification {
         return ResendVerification(userId, type)
     }
