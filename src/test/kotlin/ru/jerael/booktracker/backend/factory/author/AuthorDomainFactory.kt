@@ -5,7 +5,7 @@ import java.util.*
 
 object AuthorDomainFactory {
     fun createAuthor(
-        id: UUID = UUID.randomUUID(),
+        id: UUID? = UUID.randomUUID(),
         fullName: String = "Author A"
     ): Author {
         return Author(id, fullName)
