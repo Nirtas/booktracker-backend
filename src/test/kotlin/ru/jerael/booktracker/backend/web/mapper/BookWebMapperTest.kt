@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -135,8 +136,8 @@ class BookWebMapperTest {
             assertEquals(request.description, description)
             assertEquals(request.publisherName, publisherName)
             assertEquals(request.languageCode, languageCode)
-            assertEquals(request.publishedOn, publishedOn)
-            assertEquals(request.totalPages, totalPages)
+            assertThat(publishedOn as Int?).isEqualTo(request.publishedOn as Int?)
+            assertThat(totalPages as Int?).isEqualTo(request.totalPages as Int?)
             assertEquals("1234567890", isbn10)
             assertEquals("1234567890123", isbn13)
         }

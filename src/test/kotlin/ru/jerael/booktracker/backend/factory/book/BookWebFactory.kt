@@ -34,17 +34,17 @@ object BookWebFactory {
     }
     
     fun createBookDetailsUpdateRequest(
-        title: String? = "New Title",
-        status: String? = BookStatus.defaultStatus().value,
-        genreIds: Set<Int> = setOf(1, 2),
-        authorNames: Set<String> = setOf("Author A", "Author B"),
-        description: String? = "Description",
-        publisherName: String? = "Publisher A",
-        languageCode: String? = "en",
-        publishedOn: Int? = 1000,
-        totalPages: Int? = 678,
-        isbn10: String? = "123-456-789-0",
-        isbn13: String? = "123-456-789-012-3"
+        title: String? = null,
+        status: String? = null,
+        genreIds: Set<Int>? = null,
+        authorNames: Set<String>? = null,
+        description: String? = null,
+        publisherName: String? = null,
+        languageCode: String? = null,
+        publishedOn: Int? = null,
+        totalPages: Int? = null,
+        isbn10: String? = null,
+        isbn13: String? = null
     ): BookDetailsUpdateRequest {
         return BookDetailsUpdateRequest(
             title, status, genreIds, authorNames, description, publisherName,
