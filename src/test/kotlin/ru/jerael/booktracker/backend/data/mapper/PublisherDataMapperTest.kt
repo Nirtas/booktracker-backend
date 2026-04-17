@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import ru.jerael.booktracker.backend.factory.publisher.PublisherDomainFactory
 import ru.jerael.booktracker.backend.factory.publisher.PublisherEntityFactory
+import java.util.*
 
 class PublisherDataMapperTest {
     private val mapper = PublisherDataMapper()
@@ -22,7 +23,7 @@ class PublisherDataMapperTest {
     
     @Test
     fun `toDomain should map PublisherEntity to Publisher`() {
-        val entity = PublisherEntityFactory.createPublisherEntity()
+        val entity = PublisherEntityFactory.createPublisherEntity(id = UUID.randomUUID())
         
         val publisher = mapper.toDomain(entity)
         
