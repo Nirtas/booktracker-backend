@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import ru.jerael.booktracker.backend.factory.book.BookDomainFactory
 import ru.jerael.booktracker.backend.factory.book.BookEntityFactory
+import ru.jerael.booktracker.backend.factory.user.UserEntityFactory
+import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class BookDataMapperTest {
@@ -24,13 +26,15 @@ class BookDataMapperTest {
     
     @Test
     fun `toDomain should map BookEntity to Book`() {
-        val entity = BookEntityFactory.createBookEntity()
+        val userId = UUID.randomUUID()
+        val user = UserEntityFactory.createUserEntity(id = userId)
+        val entity = BookEntityFactory.createBookEntity(id = UUID.randomUUID(), user = user)
         
         val domain = mapper.toDomain(entity)
         
         with(domain) {
             assertEquals(entity.id, id)
-            assertEquals(entity.user.id, userId)
+            assertEquals(userId, this.userId)
             assertEquals(entity.title, title)
             assertEquals(entity.coverFileName, coverFileName)
             assertEquals(entity.createdAt, createdAt)
