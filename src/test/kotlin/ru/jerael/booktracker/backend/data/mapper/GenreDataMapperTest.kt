@@ -10,7 +10,7 @@ class GenreDataMapperTest {
     
     @Test
     fun `toDomain should map GenreEntity to Genre`() {
-        val entity = GenreEntityFactory.createGenreEntity()
+        val entity = GenreEntityFactory.createGenreEntity(id = 1)
         
         val genre = mapper.toDomain(entity)
         
