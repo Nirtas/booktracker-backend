@@ -37,7 +37,7 @@ object AuthDomainFactory {
     }
     
     fun createRefreshToken(
-        id: UUID = UUID.randomUUID(),
+        id: UUID? = UUID.randomUUID(),
         userId: UUID = UUID.randomUUID(),
         tokenHash: String = "token hash",
         expiresAt: Instant = Instant.now().plusSeconds(6000)

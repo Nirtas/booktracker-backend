@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import ru.jerael.booktracker.backend.factory.auth.AuthDomainFactory
 import ru.jerael.booktracker.backend.factory.auth.AuthEntityFactory
+import java.util.*
 
 class RefreshTokenDataMapperTest {
     private val mapper = RefreshTokenDataMapper()
@@ -24,7 +25,7 @@ class RefreshTokenDataMapperTest {
     
     @Test
     fun `toDomain should map RefreshTokenEntity to RefreshToken`() {
-        val entity = AuthEntityFactory.createRefreshTokenEntity()
+        val entity = AuthEntityFactory.createRefreshTokenEntity(id = UUID.randomUUID())
         
         val domain = mapper.toDomain(entity)
         
