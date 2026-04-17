@@ -30,7 +30,6 @@ object BookEntityFactory {
             this.totalPages = totalPages; this.isbn10 = isbn10; this.isbn13 = isbn13
             this.attempts = attempts
             this.notes = notes
-            this.attempts.forEach { it.book = this }
         }
     }
 }
