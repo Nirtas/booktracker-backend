@@ -6,7 +6,7 @@ import java.util.*
 
 object UserEntityFactory {
     fun createUserEntity(
-        id: UUID = UUID.randomUUID(),
+        id: UUID? = null,
         email: String = "test@example.com",
         passwordHash: String = "password hash",
         isVerified: Boolean = false,

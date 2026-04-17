@@ -8,8 +8,8 @@ import java.util.*
 
 object EmailVerificationEntityFactory {
     fun createEmailVerificationEntity(
-        id: UUID = UUID.randomUUID(),
-        user: UserEntity = UserEntity().apply { this.id = UUID.randomUUID() },
+        id: UUID? = UUID.randomUUID(),
+        user: UserEntity? = UserEntity().apply { this.id = UUID.randomUUID() },
         email: String = "test@example.com",
         type: VerificationType = VerificationType.REGISTRATION,
         token: String = "123456",

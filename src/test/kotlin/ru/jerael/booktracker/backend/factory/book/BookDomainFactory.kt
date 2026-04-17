@@ -13,7 +13,7 @@ import java.util.*
 
 object BookDomainFactory {
     fun createBook(
-        id: UUID = UUID.randomUUID(),
+        id: UUID? = UUID.randomUUID(),
         userId: UUID = UUID.randomUUID(),
         title: String? = "Title",
         coverFileName: String? = "cover.jpg",
