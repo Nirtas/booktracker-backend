@@ -1,0 +1,14 @@
+package ru.jerael.booktracker.backend.config
+
+import ch.martinelli.oss.testcontainers.mailpit.MailpitContainer
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection
+import org.springframework.context.annotation.Bean
+
+@TestConfiguration(proxyBeanMethods = false)
+class TestcontainersConfiguration {
+    
+    @Bean
+    @ServiceConnection
+    fun mailpitContainer(): MailpitContainer = MailpitContainer()
+}
