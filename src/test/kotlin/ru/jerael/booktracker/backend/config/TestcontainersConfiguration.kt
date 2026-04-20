@@ -32,4 +32,11 @@ class TestcontainersConfiguration {
             }
         }
     }
+    
+    @Bean
+    @ServiceConnection(name = "redis")
+    fun redisContainer(): GenericContainer<*> {
+        return GenericContainer(DockerImageName.parse("redis:8.4.2-alpine3.22"))
+            .withExposedPorts(6379)
+    }
 }
