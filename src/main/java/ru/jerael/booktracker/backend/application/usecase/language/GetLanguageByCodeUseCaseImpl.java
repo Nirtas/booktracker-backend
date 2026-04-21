@@ -1,14 +1,14 @@
 package ru.jerael.booktracker.backend.application.usecase.language;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.exception.factory.LanguageExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.language.Language;
 import ru.jerael.booktracker.backend.domain.repository.LanguageRepository;
 import ru.jerael.booktracker.backend.domain.usecase.language.GetLanguageByCodeUseCase;
 
-@Component
+@UseCase
 @RequiredArgsConstructor
 public class GetLanguageByCodeUseCaseImpl implements GetLanguageByCodeUseCase {
     private final LanguageRepository languageRepository;

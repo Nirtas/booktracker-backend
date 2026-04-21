@@ -3,8 +3,8 @@ package ru.jerael.booktracker.backend.application.usecase.book;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import ru.jerael.booktracker.backend.domain.constant.ImageRules;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
@@ -19,7 +19,7 @@ import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import ru.jerael.booktracker.backend.domain.usecase.book.UploadCoverUseCase;
 import java.util.UUID;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
     private static final Logger log = LoggerFactory.getLogger(UploadCoverUseCaseImpl.class);

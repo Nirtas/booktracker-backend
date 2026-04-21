@@ -1,8 +1,8 @@
 package ru.jerael.booktracker.backend.application.usecase.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.exception.factory.UserExceptionFactory;
 import ru.jerael.booktracker.backend.domain.hasher.PasswordHasher;
 import ru.jerael.booktracker.backend.domain.model.auth.TokenPair;
@@ -13,7 +13,7 @@ import ru.jerael.booktracker.backend.domain.service.token.AuthTokenService;
 import ru.jerael.booktracker.backend.domain.usecase.auth.LoginUserUseCase;
 import ru.jerael.booktracker.backend.domain.validator.AuthValidator;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class LoginUserUseCaseImpl implements LoginUserUseCase {
     private final AuthValidator authValidator;

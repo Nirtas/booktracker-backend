@@ -1,15 +1,15 @@
 package ru.jerael.booktracker.backend.application.usecase.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.exception.factory.UserExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.user.User;
 import ru.jerael.booktracker.backend.domain.repository.UserRepository;
 import ru.jerael.booktracker.backend.domain.usecase.user.GetUserUseCase;
 import java.util.UUID;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class GetUserUseCaseImpl implements GetUserUseCase {
     private final UserRepository userRepository;
