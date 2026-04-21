@@ -1,8 +1,8 @@
 package ru.jerael.booktracker.backend.application.usecase.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.exception.factory.UserExceptionFactory;
 import ru.jerael.booktracker.backend.domain.hasher.PasswordHasher;
 import ru.jerael.booktracker.backend.domain.model.user.User;
@@ -16,7 +16,7 @@ import ru.jerael.booktracker.backend.domain.validator.UserValidator;
 import ru.jerael.booktracker.backend.domain.verification.EmailVerificationService;
 import java.time.Instant;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class CreateUserUseCaseImpl implements CreateUserUseCase {
     private final UserRepository userRepository;

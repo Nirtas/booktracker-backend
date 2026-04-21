@@ -1,8 +1,8 @@
 package ru.jerael.booktracker.backend.application.usecase.book;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.GenreExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.LanguageExceptionFactory;
@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class UpdateBookDetailsUseCaseImpl implements UpdateBookDetailsUseCase {
     private final BookRepository bookRepository;
