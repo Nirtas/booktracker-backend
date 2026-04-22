@@ -1,6 +1,7 @@
 package ru.jerael.booktracker.backend.data.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import ru.jerael.booktracker.backend.data.db.repository.JpaLanguageRepository;
 import ru.jerael.booktracker.backend.data.mapper.LanguageDataMapper;
@@ -15,11 +16,13 @@ public class LanguageRepositoryImpl implements LanguageRepository {
     private final JpaLanguageRepository jpaLanguageRepository;
     private final LanguageDataMapper languageDataMapper;
 
+    @Cacheable(value = "languages", key = "'all'")
     @Override
     public List<Language> findAll() {
         return jpaLanguageRepository.findAllByOrderByNameAsc().stream().map(languageDataMapper::toDomain).toList();
     }
 
+    @Cacheable(value = "language", key = "#code", unless = "#result == null")
     @Override
     public Optional<Language> findByCode(String code) {
         return jpaLanguageRepository.findByCode(code).map(languageDataMapper::toDomain);
