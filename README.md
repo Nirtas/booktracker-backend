@@ -1,6 +1,6 @@
 <br>
 <p align="center">
-  <img src="assets/logo.png" alt="BookTracker Logo" width="250"/>
+  <img src="assets/logo-light.svg" alt="BookTracker Logo" width="250"/>
 </p>
 <br>
 
