@@ -41,7 +41,7 @@ class GenreCacheTest {
     
     @Test
     fun `findById should cache genre and not call database again`() {
-        val genreId = jpaGenreRepository.save(GenreEntityFactory.createGenreEntity()).id
+        val genreId = jpaGenreRepository.saveAndFlush(GenreEntityFactory.createGenreEntity()).id
         
         reset(jpaGenreRepository)
         

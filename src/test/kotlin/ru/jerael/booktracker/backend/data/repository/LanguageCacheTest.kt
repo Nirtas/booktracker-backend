@@ -41,7 +41,7 @@ class LanguageCacheTest {
     
     @Test
     fun `findByCode should cache language and not call database again`() {
-        val code = jpaLanguageRepository.save(LanguageEntityFactory.createLanguageEntity()).code
+        val code = jpaLanguageRepository.saveAndFlush(LanguageEntityFactory.createLanguageEntity()).code
         
         reset(jpaLanguageRepository)
         
