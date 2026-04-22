@@ -473,6 +473,87 @@ sequenceDiagram
 
 </details>
 
+<details>
+<summary><b>Сценарий 4: Получение списка жанров</b></summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+
+    participant ATF as AuthTokenFilter
+    participant ATS as AuthTokenService
+    participant HER as HandlerExceptionResolver
+
+    participant GC as GenreController
+    participant GWM as GenreWebMapper
+
+    participant GGUC as GetGenresUseCase
+    participant GR as GenreRepository
+    participant JGR as JpaGenreRepository
+    participant GDM as GenreDataMapper
+
+    participant CP as CacheProxy
+    participant R as Redis
+
+
+    C->>ATF: GET /genres (Header: Bearer token)
+    
+    Note over ATF: Извлечение токена<br>из заголовка Authorization
+    ATF->>ATS: authenticateToken(token, ACCESS)
+    
+    alt Токен невалидный или просрочен
+        ATS-->>ATF: throw UnauthenticatedException
+        ATF->>HER: resolveException()
+        HER-->>C: 401 Unauthorized
+    end
+    
+    ATS-->>ATF: IdentityTokenClaims(userId, ...)
+    Note over ATF: Сохранение userId в<br>UsernamePasswordAuthenticationToken
+    Note over ATF: SecurityContextHolder.getContext()<br>.setAuthentication(auth)
+    
+    ATF->>GC: invoke
+    
+    GC->>GGUC: execute()
+    GGUC->>CP: findAll()
+    
+    CP->>R: GET "genres::all"
+    
+    alt Cache Hit (Жанры есть в Redis)
+        Note over R: Запись найдена
+        R-->>CP: Жанры из кэша
+        CP-->>GGUC: Set<Genre>
+    else Cache Miss (Жанры не найдены)
+        Note over R: Кэш пуст
+        R-->>CP: null
+        
+        Note over CP: Вызов реального метода
+        CP->>GR: findAll()
+        GR->>JGR: findAllByOrderByNameAsc()
+        JGR-->>GR: List<GenreEntity>
+        
+        loop entities
+            GR->>GDM: toDomain(GenreEntity)
+            GDM-->>GR: Genre
+        end
+        
+        GR-->>CP: Set<Genre>
+        
+        Note over CP: Обновление кэша
+        CP->>R: SET "genres::all" (Set<Genre>)
+        
+        CP-->>GGUC: Set<Genre> (Данные из БД)
+    end
+    
+    GGUC-->>GC: Set<Genre>
+    GC->>GWM: toResponses(genres)
+    GWM-->>GC: Set<GenreResponse>
+    
+    GC-->>C: 200 OK (Set<GenreResponse>)
+```
+
+</details>
+
 ## Настройка и разработка
 
 ### Требования

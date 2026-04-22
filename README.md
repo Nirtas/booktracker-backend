@@ -473,6 +473,87 @@ sequenceDiagram
 
 </details>
 
+<details>
+<summary><b>Workflow 4: Genre fetching</b></summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+
+    participant ATF as AuthTokenFilter
+    participant ATS as AuthTokenService
+    participant HER as HandlerExceptionResolver
+
+    participant GC as GenreController
+    participant GWM as GenreWebMapper
+
+    participant GGUC as GetGenresUseCase
+    participant GR as GenreRepository
+    participant JGR as JpaGenreRepository
+    participant GDM as GenreDataMapper
+
+    participant CP as CacheProxy
+    participant R as Redis
+
+
+    C->>ATF: GET /genres (Header: Bearer token)
+    
+    Note over ATF: Extract token<br>from Authorization header
+    ATF->>ATS: authenticateToken(token, ACCESS)
+    
+    alt Token is invalid or expired
+        ATS-->>ATF: throw UnauthenticatedException
+        ATF->>HER: resolveException()
+        HER-->>C: 401 Unauthorized
+    end
+    
+    ATS-->>ATF: IdentityTokenClaims(userId, ...)
+    Note over ATF: Put userId to<br>UsernamePasswordAuthenticationToken
+    Note over ATF: SecurityContextHolder.getContext()<br>.setAuthentication(auth)
+    
+    ATF->>GC: invoke
+    
+    GC->>GGUC: execute()
+    GGUC->>CP: findAll()
+    
+    CP->>R: GET "genres::all"
+    
+    alt Cache Hit (Genres exists in Redis)
+        Note over R: Record has found
+        R-->>CP: Cached Genres
+        CP-->>GGUC: Set<Genre>
+    else Cache Miss (Genres not found)
+        Note over R: Cache is empty
+        R-->>CP: null
+        
+        Note over CP: Invoke actual method
+        CP->>GR: findAll()
+        GR->>JGR: findAllByOrderByNameAsc()
+        JGR-->>GR: List<GenreEntity>
+        
+        loop entities
+            GR->>GDM: toDomain(GenreEntity)
+            GDM-->>GR: Genre
+        end
+        
+        GR-->>CP: Set<Genre>
+        
+        Note over CP: Updating cache
+        CP->>R: SET "genres::all" (Set<Genre>)
+        
+        CP-->>GGUC: Set<Genre> (Returned from DB)
+    end
+    
+    GGUC-->>GC: Set<Genre>
+    GC->>GWM: toResponses(genres)
+    GWM-->>GC: Set<GenreResponse>
+    
+    GC-->>C: 200 OK (Set<GenreResponse>)
+```
+
+</details>
+
 ## Setup & Development
 
 ### Prerequisites
