@@ -1,11 +1,11 @@
 package ru.jerael.booktracker.backend.web.mapper;
 
-import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.domain.model.auth.*;
 import ru.jerael.booktracker.backend.domain.model.verification.VerificationType;
+import ru.jerael.booktracker.backend.web.annotation.WebMapper;
 import ru.jerael.booktracker.backend.web.dto.auth.*;
 
-@Component
+@WebMapper
 public class AuthWebMapper {
     public ConfirmRegistration toDomain(ConfirmRegistrationRequest request) {
         if (request == null) return null;

@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface Validator {
+public @interface AppValidator {
 
     @AliasFor(annotation = Component.class)
     String value() default "";

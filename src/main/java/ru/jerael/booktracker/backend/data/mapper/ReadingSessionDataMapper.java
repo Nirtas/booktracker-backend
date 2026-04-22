@@ -1,11 +1,11 @@
 package ru.jerael.booktracker.backend.data.mapper;
 
-import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.data.annotation.DataMapper;
 import ru.jerael.booktracker.backend.data.db.entity.ReadingAttemptEntity;
 import ru.jerael.booktracker.backend.data.db.entity.ReadingSessionEntity;
 import ru.jerael.booktracker.backend.domain.model.reading_session.ReadingSession;
 
-@Component
+@DataMapper
 public class ReadingSessionDataMapper {
     public ReadingSessionEntity toEntity(ReadingSession readingSession) {
         if (readingSession == null) return null;

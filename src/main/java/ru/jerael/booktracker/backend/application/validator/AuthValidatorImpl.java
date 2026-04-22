@@ -1,7 +1,7 @@
 package ru.jerael.booktracker.backend.application.validator;
 
 import lombok.RequiredArgsConstructor;
-import ru.jerael.booktracker.backend.application.annotation.Validator;
+import ru.jerael.booktracker.backend.application.annotation.AppValidator;
 import ru.jerael.booktracker.backend.domain.constant.EmailVerificationRules;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.factory.CommonValidationErrorFactory;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Validator
+@AppValidator
 @RequiredArgsConstructor
 public class AuthValidatorImpl implements AuthValidator {
     private final FieldValidator fieldValidator;

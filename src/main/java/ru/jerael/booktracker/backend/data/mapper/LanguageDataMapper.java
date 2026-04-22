@@ -1,10 +1,10 @@
 package ru.jerael.booktracker.backend.data.mapper;
 
-import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.data.annotation.DataMapper;
 import ru.jerael.booktracker.backend.data.db.entity.LanguageEntity;
 import ru.jerael.booktracker.backend.domain.model.language.Language;
 
-@Component
+@DataMapper
 public class LanguageDataMapper {
     public LanguageEntity toEntity(Language language) {
         if (language == null) return null;

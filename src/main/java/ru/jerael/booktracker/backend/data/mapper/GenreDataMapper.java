@@ -1,10 +1,10 @@
 package ru.jerael.booktracker.backend.data.mapper;
 
-import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.data.annotation.DataMapper;
 import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.domain.model.Genre;
 
-@Component
+@DataMapper
 public class GenreDataMapper {
     public Genre toDomain(GenreEntity entity) {
         if (entity == null) return null;

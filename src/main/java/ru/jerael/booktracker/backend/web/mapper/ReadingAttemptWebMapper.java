@@ -1,11 +1,11 @@
 package ru.jerael.booktracker.backend.web.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.domain.model.reading_attempt.ReadingAttempt;
+import ru.jerael.booktracker.backend.web.annotation.WebMapper;
 import ru.jerael.booktracker.backend.web.dto.reading_attempt.ReadingAttemptResponse;
 
-@Component
+@WebMapper
 @RequiredArgsConstructor
 public class ReadingAttemptWebMapper {
     private final ReadingSessionWebMapper readingSessionWebMapper;

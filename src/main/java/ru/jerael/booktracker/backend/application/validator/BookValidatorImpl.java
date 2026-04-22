@@ -1,6 +1,6 @@
 package ru.jerael.booktracker.backend.application.validator;
 
-import ru.jerael.booktracker.backend.application.annotation.Validator;
+import ru.jerael.booktracker.backend.application.annotation.AppValidator;
 import ru.jerael.booktracker.backend.domain.constant.AuthorRules;
 import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import ru.jerael.booktracker.backend.domain.constant.LanguageRules;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Validator
+@AppValidator
 public class BookValidatorImpl implements BookValidator {
     @Override
     public void validateUpdate(BookDetailsUpdate data) {

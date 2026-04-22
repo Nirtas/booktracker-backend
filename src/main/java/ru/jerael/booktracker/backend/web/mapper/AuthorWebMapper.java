@@ -1,10 +1,10 @@
 package ru.jerael.booktracker.backend.web.mapper;
 
-import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.domain.model.author.Author;
+import ru.jerael.booktracker.backend.web.annotation.WebMapper;
 import ru.jerael.booktracker.backend.web.dto.author.AuthorResponse;
 
-@Component
+@WebMapper
 public class AuthorWebMapper {
     public AuthorResponse toResponse(Author author) {
         if (author == null) return null;

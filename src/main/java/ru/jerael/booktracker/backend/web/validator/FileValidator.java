@@ -1,10 +1,10 @@
 package ru.jerael.booktracker.backend.web.validator;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
+import ru.jerael.booktracker.backend.web.annotation.WebValidator;
 
-@Component
+@WebValidator
 public class FileValidator {
     public void validate(MultipartFile file, String fieldName) {
         if (file == null || file.isEmpty()) {
