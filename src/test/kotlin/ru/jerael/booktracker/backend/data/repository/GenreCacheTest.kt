@@ -2,8 +2,7 @@ package ru.jerael.booktracker.backend.data.repository
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
+import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -43,6 +42,8 @@ class GenreCacheTest {
     @Test
     fun `findById should cache genre and not call database again`() {
         val genreId = jpaGenreRepository.save(GenreEntityFactory.createGenreEntity()).id
+        
+        reset(jpaGenreRepository)
         
         genreRepository.findById(genreId)
         genreRepository.findById(genreId)
