@@ -2,8 +2,7 @@ package ru.jerael.booktracker.backend.data.repository
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
+import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -43,6 +42,8 @@ class LanguageCacheTest {
     @Test
     fun `findByCode should cache language and not call database again`() {
         val code = jpaLanguageRepository.save(LanguageEntityFactory.createLanguageEntity()).code
+        
+        reset(jpaLanguageRepository)
         
         languageRepository.findByCode(code)
         languageRepository.findByCode(code)
