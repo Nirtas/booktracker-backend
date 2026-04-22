@@ -15,7 +15,7 @@ import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertNull
 import org.junit.jupiter.api.extension.ExtendWith
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException
-import ru.jerael.booktracker.backend.domain.model.Genre
+import ru.jerael.booktracker.backend.domain.model.genre.Genre
 import ru.jerael.booktracker.backend.domain.model.author.Author
 import ru.jerael.booktracker.backend.domain.model.book.Book
 import ru.jerael.booktracker.backend.domain.model.language.Language

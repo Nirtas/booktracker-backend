@@ -1,6 +1,6 @@
 package ru.jerael.booktracker.backend.domain.repository;
 
-import ru.jerael.booktracker.backend.domain.model.Genre;
+import ru.jerael.booktracker.backend.domain.model.genre.Genre;
 import java.util.Optional;
 import java.util.Set;
 

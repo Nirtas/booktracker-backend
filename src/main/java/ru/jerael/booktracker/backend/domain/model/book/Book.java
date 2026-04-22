@@ -1,6 +1,6 @@
 package ru.jerael.booktracker.backend.domain.model.book;
 
-import ru.jerael.booktracker.backend.domain.model.Genre;
+import ru.jerael.booktracker.backend.domain.model.genre.Genre;
 import ru.jerael.booktracker.backend.domain.model.author.Author;
 import ru.jerael.booktracker.backend.domain.model.language.Language;
 import ru.jerael.booktracker.backend.domain.model.note.Note;

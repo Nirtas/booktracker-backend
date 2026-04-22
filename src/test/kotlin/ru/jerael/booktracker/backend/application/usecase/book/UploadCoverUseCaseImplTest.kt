@@ -12,7 +12,6 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.MediaType
-import ru.jerael.booktracker.backend.data.exception.factory.StorageExceptionFactory
 import ru.jerael.booktracker.backend.domain.exception.NotFoundException
 import ru.jerael.booktracker.backend.domain.exception.ValidationException
 import ru.jerael.booktracker.backend.domain.model.book.Book
@@ -24,6 +23,7 @@ import ru.jerael.booktracker.backend.domain.service.image.ImageProcessor
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage
 import ru.jerael.booktracker.backend.factory.book.BookDomainFactory
 import ru.jerael.booktracker.backend.factory.image.ImageDomainFactory
+import java.io.IOException
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
@@ -135,8 +135,7 @@ class UploadCoverUseCaseImplTest {
         val book = BookDomainFactory.createBook(id = bookId, userId = userId, coverFileName = "old_cover.jpg")
         
         every { bookRepository.findByIdAndUserId(bookId, userId) } returns Optional.of(book)
-        every { bookCoverStorage.delete(any()) }
-            .throws(StorageExceptionFactory.error("Error", null))
+        every { bookCoverStorage.delete(any()) } throws IOException("Error")
         
         assertDoesNotThrow { useCase.execute(data) }
         

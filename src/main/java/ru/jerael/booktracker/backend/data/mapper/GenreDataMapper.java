@@ -2,7 +2,7 @@ package ru.jerael.booktracker.backend.data.mapper;
 
 import ru.jerael.booktracker.backend.data.annotation.DataMapper;
 import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
-import ru.jerael.booktracker.backend.domain.model.Genre;
+import ru.jerael.booktracker.backend.domain.model.genre.Genre;
 
 @DataMapper
 public class GenreDataMapper {
