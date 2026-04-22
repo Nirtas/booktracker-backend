@@ -339,6 +339,140 @@ sequenceDiagram
 
 </details>
 
+<details>
+<summary><b>Сценарий 3: Обновление книги (без обложки)</b></summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+
+    participant ATF as AuthTokenFilter
+    participant ATS as AuthTokenService
+    participant HER as HandlerExceptionResolver
+
+    participant BC as BookController
+    participant BWM as BookWebMapper
+
+    participant UBDUC as UpdateBookDetailsUseCase
+    participant BV as BookValidator
+
+    participant BR as BookRepository
+    participant GR as GenreRepository
+    participant AR as AuthorRepository
+    participant PR as PublisherRepository
+    participant LAR as LanguageRepository
+
+
+    C->>ATF: PATCH /books/{id} (Header: Bearer token)
+    
+    Note over ATF: Извлечение токена<br>из заголовка Authorization
+    ATF->>ATS: authenticateToken(token, ACCESS)
+    
+    alt Токен невалидный или просрочен
+        ATS-->>ATF: throw UnauthenticatedException
+        ATF->>HER: resolveException()
+        HER-->>C: 401 Unauthorized
+    end
+    
+    ATS-->>ATF: IdentityTokenClaims(userId, ...)
+    Note over ATF: Сохранение userId в<br>UsernamePasswordAuthenticationToken
+    Note over ATF: SecurityContextHolder.getContext()<br>.setAuthentication(auth)
+    
+    ATF->>BC: invoke(BookDetailsUpdateRequest)
+    
+    Note over BC: Извлечение<br>@AuthenticationPrincipal userId
+    BC->>BWM: toDomain(request, id, userId)
+    BWM-->>BC: BookDetailsUpdate
+    
+    BC->>UBDUC: execute(BookDetailsUpdate)
+    
+    UBDUC->>BV: validateUpdate(data)
+    alt Валидация провалена
+        BV-->>UBDUC: throw ValidationException
+        UBDUC-->>BC: throw ValidationException
+        BC-->>C: 400 Bad Request
+    end
+    
+    UBDUC->>BR: findByIdAndUserId(bookId, userId)
+    alt Книга не найдена
+        BR-->>UBDUC: Ничего
+        UBDUC-->>BC: throw NotFoundException
+        BC-->>C: 404 Not Found
+    end
+    BR-->>UBDUC: Book
+    
+    opt genreIds != null
+        UBDUC->>GR: findAllById(genreIds)
+        GR-->>UBDUC: updatedGenres
+        alt Некоторые жанры не найдены
+            UBDUC-->>BC: throw NotFoundException
+            BC-->>C: 404 Not Found
+        end
+    end
+    
+    opt authorNames != null
+        loop authorNames
+            UBDUC->>AR: findByFullName(name)
+            
+            alt Автор не найден
+                AR-->>UBDUC: Ничего
+                UBDUC->>AR: save(Author)
+                AR-->>UBDUC: savedAuthor
+            else Автор найден
+                AR-->>UBDUC: Author
+            end
+        end
+    end
+    
+    opt publisherName != null
+        UBDUC->>PR: findByName(publisherName)
+
+        alt Издатель не найден
+            PR-->>UBDUC: Ничего
+            UBDUC->>PR: save(Publisher)
+            PR-->>UBDUC: savedPublisher
+        else Издатель найден
+            PR-->>UBDUC: Publisher
+        end
+    end
+    
+    opt languageCode != null
+        UBDUC->>LAR: findByCode(languageCode)
+
+        alt Язык не найден
+            LAR-->>UBDUC: Ничего
+            UBDUC-->>BC: throw NotFoundException
+            BC-->>C: 404 Not Found
+        end
+
+        LAR-->>UBDUC: Language
+    end
+    
+    opt status != null
+        Note over UBDUC: changeStatus() вычисляет<br>BookStatusTransition
+
+        alt Transition == INVALID
+            UBDUC-->>BC: throw UnprocessableContentException
+            BC-->>C: 422 Unprocessable Content
+        else Transition == UPDATE / NEW_ATTEMPT
+            Note over UBDUC: Обновление последней /<br>создание новой попытки
+        end
+    end
+    
+    Note over UBDUC: Создание обновленной<br>модели Книги
+    UBDUC->>BR: save(updatedBook, userId)
+    BR-->>UBDUC: savedBook
+    
+    UBDUC-->>BC: savedBook
+    BC->>BWM: toResponse(savedBook)
+    BWM-->>BC: BookResponse
+    
+    BC-->>C: 200 OK (BookResponse)
+```
+
+</details>
+
 ## Настройка и разработка
 
 ### Требования
