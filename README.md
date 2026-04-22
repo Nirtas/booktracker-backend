@@ -48,8 +48,18 @@ erDiagram
     users ||--o{ books : owns
     users ||--o{ refresh_tokens : has
     users ||--o{ email_verifications : initiates
+
     books ||--o{ book_genres : has
     genres ||--o{ book_genres : "associated with"
+
+    books ||--o{ book_authors : "written by"
+    authors ||--o{ book_authors : wrote
+
+    books }o--|| publishers : "published by"
+    books }o--|| languages : "written in"
+    books ||--o{ notes : has
+    books ||--o{ reading_attempts : "tracked by"
+    reading_attempts ||--o{ reading_sessions : contains
 
     users {
         uuid user_id PK
@@ -60,13 +70,65 @@ erDiagram
     }
 
     books {
-        uuid book_id PK
+        uuid id PK
         uuid user_id FK
+        uuid publisher_id FK
+        uuid language_code FK
         varchar title
-        varchar author
         text cover_file_name
-        text status
         timestamptz created_at
+        text description
+        int total_pages
+        varchar isbn_10
+        varchar isbn_13
+        int published_on
+    }
+
+    book_authors {
+        uuid book_id PK, FK
+        uuid author_id PK, FK
+    }
+
+    authors {
+        uuid id PK
+        varchar full_name
+    }
+
+    publishers {
+        uuid id PK
+        varchar name
+    }
+
+    languages {
+        varchar code PK
+        varchar name
+    }
+
+    notes {
+        uuid id PK
+        uuid book_id FK
+        varchar type
+        text text_content
+        text file_name
+        int page_number
+        timestamptz created_at
+    }
+
+    reading_attempts {
+        uuid id PK
+        uuid book_id FK
+        varchar status
+        timestamptz started_at
+        timestamptz finished_at
+    }
+
+    reading_sessions {
+        uuid id PK
+        uuid attempt_id FK
+        int start_page
+        int end_page
+        timestamptz started_at
+        timestamptz finished_at
     }
 
     genres {
