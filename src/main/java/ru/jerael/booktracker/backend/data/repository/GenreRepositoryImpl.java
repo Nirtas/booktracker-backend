@@ -27,7 +27,7 @@ public class GenreRepositoryImpl implements GenreRepository {
         return entities.stream().map(genreDataMapper::toDomain).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    @Cacheable(value = "genre", key = "#id")
+    @Cacheable(value = "genre", key = "#id", unless = "#result == null")
     @Override
     public Optional<Genre> findById(Integer id) {
         return jpaGenreRepository.findById(id).map(genreDataMapper::toDomain);

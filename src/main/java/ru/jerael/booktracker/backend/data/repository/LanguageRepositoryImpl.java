@@ -22,7 +22,7 @@ public class LanguageRepositoryImpl implements LanguageRepository {
         return jpaLanguageRepository.findAllByOrderByNameAsc().stream().map(languageDataMapper::toDomain).toList();
     }
 
-    @Cacheable(value = "language", key = "#code")
+    @Cacheable(value = "language", key = "#code", unless = "#result == null")
     @Override
     public Optional<Language> findByCode(String code) {
         return jpaLanguageRepository.findByCode(code).map(languageDataMapper::toDomain);
