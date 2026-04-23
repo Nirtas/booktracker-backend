@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.data.redis.cache.RedisCacheManager
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import ru.jerael.booktracker.backend.config.TestcontainersConfiguration
 import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository
 import ru.jerael.booktracker.backend.factory.genre.GenreEntityFactory
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @SpringBootTest
 @Import(TestcontainersConfiguration::class)
 class GenreCacheTest {
@@ -29,6 +31,8 @@ class GenreCacheTest {
     fun setUp() {
         redisCacheManager.getCache("genres")?.clear()
         redisCacheManager.getCache("genre")?.clear()
+        
+        reset(jpaGenreRepository)
     }
     
     @Test
