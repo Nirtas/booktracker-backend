@@ -14,19 +14,22 @@
 
 # BookTracker
 
-Backend for tracking your reading progress, built with **Clean Architecture** principles. This server manages book data,
-genres, users and secure cover storage.
+Backend for tracking your reading progress, built with **Clean Architecture** principles. This server manages books,
+users, detailed reading history and secure cover storage.
 
 ## Tech Stack
 
-- **Framework:** Spring Boot 4 (Java 17)
+- **Languages:** Java 17 (main), Kotlin 2.3 (tests)
+- **Framework:** Spring Boot 4
 - **Security:** Spring Security, Argon2id hashing, JWT (Nimbus JOSE + JWT)
 - **Database:** PostgreSQL
 - **Migrations:** Liquibase (YAML)
-- **File Storage:** MinIO (S3 compatible)
+- **Caching:** Redis
+- **File Storage:** MinIO (S3-compatible)
 - **Documentation:** OpenAPI / Swagger UI
 - **Deployment:** Docker & Docker Compose
 - **SMTP** for email delivery
+- **Testing:** JUnit 5, MockK, Testcontainers
 
 ## Architecture
 
@@ -36,8 +39,8 @@ The project follows **Clean Architecture** to ensure maintainability and testabi
 - **Application:** Orchestration of business logic through use cases and domain services.
 - **Domain:** Pure business logic, Entities, Repository interfaces and Validation rules.
 - **Data:** Infrastructure implementations (JPA Repositories, S3 Storage, Image Processor, Password Hasher, Identity
-  Token Provider).
- 
+  Token Provider, Redis Caching).
+
 ## Diagrams
 
 <details>
@@ -520,7 +523,7 @@ sequenceDiagram
     CP->>R: GET "genres::all"
     
     alt Cache Hit (Genres exists in Redis)
-        Note over R: Record has found
+        Note over R: Record found
         R-->>CP: Cached Genres
         CP-->>GGUC: Set<Genre>
     else Cache Miss (Genres not found)
@@ -554,6 +557,16 @@ sequenceDiagram
 
 </details>
 
+## Roadmap
+
+- [x] **v0.3.0:** Database schema expanded, added reading history (attempts, sessions) and implemented Redis caching.
+- [ ] **v0.4.0:**
+    - **ISBN Lookup:** Integration with external APIs for search and fetch book details.
+    - **Search:** Query-based search for books.
+    - **Reading Sessions:** Logic to add and manage reading progress.
+- [ ] **v0.5.0:**
+    - **Rich Notes:** Combinations of text, image, audio and video.
+
 ## Setup & Development
 
 ### Prerequisites
@@ -567,13 +580,13 @@ sequenceDiagram
    ```bash
    cp .env.example .env
    ```
-2. Fill in your credentials and properties in the `.env` file (DB, MinIO, Argon2, SMTP, JWT).
+2. Fill in your credentials and properties in the `.env` file (DB, MinIO, Argon2, SMTP, JWT, Redis).
 
 ### Launch Options
 
 #### 1. Development (Infrastructure only)
 
-Start PostgreSQL and MinIO to run the application from your IDE:
+Start infrastructure to run the application from your IDE:
 
 ```bash
 docker compose -f docker-compose.dev.yml up --build -d
@@ -581,7 +594,7 @@ docker compose -f docker-compose.dev.yml up --build -d
 
 #### 2. Production (Full Stack from source)
 
-Build and start all services (App + DB + Storage) in containers:
+Build and start all services (app + infrastructure) in containers:
 
 ```bash
 docker compose -f docker-compose.prod.yml up --build -d
@@ -591,32 +604,35 @@ docker compose -f docker-compose.prod.yml up --build -d
 
 Once the server is running and Swagger enabled in `.env` file (`ENABLE_SWAGGER_UI=true`), explore the API and test
 endpoints via Swagger UI:
-`http://localhost:8080/swagger-ui/index.html`
+[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 ### Quick API Reference
 
 All endpoints are prefixed with `/api/v1`.
 
-| Method     | Endpoint                     | Auth Required | Description              |
-|------------|------------------------------|---------------|--------------------------|
-| **Auth**   |
-| `POST`     | `/auth/register`             | No            | Register new user        |
-| `POST`     | `/auth/confirm-registration` | No            | Confirm registration     |
-| `POST`     | `/auth/login`                | No            | Login                    |
-| `POST`     | `/auth/refresh`              | No            | Refresh tokens           |
-| `POST`     | `/auth/logout`               | No            | Logout                   |
-| `POST`     | `/auth/resend-code`          | No            | Resend verification code |
-| **Users**  |
-| `GET`      | `/users/me`                  | **Yes**       | Get current user details |
-| **Books**  |
-| `GET`      | `/books`                     | **Yes**       | Get user's books         |
-| `GET`      | `/books/{id}`                | **Yes**       | Get book by id           |
-| `DELETE`   | `/books/{id}`                | **Yes**       | Delete book by id        |
-| `PATCH`    | `/books/{id}`                | **Yes**       | Update book details      |
-| `POST`     | `/books`                     | **Yes**       | Create book              |
-| `POST`     | `/books/{id}/cover`          | **Yes**       | Upload book cover        |
-| `DELETE`   | `/books/{id}/cover`          | **Yes**       | Delete book cover        |
-| `GET`      | `/books/{id}/cover`          | **Yes**       | Get book cover           |
-| **Genres** |
-| `GET`      | `/genres`                    | **Yes**       | Get all genres           |
-| `GET`      | `/genres/{id}`               | **Yes**       | Get genre by id          |
+| Method        | Endpoint                     | Auth Required | Description              |
+|---------------|------------------------------|---------------|--------------------------|
+| **Auth**      |
+| `POST`        | `/auth/register`             | No            | Register new user        |
+| `POST`        | `/auth/confirm-registration` | No            | Confirm registration     |
+| `POST`        | `/auth/login`                | No            | Login                    |
+| `POST`        | `/auth/refresh`              | No            | Refresh tokens           |
+| `POST`        | `/auth/logout`               | No            | Logout                   |
+| `POST`        | `/auth/resend-code`          | No            | Resend verification code |
+| **Users**     |
+| `GET`         | `/users/me`                  | **Yes**       | Get current user details |
+| **Books**     |
+| `GET`         | `/books`                     | **Yes**       | Get user's books         |
+| `POST`        | `/books`                     | **Yes**       | Create book              |
+| `GET`         | `/books/{id}`                | **Yes**       | Get book by id           |
+| `DELETE`      | `/books/{id}`                | **Yes**       | Delete book by id        |
+| `PATCH`       | `/books/{id}`                | **Yes**       | Update book details      |
+| `POST`        | `/books/{id}/cover`          | **Yes**       | Upload book cover        |
+| `DELETE`      | `/books/{id}/cover`          | **Yes**       | Delete book cover        |
+| `GET`         | `/books/{id}/cover`          | **Yes**       | Get book cover           |
+| **Genres**    |
+| `GET`         | `/genres`                    | **Yes**       | Get all genres           |
+| `GET`         | `/genres/{id}`               | **Yes**       | Get genre by id          |
+| **Languages** |
+| `GET`         | `/languages`                 | **Yes**       | Get all languages        |
+| `GET`         | `/languages/{code}`          | **Yes**       | Get language by code     |
