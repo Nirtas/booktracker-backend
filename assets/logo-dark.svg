@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256">
+  <rect width="100" height="100" rx="22" fill="#111827" />
+
+  <defs>
+    <linearGradient id="checkGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(0, 4)" fill="#f59e0b">
+    <circle cx="50" cy="15" r="4" />
+    <circle cx="38" cy="22" r="3" opacity="0.6" />
+    <circle cx="62" cy="22" r="3" opacity="0.6" />
+  </g>
+
+  <g transform="translate(0, 6)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 18 40 V 75 Q 32 65 50 75 V 40 Q 32 30 18 40" stroke="#a4a7ae" stroke-width="6" />
+
+    <line x1="50" y1="40" x2="50" y2="75" stroke="#a4a7ae" stroke-width="6" />
+
+    <path d="M 50 75 Q 60 65 70 70 L 85 25" stroke="url(#checkGrad)" stroke-width="8" />
+    <path d="M 50 40 Q 60 30 70 35 L 85 25" stroke="url(#checkGrad)" stroke-width="8" opacity="0.3" />
+  </g>
+</svg>

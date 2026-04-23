@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.exception.factory.GenreExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.LanguageExceptionFactory;
-import ru.jerael.booktracker.backend.domain.model.Genre;
+import ru.jerael.booktracker.backend.domain.model.genre.Genre;
 import ru.jerael.booktracker.backend.domain.model.author.Author;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;

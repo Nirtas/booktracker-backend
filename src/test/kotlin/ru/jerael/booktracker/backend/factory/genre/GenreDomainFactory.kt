@@ -1,6 +1,6 @@
 package ru.jerael.booktracker.backend.factory.genre
 
-import ru.jerael.booktracker.backend.domain.model.Genre
+import ru.jerael.booktracker.backend.domain.model.genre.Genre
 
 object GenreDomainFactory {
     fun createGenre(

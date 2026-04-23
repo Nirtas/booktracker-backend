@@ -1,11 +1,11 @@
 package ru.jerael.booktracker.backend.data.mapper;
 
-import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.data.annotation.DataMapper;
 import ru.jerael.booktracker.backend.data.db.entity.EmailVerificationEntity;
 import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.domain.model.verification.EmailVerification;
 
-@Component
+@DataMapper
 public class EmailVerificationDataMapper {
     public EmailVerification toDomain(EmailVerificationEntity entity) {
         if (entity == null) return null;

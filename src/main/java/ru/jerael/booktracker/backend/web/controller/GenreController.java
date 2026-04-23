@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.jerael.booktracker.backend.domain.model.Genre;
+import ru.jerael.booktracker.backend.domain.model.genre.Genre;
 import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenreByIdUseCase;
 import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenresUseCase;
 import ru.jerael.booktracker.backend.web.dto.genre.GenreResponse;

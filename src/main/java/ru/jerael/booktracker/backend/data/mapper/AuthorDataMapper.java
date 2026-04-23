@@ -1,10 +1,10 @@
 package ru.jerael.booktracker.backend.data.mapper;
 
-import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.data.annotation.DataMapper;
 import ru.jerael.booktracker.backend.data.db.entity.AuthorEntity;
 import ru.jerael.booktracker.backend.domain.model.author.Author;
 
-@Component
+@DataMapper
 public class AuthorDataMapper {
     public AuthorEntity toEntity(Author author) {
         if (author == null) return null;

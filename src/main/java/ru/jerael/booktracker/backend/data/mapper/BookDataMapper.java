@@ -1,7 +1,7 @@
 package ru.jerael.booktracker.backend.data.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.data.annotation.DataMapper;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.entity.NoteEntity;
 import ru.jerael.booktracker.backend.data.db.entity.ReadingAttemptEntity;
@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@DataMapper
 @RequiredArgsConstructor
 public class BookDataMapper {
     private final GenreDataMapper genreDataMapper;
@@ -76,23 +76,23 @@ public class BookDataMapper {
         entity.setAttempts(
             book.attempts() == null ? List.of() :
                 book.attempts().stream()
-                    .map(readingAttempt -> {
-                        ReadingAttemptEntity attemptEntity = readingAttemptDataMapper.toEntity(readingAttempt);
-                        attemptEntity.setBook(entity);
-                        return attemptEntity;
-                    })
-                    .toList()
+                .map(readingAttempt -> {
+                    ReadingAttemptEntity attemptEntity = readingAttemptDataMapper.toEntity(readingAttempt);
+                    attemptEntity.setBook(entity);
+                    return attemptEntity;
+                })
+                .toList()
         );
 
         entity.setNotes(
             book.notes() == null ? List.of() :
                 book.notes().stream()
-                    .map(note -> {
-                        NoteEntity noteEntity = noteDataMapper.toEntity(note);
-                        noteEntity.setBook(entity);
-                        return noteEntity;
-                    })
-                    .toList()
+                .map(note -> {
+                    NoteEntity noteEntity = noteDataMapper.toEntity(note);
+                    noteEntity.setBook(entity);
+                    return noteEntity;
+                })
+                .toList()
         );
 
         return entity;

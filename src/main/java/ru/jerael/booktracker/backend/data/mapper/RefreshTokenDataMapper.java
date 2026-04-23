@@ -1,11 +1,11 @@
 package ru.jerael.booktracker.backend.data.mapper;
 
-import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.data.annotation.DataMapper;
 import ru.jerael.booktracker.backend.data.db.entity.RefreshTokenEntity;
 import ru.jerael.booktracker.backend.data.db.entity.UserEntity;
 import ru.jerael.booktracker.backend.domain.model.auth.RefreshToken;
 
-@Component
+@DataMapper
 public class RefreshTokenDataMapper {
     public RefreshTokenEntity toEntity(RefreshToken refreshToken) {
         if (refreshToken == null) return null;

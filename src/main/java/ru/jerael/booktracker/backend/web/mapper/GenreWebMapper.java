@@ -1,13 +1,13 @@
 package ru.jerael.booktracker.backend.web.mapper;
 
-import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.domain.model.genre.Genre;
+import ru.jerael.booktracker.backend.web.annotation.WebMapper;
 import ru.jerael.booktracker.backend.web.dto.genre.GenreResponse;
-import ru.jerael.booktracker.backend.domain.model.Genre;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Component
+@WebMapper
 public class GenreWebMapper {
     public GenreResponse toResponse(Genre genre) {
         if (genre == null) return null;

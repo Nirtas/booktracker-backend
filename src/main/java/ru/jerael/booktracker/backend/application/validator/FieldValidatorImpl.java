@@ -1,7 +1,7 @@
 package ru.jerael.booktracker.backend.application.validator;
 
 import org.apache.commons.validator.routines.EmailValidator;
-import ru.jerael.booktracker.backend.application.annotation.Validator;
+import ru.jerael.booktracker.backend.application.annotation.AppValidator;
 import ru.jerael.booktracker.backend.domain.constant.UserRules;
 import ru.jerael.booktracker.backend.domain.exception.factory.CommonValidationErrorFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.EmailValidationErrorFactory;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Validator
+@AppValidator
 public class FieldValidatorImpl implements FieldValidator {
     @Override
     public List<ValidationError> validateEmail(String email) {

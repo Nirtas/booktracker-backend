@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.jerael.booktracker.backend.data.db.entity.GenreEntity;
 import ru.jerael.booktracker.backend.data.db.repository.JpaGenreRepository;
 import ru.jerael.booktracker.backend.data.mapper.GenreDataMapper;
-import ru.jerael.booktracker.backend.domain.model.Genre;
+import ru.jerael.booktracker.backend.domain.model.genre.Genre;
 import ru.jerael.booktracker.backend.domain.repository.GenreRepository;
 import java.util.LinkedHashSet;
 import java.util.List;

@@ -1,11 +1,11 @@
 package ru.jerael.booktracker.backend.data.mapper;
 
-import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.data.annotation.DataMapper;
 import ru.jerael.booktracker.backend.data.db.entity.BookEntity;
 import ru.jerael.booktracker.backend.data.db.entity.NoteEntity;
 import ru.jerael.booktracker.backend.domain.model.note.Note;
 
-@Component
+@DataMapper
 public class NoteDataMapper {
     public NoteEntity toEntity(Note note) {
         if (note == null) return null;

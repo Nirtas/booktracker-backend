@@ -1,10 +1,10 @@
 package ru.jerael.booktracker.backend.web.mapper;
 
-import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.domain.model.note.Note;
+import ru.jerael.booktracker.backend.web.annotation.WebMapper;
 import ru.jerael.booktracker.backend.web.dto.note.NoteResponse;
 
-@Component
+@WebMapper
 public class NoteWebMapper {
     public NoteResponse toResponse(Note note) {
         if (note == null) return null;

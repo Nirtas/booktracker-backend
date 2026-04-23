@@ -1,12 +1,12 @@
 package ru.jerael.booktracker.backend.web.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
 import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
 import ru.jerael.booktracker.backend.domain.util.StringNormalizer;
+import ru.jerael.booktracker.backend.web.annotation.WebMapper;
 import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
 import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Component
+@WebMapper
 @RequiredArgsConstructor
 public class BookWebMapper {
     private final GenreWebMapper genreWebMapper;

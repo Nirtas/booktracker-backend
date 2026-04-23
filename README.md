@@ -1,6 +1,6 @@
 <br>
 <p align="center">
-  <img src="assets/logo.png" alt="BookTracker Logo" width="250"/>
+  <img src="assets/logo-light.svg" alt="BookTracker Logo" width="250"/>
 </p>
 <br>
 
@@ -14,19 +14,22 @@
 
 # BookTracker
 
-Backend for tracking your reading progress, built with **Clean Architecture** principles. This server manages book data,
-genres, users and secure cover storage.
+Backend for tracking your reading progress, built with **Clean Architecture** principles. This server manages books,
+users, detailed reading history and secure cover storage.
 
 ## Tech Stack
 
-- **Framework:** Spring Boot 4 (Java 17)
+- **Languages:** Java 17 (main), Kotlin 2.3 (tests)
+- **Framework:** Spring Boot 4
 - **Security:** Spring Security, Argon2id hashing, JWT (Nimbus JOSE + JWT)
 - **Database:** PostgreSQL
 - **Migrations:** Liquibase (YAML)
-- **File Storage:** MinIO (S3 compatible)
+- **Caching:** Redis
+- **File Storage:** MinIO (S3-compatible)
 - **Documentation:** OpenAPI / Swagger UI
 - **Deployment:** Docker & Docker Compose
 - **SMTP** for email delivery
+- **Testing:** JUnit 5, MockK, Testcontainers
 
 ## Architecture
 
@@ -36,8 +39,8 @@ The project follows **Clean Architecture** to ensure maintainability and testabi
 - **Application:** Orchestration of business logic through use cases and domain services.
 - **Domain:** Pure business logic, Entities, Repository interfaces and Validation rules.
 - **Data:** Infrastructure implementations (JPA Repositories, S3 Storage, Image Processor, Password Hasher, Identity
-  Token Provider).
- 
+  Token Provider, Redis Caching).
+
 ## Diagrams
 
 <details>
@@ -48,8 +51,18 @@ erDiagram
     users ||--o{ books : owns
     users ||--o{ refresh_tokens : has
     users ||--o{ email_verifications : initiates
+
     books ||--o{ book_genres : has
     genres ||--o{ book_genres : "associated with"
+
+    books ||--o{ book_authors : "written by"
+    authors ||--o{ book_authors : wrote
+
+    books }o--|| publishers : "published by"
+    books }o--|| languages : "written in"
+    books ||--o{ notes : has
+    books ||--o{ reading_attempts : "tracked by"
+    reading_attempts ||--o{ reading_sessions : contains
 
     users {
         uuid user_id PK
@@ -60,13 +73,65 @@ erDiagram
     }
 
     books {
-        uuid book_id PK
+        uuid id PK
         uuid user_id FK
+        uuid publisher_id FK
+        uuid language_code FK
         varchar title
-        varchar author
         text cover_file_name
-        text status
         timestamptz created_at
+        text description
+        int total_pages
+        varchar isbn_10
+        varchar isbn_13
+        int published_on
+    }
+
+    book_authors {
+        uuid book_id PK, FK
+        uuid author_id PK, FK
+    }
+
+    authors {
+        uuid id PK
+        varchar full_name
+    }
+
+    publishers {
+        uuid id PK
+        varchar name
+    }
+
+    languages {
+        varchar code PK
+        varchar name
+    }
+
+    notes {
+        uuid id PK
+        uuid book_id FK
+        varchar type
+        text text_content
+        text file_name
+        int page_number
+        timestamptz created_at
+    }
+
+    reading_attempts {
+        uuid id PK
+        uuid book_id FK
+        varchar status
+        timestamptz started_at
+        timestamptz finished_at
+    }
+
+    reading_sessions {
+        uuid id PK
+        uuid attempt_id FK
+        int start_page
+        int end_page
+        timestamptz started_at
+        timestamptz finished_at
     }
 
     genres {
@@ -277,6 +342,231 @@ sequenceDiagram
 
 </details>
 
+<details>
+<summary><b>Workflow 3: Book details update (without cover)</b></summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+
+    participant ATF as AuthTokenFilter
+    participant ATS as AuthTokenService
+    participant HER as HandlerExceptionResolver
+
+    participant BC as BookController
+    participant BWM as BookWebMapper
+
+    participant UBDUC as UpdateBookDetailsUseCase
+    participant BV as BookValidator
+
+    participant BR as BookRepository
+    participant GR as GenreRepository
+    participant AR as AuthorRepository
+    participant PR as PublisherRepository
+    participant LAR as LanguageRepository
+
+
+    C->>ATF: PATCH /books/{id} (Header: Bearer token)
+    
+    Note over ATF: Extract token<br>from Authorization header
+    ATF->>ATS: authenticateToken(token, ACCESS)
+    
+    alt Token is invalid or expired
+        ATS-->>ATF: throw UnauthenticatedException
+        ATF->>HER: resolveException()
+        HER-->>C: 401 Unauthorized
+    end
+    
+    ATS-->>ATF: IdentityTokenClaims(userId, ...)
+    Note over ATF: Put userId to<br>UsernamePasswordAuthenticationToken
+    Note over ATF: SecurityContextHolder.getContext()<br>.setAuthentication(auth)
+    
+    ATF->>BC: invoke(BookDetailsUpdateRequest)
+    
+    Note over BC: Extract<br>@AuthenticationPrincipal userId
+    BC->>BWM: toDomain(request, id, userId)
+    BWM-->>BC: BookDetailsUpdate
+    
+    BC->>UBDUC: execute(BookDetailsUpdate)
+    
+    UBDUC->>BV: validateUpdate(data)
+    alt Validation failed
+        BV-->>UBDUC: throw ValidationException
+        UBDUC-->>BC: throw ValidationException
+        BC-->>C: 400 Bad Request
+    end
+    
+    UBDUC->>BR: findByIdAndUserId(bookId, userId)
+    alt Book not found
+        BR-->>UBDUC: Empty
+        UBDUC-->>BC: throw NotFoundException
+        BC-->>C: 404 Not Found
+    end
+    BR-->>UBDUC: Book
+    
+    opt genreIds != null
+        UBDUC->>GR: findAllById(genreIds)
+        GR-->>UBDUC: updatedGenres
+        alt One or more genres not found
+            UBDUC-->>BC: throw NotFoundException
+            BC-->>C: 404 Not Found
+        end
+    end
+    
+    opt authorNames != null
+        loop authorNames
+            UBDUC->>AR: findByFullName(name)
+            
+            alt Author not found
+                AR-->>UBDUC: Empty
+                UBDUC->>AR: save(Author)
+                AR-->>UBDUC: savedAuthor
+            else Author exists
+                AR-->>UBDUC: Author
+            end
+        end
+    end
+    
+    opt publisherName != null
+        UBDUC->>PR: findByName(publisherName)
+
+        alt Publisher not found
+            PR-->>UBDUC: Empty
+            UBDUC->>PR: save(Publisher)
+            PR-->>UBDUC: savedPublisher
+        else Publisher exists
+            PR-->>UBDUC: Publisher
+        end
+    end
+    
+    opt languageCode != null
+        UBDUC->>LAR: findByCode(languageCode)
+
+        alt Language not found
+            LAR-->>UBDUC: Empty
+            UBDUC-->>BC: throw NotFoundException
+            BC-->>C: 404 Not Found
+        end
+
+        LAR-->>UBDUC: Language
+    end
+    
+    opt status != null
+        Note over UBDUC: changeStatus() calculates<br>BookStatusTransition
+
+        alt Transition == INVALID
+            UBDUC-->>BC: throw UnprocessableContentException
+            BC-->>C: 422 Unprocessable Content
+        else Transition == UPDATE / NEW_ATTEMPT
+            Note over UBDUC: Update last /<br>create new attempt
+        end
+    end
+    
+    Note over UBDUC: Create updated<br>Book model
+    UBDUC->>BR: save(updatedBook, userId)
+    BR-->>UBDUC: savedBook
+    
+    UBDUC-->>BC: savedBook
+    BC->>BWM: toResponse(savedBook)
+    BWM-->>BC: BookResponse
+    
+    BC-->>C: 200 OK (BookResponse)
+```
+
+</details>
+
+<details>
+<summary><b>Workflow 4: Genre fetching</b></summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+
+    participant ATF as AuthTokenFilter
+    participant ATS as AuthTokenService
+    participant HER as HandlerExceptionResolver
+
+    participant GC as GenreController
+    participant GWM as GenreWebMapper
+
+    participant GGUC as GetGenresUseCase
+    participant GR as GenreRepository
+    participant JGR as JpaGenreRepository
+    participant GDM as GenreDataMapper
+
+    participant CP as CacheProxy
+    participant R as Redis
+
+
+    C->>ATF: GET /genres (Header: Bearer token)
+    
+    Note over ATF: Extract token<br>from Authorization header
+    ATF->>ATS: authenticateToken(token, ACCESS)
+    
+    alt Token is invalid or expired
+        ATS-->>ATF: throw UnauthenticatedException
+        ATF->>HER: resolveException()
+        HER-->>C: 401 Unauthorized
+    end
+    
+    ATS-->>ATF: IdentityTokenClaims(userId, ...)
+    Note over ATF: Put userId to<br>UsernamePasswordAuthenticationToken
+    Note over ATF: SecurityContextHolder.getContext()<br>.setAuthentication(auth)
+    
+    ATF->>GC: invoke
+    
+    GC->>GGUC: execute()
+    GGUC->>CP: findAll()
+    
+    CP->>R: GET "genres::all"
+    
+    alt Cache Hit (Genres exists in Redis)
+        Note over R: Record found
+        R-->>CP: Cached Genres
+        CP-->>GGUC: Set<Genre>
+    else Cache Miss (Genres not found)
+        Note over R: Cache is empty
+        R-->>CP: null
+        
+        Note over CP: Invoke actual method
+        CP->>GR: findAll()
+        GR->>JGR: findAllByOrderByNameAsc()
+        JGR-->>GR: List<GenreEntity>
+        
+        loop entities
+            GR->>GDM: toDomain(GenreEntity)
+            GDM-->>GR: Genre
+        end
+        
+        GR-->>CP: Set<Genre>
+        
+        Note over CP: Updating cache
+        CP->>R: SET "genres::all" (Set<Genre>)
+        
+        CP-->>GGUC: Set<Genre> (Returned from DB)
+    end
+    
+    GGUC-->>GC: Set<Genre>
+    GC->>GWM: toResponses(genres)
+    GWM-->>GC: Set<GenreResponse>
+    
+    GC-->>C: 200 OK (Set<GenreResponse>)
+```
+
+</details>
+
+## Roadmap
+
+- [x] **v0.3.0:** Database schema expanded, added reading history (attempts, sessions) and implemented Redis caching.
+- [ ] **v0.4.0:**
+    - **ISBN Lookup:** Integration with external APIs for search and fetch book details.
+    - **Search:** Query-based search for books.
+    - **Reading Sessions:** Logic to add and manage reading progress.
+- [ ] **v0.5.0:**
+    - **Rich Notes:** Combinations of text, image, audio and video.
+
 ## Setup & Development
 
 ### Prerequisites
@@ -290,13 +580,13 @@ sequenceDiagram
    ```bash
    cp .env.example .env
    ```
-2. Fill in your credentials and properties in the `.env` file (DB, MinIO, Argon2, SMTP, JWT).
+2. Fill in your credentials and properties in the `.env` file (DB, MinIO, Argon2, SMTP, JWT, Redis).
 
 ### Launch Options
 
 #### 1. Development (Infrastructure only)
 
-Start PostgreSQL and MinIO to run the application from your IDE:
+Start infrastructure to run the application from your IDE:
 
 ```bash
 docker compose -f docker-compose.dev.yml up --build -d
@@ -304,7 +594,7 @@ docker compose -f docker-compose.dev.yml up --build -d
 
 #### 2. Production (Full Stack from source)
 
-Build and start all services (App + DB + Storage) in containers:
+Build and start all services (app + infrastructure) in containers:
 
 ```bash
 docker compose -f docker-compose.prod.yml up --build -d
@@ -314,32 +604,35 @@ docker compose -f docker-compose.prod.yml up --build -d
 
 Once the server is running and Swagger enabled in `.env` file (`ENABLE_SWAGGER_UI=true`), explore the API and test
 endpoints via Swagger UI:
-`http://localhost:8080/swagger-ui/index.html`
+[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 ### Quick API Reference
 
 All endpoints are prefixed with `/api/v1`.
 
-| Method     | Endpoint                     | Auth Required | Description              |
-|------------|------------------------------|---------------|--------------------------|
-| **Auth**   |
-| `POST`     | `/auth/register`             | No            | Register new user        |
-| `POST`     | `/auth/confirm-registration` | No            | Confirm registration     |
-| `POST`     | `/auth/login`                | No            | Login                    |
-| `POST`     | `/auth/refresh`              | No            | Refresh tokens           |
-| `POST`     | `/auth/logout`               | No            | Logout                   |
-| `POST`     | `/auth/resend-code`          | No            | Resend verification code |
-| **Users**  |
-| `GET`      | `/users/me`                  | **Yes**       | Get current user details |
-| **Books**  |
-| `GET`      | `/books`                     | **Yes**       | Get user's books         |
-| `GET`      | `/books/{id}`                | **Yes**       | Get book by id           |
-| `DELETE`   | `/books/{id}`                | **Yes**       | Delete book by id        |
-| `PATCH`    | `/books/{id}`                | **Yes**       | Update book details      |
-| `POST`     | `/books`                     | **Yes**       | Create book              |
-| `POST`     | `/books/{id}/cover`          | **Yes**       | Upload book cover        |
-| `DELETE`   | `/books/{id}/cover`          | **Yes**       | Delete book cover        |
-| `GET`      | `/books/{id}/cover`          | **Yes**       | Get book cover           |
-| **Genres** |
-| `GET`      | `/genres`                    | **Yes**       | Get all genres           |
-| `GET`      | `/genres/{id}`               | **Yes**       | Get genre by id          |
+| Method        | Endpoint                     | Auth Required | Description              |
+|---------------|------------------------------|---------------|--------------------------|
+| **Auth**      |
+| `POST`        | `/auth/register`             | No            | Register new user        |
+| `POST`        | `/auth/confirm-registration` | No            | Confirm registration     |
+| `POST`        | `/auth/login`                | No            | Login                    |
+| `POST`        | `/auth/refresh`              | No            | Refresh tokens           |
+| `POST`        | `/auth/logout`               | No            | Logout                   |
+| `POST`        | `/auth/resend-code`          | No            | Resend verification code |
+| **Users**     |
+| `GET`         | `/users/me`                  | **Yes**       | Get current user details |
+| **Books**     |
+| `GET`         | `/books`                     | **Yes**       | Get user's books         |
+| `POST`        | `/books`                     | **Yes**       | Create book              |
+| `GET`         | `/books/{id}`                | **Yes**       | Get book by id           |
+| `DELETE`      | `/books/{id}`                | **Yes**       | Delete book by id        |
+| `PATCH`       | `/books/{id}`                | **Yes**       | Update book details      |
+| `POST`        | `/books/{id}/cover`          | **Yes**       | Upload book cover        |
+| `DELETE`      | `/books/{id}/cover`          | **Yes**       | Delete book cover        |
+| `GET`         | `/books/{id}/cover`          | **Yes**       | Get book cover           |
+| **Genres**    |
+| `GET`         | `/genres`                    | **Yes**       | Get all genres           |
+| `GET`         | `/genres/{id}`               | **Yes**       | Get genre by id          |
+| **Languages** |
+| `GET`         | `/languages`                 | **Yes**       | Get all languages        |
+| `GET`         | `/languages/{code}`          | **Yes**       | Get language by code     |
