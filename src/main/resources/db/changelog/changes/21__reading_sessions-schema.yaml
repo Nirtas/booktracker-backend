@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: 21__create-reading_sessions-table
+      author: Jerael
+      comment: create reading_sessions table
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: reading_sessions
+      changes:
+        - createTable:
+            tableName: reading_sessions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attempt_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_page
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_page
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: started_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: finished_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: reading_sessions
+            columnNames: id
+            constraintName: pk_reading_sessions
+        - addForeignKeyConstraint:
+            baseTableName: reading_sessions
+            baseColumnNames: attempt_id
+            referencedTableName: reading_attempts
+            referencedColumnNames: id
+            constraintName: fk_reading_sessions_attempt_id
+            onDelete: CASCADE
+        - createIndex:
+            indexName: idx_reading_sessions_attempt_id
+            using: btree
+            tableName: reading_sessions
+            columns:
+              - column:
+                  name: attempt_id

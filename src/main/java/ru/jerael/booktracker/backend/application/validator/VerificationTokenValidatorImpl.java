@@ -1,6 +1,6 @@
 package ru.jerael.booktracker.backend.application.validator;
 
-import org.springframework.stereotype.Component;
+import ru.jerael.booktracker.backend.application.annotation.AppValidator;
 import ru.jerael.booktracker.backend.domain.exception.ValidationException;
 import ru.jerael.booktracker.backend.domain.exception.factory.EmailVerificationErrorFactory;
 import ru.jerael.booktracker.backend.domain.exception.model.ValidationError;
@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@AppValidator
 public class VerificationTokenValidatorImpl implements VerificationTokenValidator {
     public void validate(EmailVerification emailVerification, String token) {
         List<ValidationError> errors = new ArrayList<>();

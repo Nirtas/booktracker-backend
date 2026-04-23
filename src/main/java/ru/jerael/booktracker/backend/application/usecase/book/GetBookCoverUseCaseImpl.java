@@ -1,8 +1,8 @@
 package ru.jerael.booktracker.backend.application.usecase.book;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
@@ -11,7 +11,7 @@ import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import ru.jerael.booktracker.backend.domain.usecase.book.GetBookCoverUseCase;
 import java.util.UUID;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class GetBookCoverUseCaseImpl implements GetBookCoverUseCase {
     private final BookRepository bookRepository;

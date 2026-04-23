@@ -18,7 +18,7 @@ import ru.jerael.booktracker.backend.domain.constant.PaginationRules;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
 import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
 import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
-import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.book.UploadCoverPayload;
 import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
@@ -97,8 +97,8 @@ public class BookController {
         @Valid @RequestBody BookDetailsUpdateRequest request,
         @AuthenticationPrincipal UUID userId
     ) {
-        BookDetailsUpdate data = bookWebMapper.toDomain(request);
-        Book book = updateBookDetailsUseCase.execute(id, userId, data);
+        BookDetailsUpdate data = bookWebMapper.toDomain(request, id, userId);
+        Book book = updateBookDetailsUseCase.execute(data);
         return bookWebMapper.toResponse(book);
     }
 
@@ -106,8 +106,8 @@ public class BookController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookResponse create(@Valid @RequestBody BookCreationRequest request, @AuthenticationPrincipal UUID userId) {
-        BookCreation data = bookWebMapper.toDomain(request);
-        Book book = createBookUseCase.execute(data, userId);
+        BookCreation data = bookWebMapper.toDomain(request, userId);
+        Book book = createBookUseCase.execute(data);
         return bookWebMapper.toResponse(book);
     }
 
@@ -119,8 +119,8 @@ public class BookController {
         @AuthenticationPrincipal UUID userId
     ) {
         fileValidator.validate(file, BookRules.COVER_FIELD_NAME);
-        UploadCover data = uploadCoverWebMapper.toDomain(file);
-        Book book = uploadCoverUseCase.execute(id, userId, data);
+        UploadCoverPayload data = uploadCoverWebMapper.toDomain(file, id, userId);
+        Book book = uploadCoverUseCase.execute(data);
         return bookWebMapper.toResponse(book);
     }
 

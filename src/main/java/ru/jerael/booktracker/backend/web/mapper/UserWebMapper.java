@@ -1,14 +1,14 @@
 package ru.jerael.booktracker.backend.web.mapper;
 
-import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.domain.model.user.User;
 import ru.jerael.booktracker.backend.domain.model.user.UserCreation;
 import ru.jerael.booktracker.backend.domain.model.user.UserCreationResult;
+import ru.jerael.booktracker.backend.web.annotation.WebMapper;
 import ru.jerael.booktracker.backend.web.dto.user.UserCreationRequest;
 import ru.jerael.booktracker.backend.web.dto.user.UserCreationResponse;
 import ru.jerael.booktracker.backend.web.dto.user.UserResponse;
 
-@Component
+@WebMapper
 public class UserWebMapper {
     public UserCreationResponse toResponse(UserCreationResult result) {
         if (result == null) return null;

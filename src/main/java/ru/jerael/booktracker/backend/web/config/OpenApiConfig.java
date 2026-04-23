@@ -7,10 +7,11 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+@Configuration
 public class OpenApiConfig {
+
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
@@ -18,7 +19,7 @@ public class OpenApiConfig {
                 new Info()
                     .title("BookTracker API")
                     .description("Backend for tracking your reading progress")
-                    .version("0.2.0")
+                    .version("0.3.0")
                     .license(new License().name("MIT license").url("https://opensource.org/licenses/MIT"))
             )
             .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))

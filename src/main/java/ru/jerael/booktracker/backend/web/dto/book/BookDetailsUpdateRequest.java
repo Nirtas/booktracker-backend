@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import ru.jerael.booktracker.backend.domain.constant.AuthorRules;
 import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import ru.jerael.booktracker.backend.domain.constant.ValidationRegex;
 import java.util.Set;
@@ -16,15 +17,33 @@ public record BookDetailsUpdateRequest(
     String title,
 
     @Nullable
-    @Schema(example = "Book Author")
-    @Pattern(regexp = ValidationRegex.PATTERN_NOT_BLANK, message = "must not be blank")
-    @Size(max = BookRules.AUTHOR_MAX_LENGTH)
-    String author,
-
-    @Nullable
     @Schema(example = "READING")
     String status,
 
     @Nullable
-    Set<Integer> genreIds
+    Set<Integer> genreIds,
+
+    @Nullable
+    Set<@Size(max = AuthorRules.AUTHOR_FULL_NAME_MAX_LENGTH) String> authorNames,
+
+    @Nullable
+    String description,
+
+    @Nullable
+    String publisherName,
+
+    @Nullable
+    String languageCode,
+
+    @Nullable
+    Integer publishedOn,
+
+    @Nullable
+    Integer totalPages,
+
+    @Nullable
+    String isbn10,
+
+    @Nullable
+    String isbn13
 ) {}

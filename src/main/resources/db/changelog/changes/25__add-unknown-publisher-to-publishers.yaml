@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 25__add-unknown-publisher-to-publishers
+      author: Jerael
+      comment: add unknown publisher to publishers
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            sqlCheck:
+              expectedResult: 1
+              sql: SELECT COUNT(*) FROM publishers WHERE id = '85e0df25-5257-4e15-96e6-46a9c2e3bbfe'
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO publishers (id, name)
+              VALUES ('85e0df25-5257-4e15-96e6-46a9c2e3bbfe', 'Unknown Publisher');

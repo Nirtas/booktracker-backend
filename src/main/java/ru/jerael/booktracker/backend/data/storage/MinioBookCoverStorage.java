@@ -3,7 +3,6 @@ package ru.jerael.booktracker.backend.data.storage;
 import io.minio.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import ru.jerael.booktracker.backend.data.exception.factory.StorageExceptionFactory;
 import ru.jerael.booktracker.backend.data.storage.config.MinioProperties;
@@ -13,7 +12,6 @@ import java.io.InputStream;
 import java.util.Objects;
 
 @Component
-@Primary
 @RequiredArgsConstructor
 public class MinioBookCoverStorage implements BookCoverStorage {
     private final MinioProperties minioProperties;

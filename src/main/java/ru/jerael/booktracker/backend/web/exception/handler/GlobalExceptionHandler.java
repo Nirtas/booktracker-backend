@@ -45,6 +45,16 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(UnprocessableContentException.class)
+    public ProblemDetail handleUnprocessableContentException(UnprocessableContentException ex) {
+        return buildProblemDetail(
+            HttpStatus.UNPROCESSABLE_CONTENT,
+            ex.getMessage(),
+            "Business rule violation",
+            ex.getErrorCode()
+        );
+    }
+
     @ExceptionHandler(TooManyRequestsException.class)
     public ProblemDetail handleTooManyRequestsException(TooManyRequestsException ex) {
         return buildProblemDetail(

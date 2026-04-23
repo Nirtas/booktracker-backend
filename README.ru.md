@@ -1,6 +1,6 @@
 <br>
 <p align="center">
-  <img src="assets/logo.png" alt="BookTracker Logo" width="250"/>
+  <img src="assets/logo-light.svg" alt="BookTracker Logo" width="250"/>
 </p>
 <br>
 
@@ -14,19 +14,22 @@
 
 # BookTracker
 
-Бэкенд для отслеживания прогресса чтения книг, построенный на принципах **Clean Architecture**. Сервер управляет данными
-книг, жанрами, пользователями и обеспечивает безопасное хранение обложек.
+Бэкенд для отслеживания прогресса чтения книг, построенный на принципах **Clean Architecture**. Сервер управляет
+книгами, пользователями, детальной историей чтения и обеспечивает безопасное хранение обложек.
 
 ## Стек технологий
 
-- **Фреймворк:** Spring Boot 4 (Java 17)
+- **Языки:** Java 17 (основной), Kotlin 2.3 (тесты)
+- **Фреймворк:** Spring Boot 4
 - **Безопасность:** Spring Security, Argon2id hashing, JWT (Nimbus JOSE + JWT)
 - **База данных:** PostgreSQL
 - **Миграции:** Liquibase (YAML)
-- **Хранилище файлов:** MinIO (S3 совместимое)
+- **Кэширование:** Redis
+- **Хранилище файлов:** MinIO (S3-совместимое)
 - **Документация:** OpenAPI / Swagger UI
 - **Развертывание:** Docker & Docker Compose
 - **SMTP** для доставки электронных писем
+- **Тестирование:** JUnit 5, MockK, Testcontainers
 
 ## Архитектура
 
@@ -35,8 +38,8 @@
 - **Web:** REST контроллеры, DTO, фильтры безопасности и мапперы.
 - **Application:** Оркестрация бизнес-логики через юзкейсы и доменные сервисы.
 - **Domain:** Чистая бизнес-логика, сущности, интерфейсы репозиториев и правила валидации.
-- **Data:** Реализация инфраструктуры (JPA репозитории, S3 хранилище, обработчик изображений, хэшер паролей, поставщик
-  токенов идентификации).
+- **Data:** Реализация инфраструктуры (JPA репозитории, S3 хранилище, обработчик изображений, хэшер паролей, провайдер
+  токенов идентификации, Redis-кэширование).
 
 ## Диаграммы
 
@@ -48,8 +51,18 @@ erDiagram
     users ||--o{ books : владеет
     users ||--o{ refresh_tokens : имеет
     users ||--o{ email_verifications : инициирует
+
     books ||--o{ book_genres : имеет
     genres ||--o{ book_genres : "ассоциируется с"
+
+    books ||--o{ book_authors : "написана автором"
+    authors ||--o{ book_authors : написал
+
+    books }o--|| publishers : издана
+    books }o--|| languages : "написана на языке"
+    books ||--o{ notes : имеет
+    books ||--o{ reading_attempts : отслеживается
+    reading_attempts ||--o{ reading_sessions : содержит
 
     users {
         uuid user_id PK
@@ -60,13 +73,65 @@ erDiagram
     }
 
     books {
-        uuid book_id PK
+        uuid id PK
         uuid user_id FK
+        uuid publisher_id FK
+        uuid language_code FK
         varchar title
-        varchar author
         text cover_file_name
-        text status
         timestamptz created_at
+        text description
+        int total_pages
+        varchar isbn_10
+        varchar isbn_13
+        int published_on
+    }
+
+    book_authors {
+        uuid book_id PK, FK
+        uuid author_id PK, FK
+    }
+
+    authors {
+        uuid id PK
+        varchar full_name
+    }
+
+    publishers {
+        uuid id PK
+        varchar name
+    }
+
+    languages {
+        varchar code PK
+        varchar name
+    }
+
+    notes {
+        uuid id PK
+        uuid book_id FK
+        varchar type
+        text text_content
+        text file_name
+        int page_number
+        timestamptz created_at
+    }
+
+    reading_attempts {
+        uuid id PK
+        uuid book_id FK
+        varchar status
+        timestamptz started_at
+        timestamptz finished_at
+    }
+
+    reading_sessions {
+        uuid id PK
+        uuid attempt_id FK
+        int start_page
+        int end_page
+        timestamptz started_at
+        timestamptz finished_at
     }
 
     genres {
@@ -277,6 +342,232 @@ sequenceDiagram
 
 </details>
 
+<details>
+<summary><b>Сценарий 3: Обновление сведений о книге (без обложки)</b></summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+
+    participant ATF as AuthTokenFilter
+    participant ATS as AuthTokenService
+    participant HER as HandlerExceptionResolver
+
+    participant BC as BookController
+    participant BWM as BookWebMapper
+
+    participant UBDUC as UpdateBookDetailsUseCase
+    participant BV as BookValidator
+
+    participant BR as BookRepository
+    participant GR as GenreRepository
+    participant AR as AuthorRepository
+    participant PR as PublisherRepository
+    participant LAR as LanguageRepository
+
+
+    C->>ATF: PATCH /books/{id} (Header: Bearer token)
+    
+    Note over ATF: Извлечение токена<br>из заголовка Authorization
+    ATF->>ATS: authenticateToken(token, ACCESS)
+    
+    alt Токен невалидный или просрочен
+        ATS-->>ATF: throw UnauthenticatedException
+        ATF->>HER: resolveException()
+        HER-->>C: 401 Unauthorized
+    end
+    
+    ATS-->>ATF: IdentityTokenClaims(userId, ...)
+    Note over ATF: Сохранение userId в<br>UsernamePasswordAuthenticationToken
+    Note over ATF: SecurityContextHolder.getContext()<br>.setAuthentication(auth)
+    
+    ATF->>BC: invoke(BookDetailsUpdateRequest)
+    
+    Note over BC: Извлечение<br>@AuthenticationPrincipal userId
+    BC->>BWM: toDomain(request, id, userId)
+    BWM-->>BC: BookDetailsUpdate
+    
+    BC->>UBDUC: execute(BookDetailsUpdate)
+    
+    UBDUC->>BV: validateUpdate(data)
+    alt Валидация провалена
+        BV-->>UBDUC: throw ValidationException
+        UBDUC-->>BC: throw ValidationException
+        BC-->>C: 400 Bad Request
+    end
+    
+    UBDUC->>BR: findByIdAndUserId(bookId, userId)
+    alt Книга не найдена
+        BR-->>UBDUC: Ничего
+        UBDUC-->>BC: throw NotFoundException
+        BC-->>C: 404 Not Found
+    end
+    BR-->>UBDUC: Book
+    
+    opt genreIds != null
+        UBDUC->>GR: findAllById(genreIds)
+        GR-->>UBDUC: updatedGenres
+        alt Некоторые жанры не найдены
+            UBDUC-->>BC: throw NotFoundException
+            BC-->>C: 404 Not Found
+        end
+    end
+    
+    opt authorNames != null
+        loop authorNames
+            UBDUC->>AR: findByFullName(name)
+            
+            alt Автор не найден
+                AR-->>UBDUC: Ничего
+                UBDUC->>AR: save(Author)
+                AR-->>UBDUC: savedAuthor
+            else Автор найден
+                AR-->>UBDUC: Author
+            end
+        end
+    end
+    
+    opt publisherName != null
+        UBDUC->>PR: findByName(publisherName)
+
+        alt Издатель не найден
+            PR-->>UBDUC: Ничего
+            UBDUC->>PR: save(Publisher)
+            PR-->>UBDUC: savedPublisher
+        else Издатель найден
+            PR-->>UBDUC: Publisher
+        end
+    end
+    
+    opt languageCode != null
+        UBDUC->>LAR: findByCode(languageCode)
+
+        alt Язык не найден
+            LAR-->>UBDUC: Ничего
+            UBDUC-->>BC: throw NotFoundException
+            BC-->>C: 404 Not Found
+        end
+
+        LAR-->>UBDUC: Language
+    end
+    
+    opt status != null
+        Note over UBDUC: changeStatus() вычисляет<br>BookStatusTransition
+
+        alt Transition == INVALID
+            UBDUC-->>BC: throw UnprocessableContentException
+            BC-->>C: 422 Unprocessable Content
+        else Transition == UPDATE / NEW_ATTEMPT
+            Note over UBDUC: Обновление последней /<br>создание новой попытки
+        end
+    end
+    
+    Note over UBDUC: Создание обновленной<br>модели Книги
+    UBDUC->>BR: save(updatedBook, userId)
+    BR-->>UBDUC: savedBook
+    
+    UBDUC-->>BC: savedBook
+    BC->>BWM: toResponse(savedBook)
+    BWM-->>BC: BookResponse
+    
+    BC-->>C: 200 OK (BookResponse)
+```
+
+</details>
+
+<details>
+<summary><b>Сценарий 4: Получение списка жанров</b></summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+
+    participant ATF as AuthTokenFilter
+    participant ATS as AuthTokenService
+    participant HER as HandlerExceptionResolver
+
+    participant GC as GenreController
+    participant GWM as GenreWebMapper
+
+    participant GGUC as GetGenresUseCase
+    participant GR as GenreRepository
+    participant JGR as JpaGenreRepository
+    participant GDM as GenreDataMapper
+
+    participant CP as CacheProxy
+    participant R as Redis
+
+
+    C->>ATF: GET /genres (Header: Bearer token)
+    
+    Note over ATF: Извлечение токена<br>из заголовка Authorization
+    ATF->>ATS: authenticateToken(token, ACCESS)
+    
+    alt Токен невалидный или просрочен
+        ATS-->>ATF: throw UnauthenticatedException
+        ATF->>HER: resolveException()
+        HER-->>C: 401 Unauthorized
+    end
+    
+    ATS-->>ATF: IdentityTokenClaims(userId, ...)
+    Note over ATF: Сохранение userId в<br>UsernamePasswordAuthenticationToken
+    Note over ATF: SecurityContextHolder.getContext()<br>.setAuthentication(auth)
+    
+    ATF->>GC: invoke
+    
+    GC->>GGUC: execute()
+    GGUC->>CP: findAll()
+    
+    CP->>R: GET "genres::all"
+    
+    alt Cache Hit (Жанры есть в Redis)
+        Note over R: Запись найдена
+        R-->>CP: Жанры из кэша
+        CP-->>GGUC: Set<Genre>
+    else Cache Miss (Жанры не найдены)
+        Note over R: Кэш пуст
+        R-->>CP: null
+        
+        Note over CP: Вызов реального метода
+        CP->>GR: findAll()
+        GR->>JGR: findAllByOrderByNameAsc()
+        JGR-->>GR: List<GenreEntity>
+        
+        loop entities
+            GR->>GDM: toDomain(GenreEntity)
+            GDM-->>GR: Genre
+        end
+        
+        GR-->>CP: Set<Genre>
+        
+        Note over CP: Обновление кэша
+        CP->>R: SET "genres::all" (Set<Genre>)
+        
+        CP-->>GGUC: Set<Genre> (Данные из БД)
+    end
+    
+    GGUC-->>GC: Set<Genre>
+    GC->>GWM: toResponses(genres)
+    GWM-->>GC: Set<GenreResponse>
+    
+    GC-->>C: 200 OK (Set<GenreResponse>)
+```
+
+</details>
+
+## План развития
+
+- [x] **v0.3.0:** Расширена схема базы данных, добавлена история чтения (попытки, сессии) и реализовано кэширование с
+  помощью Redis.
+- [ ] **v0.4.0:**
+    - **Поиск по ISBN:** Интеграция с внешними API для поиска и получения данных о книгах.
+    - **Поиск:** Поиск книг по запросам.
+    - **Сессии чтения:** Логика добавления и управления прогрессом чтения.
+- [ ] **v0.5.0:**
+    - **Продвинутые заметки:** Заметки, сочетающие в себе текст, изображения, аудио и видео.
+
 ## Настройка и разработка
 
 ### Требования
@@ -290,13 +581,13 @@ sequenceDiagram
    ```bash
    cp .env.example .env
    ```
-2. Заполните учетные данные и настройки в файле `.env` (БД, MinIO, Argon2, SMTP, JWT).
+2. Заполните учетные данные и настройки в файле `.env` (БД, MinIO, Argon2, SMTP, JWT, Redis).
 
 ### Варианты запуска
 
 #### 1. Разработка (только инфраструктура)
 
-Запуск PostgreSQL и MinIO для работы с приложением напрямую из IDE:
+Запуск инфраструктуры для работы с приложением напрямую из IDE:
 
 ```bash
 docker compose -f docker-compose.dev.yml up --build -d
@@ -304,7 +595,7 @@ docker compose -f docker-compose.dev.yml up --build -d
 
 #### 2. Продакшн (полный запуск из исходников)
 
-Сборка и запуск всех сервисов (Приложение + БД + Хранилище) в контейнерах:
+Сборка и запуск всех сервисов (приложение + инфраструктура) в контейнерах:
 
 ```bash
 docker compose -f docker-compose.prod.yml up --build -d
@@ -314,7 +605,7 @@ docker compose -f docker-compose.prod.yml up --build -d
 
 После запуска сервера и активации Swagger в `.env` (`ENABLE_SWAGGER_UI=true`), вы можете изучить API и протестировать
 эндпоинты через Swagger UI:
-`http://localhost:8080/swagger-ui/index.html`
+[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 ### Краткий справочник по API
 
@@ -333,14 +624,17 @@ docker compose -f docker-compose.prod.yml up --build -d
 | `GET`              | `/users/me`                  | **Да**               | Получить текущие данные пользователя |
 | **Книги**          |
 | `GET`              | `/books`                     | **Да**               | Получить все книги пользователя      |
+| `POST`             | `/books`                     | **Да**               | Создать книгу                        |
 | `GET`              | `/books/{id}`                | **Да**               | Получить книгу по id                 |
 | `DELETE`           | `/books/{id}`                | **Да**               | Удалить книгу по id                  |
 | `PATCH`            | `/books/{id}`                | **Да**               | Обновить сведения о книге            |
-| `POST`             | `/books`                     | **Да**               | Создать книгу                        |
 | `POST`             | `/books/{id}/cover`          | **Да**               | Загрузить обложку книги              |
 | `DELETE`           | `/books/{id}/cover`          | **Да**               | Удалить обложку книги                |
 | `GET`              | `/books/{id}/cover`          | **Да**               | Получить обложку книги               |
 | **Жанры**          |
 | `GET`              | `/genres`                    | **Да**               | Получить все жанры книг              |
 | `GET`              | `/genres/{id}`               | **Да**               | Получить жанр книги по id            |
+| **Языки**          |
+| `GET`              | `/languages`                 | **Да**               | Получить все языки                   |
+| `GET`              | `/languages/{code}`          | **Да**               | Получить язык по коду                |
 

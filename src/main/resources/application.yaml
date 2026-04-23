@@ -31,6 +31,7 @@ spring:
   servlet:
     multipart:
       max-file-size: ${MAX_FILE_SIZE:10MB}
+      max-request-size: ${MAX_REQUEST_SIZE:30MB}
 
   mail:
     host: ${SMTP_HOST}
@@ -41,6 +42,12 @@ spring:
       auth: ${SMTP_ENABLE_AUTH}
       starttls:
         enable: ${SMTP_ENABLE_TLS}
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
 
 springdoc:
   api-docs:
@@ -81,3 +88,5 @@ app:
       access-expiry: ${AUTH_ACCESS_TOKEN_EXPIRY:10m}
       refresh-expiry: ${AUTH_REFRESH_TOKEN_EXPIRY:30d}
       issuer: ${AUTH_TOKEN_ISSUER}
+  redis:
+    ttl: ${REDIS_TTL:24h}

@@ -3,14 +3,14 @@ package ru.jerael.booktracker.backend.application.usecase.book;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.constant.BookRules;
 import ru.jerael.booktracker.backend.domain.constant.ImageRules;
 import ru.jerael.booktracker.backend.domain.exception.factory.BookExceptionFactory;
 import ru.jerael.booktracker.backend.domain.exception.factory.FileValidationExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.book.Book;
-import ru.jerael.booktracker.backend.domain.model.book.UploadCover;
+import ru.jerael.booktracker.backend.domain.model.book.UploadCoverPayload;
 import ru.jerael.booktracker.backend.domain.model.image.ImageFile;
 import ru.jerael.booktracker.backend.domain.model.image.ProcessedImage;
 import ru.jerael.booktracker.backend.domain.repository.BookRepository;
@@ -19,7 +19,7 @@ import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage;
 import ru.jerael.booktracker.backend.domain.usecase.book.UploadCoverUseCase;
 import java.util.UUID;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
     private static final Logger log = LoggerFactory.getLogger(UploadCoverUseCaseImpl.class);
@@ -29,7 +29,10 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
 
     @Override
     @Transactional
-    public Book execute(UUID bookId, UUID userId, UploadCover data) {
+    public Book execute(UploadCoverPayload data) {
+        UUID bookId = data.bookId();
+        UUID userId = data.userId();
+
         Book book =
             bookRepository.findByIdAndUserId(bookId, userId)
                 .orElseThrow(() -> BookExceptionFactory.bookNotFound(bookId));
@@ -53,12 +56,21 @@ public class UploadCoverUseCaseImpl implements UploadCoverUseCase {
 
         Book updatedBook = new Book(
             book.id(),
+            userId,
             book.title(),
-            book.author(),
             newCoverFileName,
-            book.status(),
             book.createdAt(),
-            book.genres()
+            book.genres(),
+            book.authors(),
+            book.description(),
+            book.publisher(),
+            book.language(),
+            book.publishedOn(),
+            book.totalPages(),
+            book.isbn10(),
+            book.isbn13(),
+            book.attempts(),
+            book.notes()
         );
         Book savedBook = bookRepository.save(updatedBook, userId);
         if (oldCoverFileName != null && !oldCoverFileName.equals(newCoverFileName)) {

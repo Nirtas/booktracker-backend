@@ -1,8 +1,8 @@
 package ru.jerael.booktracker.backend.application.usecase.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.exception.factory.UserExceptionFactory;
 import ru.jerael.booktracker.backend.domain.model.auth.ConfirmRegistration;
 import ru.jerael.booktracker.backend.domain.model.auth.TokenPair;
@@ -16,7 +16,7 @@ import ru.jerael.booktracker.backend.domain.validator.AuthValidator;
 import ru.jerael.booktracker.backend.domain.verification.EmailVerificationService;
 import java.util.UUID;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class ConfirmRegistrationUseCaseImpl implements ConfirmRegistrationUseCase {
     private final AuthValidator authValidator;

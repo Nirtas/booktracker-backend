@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 17__create-languages-table
+      author: Jerael
+      comment: create languages table
+      preconditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: languages
+      changes:
+        - createTable:
+            tableName: languages
+            columns:
+              - column:
+                  name: code
+                  type: varchar(2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: languages
+            columnNames: code
+            constraintName: pk_languages

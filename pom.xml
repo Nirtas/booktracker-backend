@@ -11,7 +11,7 @@
 
     <groupId>ru.jerael</groupId>
     <artifactId>booktracker-backend</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <name>booktracker-backend</name>
     <description>BookTracker Backend</description>
 
@@ -48,6 +48,9 @@
         <nimbus-jose-jwt.version>10.8</nimbus-jose-jwt.version>
         <spring-security-crypto.version>7.0.3</spring-security-crypto.version>
         <spring-security-test.version>7.0.3</spring-security-test.version>
+        <kotlin.version>2.3.20</kotlin.version>
+        <mockk-jvm.version>1.14.9</mockk-jvm.version>
+        <springmockk.version>5.0.1</springmockk.version>
     </properties>
     <dependencies>
 
@@ -83,6 +86,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-liquibase</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
             <scope>compile</scope>
         </dependency>
 
@@ -142,12 +155,6 @@
 
         <!-- UTILS -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
@@ -202,6 +209,18 @@
             <version>${spring-security-test.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk-jvm</artifactId>
+            <version>${mockk-jvm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ninja-squad</groupId>
+            <artifactId>springmockk</artifactId>
+            <version>${springmockk.version}</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -230,6 +249,24 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>test-compile</id>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

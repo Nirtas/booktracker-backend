@@ -1,11 +1,19 @@
 package ru.jerael.booktracker.backend.domain.model.book;
 
-import jakarta.annotation.Nullable;
 import java.util.Set;
+import java.util.UUID;
 
 public record BookCreation(
+    UUID userId,
     String title,
-    String author,
-    @Nullable BookStatus status,
-    Set<Integer> genreIds
+    BookStatus status,
+    Set<Integer> genreIds,
+    Set<String> authorNames,
+    String description,
+    String publisherName,
+    String languageCode,
+    Integer publishedOn,
+    Integer totalPages,
+    String isbn10,
+    String isbn13
 ) {}

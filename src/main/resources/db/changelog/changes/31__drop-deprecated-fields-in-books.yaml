@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 31__drop-deprecated-fields-in-books
+      author: Jerael
+      comment: drop deprecated fields in books
+      changes:
+        - dropColumn:
+            tableName: books
+            columns:
+              - column:
+                  name: author
+              - column:
+                  name: status
