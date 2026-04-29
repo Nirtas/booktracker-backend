@@ -51,6 +51,7 @@
         <kotlin.version>2.3.20</kotlin.version>
         <mockk-jvm.version>1.14.9</mockk-jvm.version>
         <springmockk.version>5.0.1</springmockk.version>
+        <wiremock-spring-boot.version>4.2.1</wiremock-spring-boot.version>
     </properties>
     <dependencies>
 
@@ -219,6 +220,12 @@
             <groupId>com.ninja-squad</groupId>
             <artifactId>springmockk</artifactId>
             <version>${springmockk.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wiremock.integrations</groupId>
+            <artifactId>wiremock-spring-boot</artifactId>
+            <version>${wiremock-spring-boot.version}</version>
             <scope>test</scope>
         </dependency>
 
