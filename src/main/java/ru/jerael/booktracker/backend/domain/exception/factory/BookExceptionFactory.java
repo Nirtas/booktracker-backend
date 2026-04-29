@@ -49,4 +49,11 @@ public class BookExceptionFactory {
             "status"
         );
     }
+
+    public static NotFoundException bookMetadataNotFound() {
+        return new NotFoundException(
+            BookErrorCode.BOOK_METADATA_NOT_FOUND,
+            "Book metadata not found"
+        );
+    }
 }
