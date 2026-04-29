@@ -1,8 +1,8 @@
 package ru.jerael.booktracker.backend.factory.book
 
-import ru.jerael.booktracker.backend.domain.model.genre.Genre
 import ru.jerael.booktracker.backend.domain.model.author.Author
 import ru.jerael.booktracker.backend.domain.model.book.*
+import ru.jerael.booktracker.backend.domain.model.genre.Genre
 import ru.jerael.booktracker.backend.domain.model.language.Language
 import ru.jerael.booktracker.backend.domain.model.note.Note
 import ru.jerael.booktracker.backend.domain.model.publisher.Publisher
@@ -106,5 +106,30 @@ object BookDomainFactory {
         size: Long = "cover content".length.toLong()
     ): UploadCoverPayload {
         return UploadCoverPayload(bookId, userId, contentType, content, size)
+    }
+    
+    fun createBookMetadata(
+        title: String? = "Title",
+        cover: String? = null,
+        genres: Set<Genre> = emptySet(),
+        authors: Set<Author> = emptySet(),
+        description: String? = null,
+        publisher: Publisher? = null,
+        language: Language? = null,
+        publishedOn: Int? = 2025,
+        totalPages: Int? = 300,
+        isbn10: String? = null,
+        isbn13: String? = null,
+    ): BookMetadata {
+        return BookMetadata(
+            title, cover, genres, authors, description, publisher, language,
+            publishedOn, totalPages, isbn10, isbn13
+        )
+    }
+    
+    fun createBookSearchQuery(
+        isbn: String? = "1234567890"
+    ): BookSearchQuery {
+        return BookSearchQuery(isbn)
     }
 }
