@@ -1,6 +1,6 @@
 package ru.jerael.booktracker.backend.data.external.google.dto;
 
 public record IndustryIdentifier(
-    String type,
+    IsbnType type,
     String identifier
 ) {}
