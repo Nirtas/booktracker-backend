@@ -13,8 +13,8 @@ import org.wiremock.spring.ConfigureWireMock
 import org.wiremock.spring.EnableWireMock
 import ru.jerael.booktracker.backend.data.exception.code.ExternalApiErrorCode
 import ru.jerael.booktracker.backend.domain.exception.InternalException
-import ru.jerael.booktracker.backend.domain.model.book.BookSearchQuery
 import ru.jerael.booktracker.backend.domain.storage.BookCoverStorage
+import ru.jerael.booktracker.backend.factory.book.BookDomainFactory
 
 @SpringBootTest(properties = ["app.external.google-books.api-key=test-api-key"])
 @EnableWireMock(ConfigureWireMock(baseUrlProperties = ["app.external.google-books.base-url"]))
@@ -29,6 +29,7 @@ class GoogleBooksMetadataProviderTest {
     @Test
     fun `when book found, findBook should return BookMetadata`() {
         val isbn = "9780765326355"
+        val query = BookDomainFactory.createBookSearchQuery(isbn = isbn)
         
         stubFor(
             get(urlPathEqualTo("/volumes"))
@@ -42,7 +43,7 @@ class GoogleBooksMetadataProviderTest {
                 )
         )
         
-        val result = provider.findBook(BookSearchQuery(isbn))
+        val result = provider.findBook(query)
         
         with(result.get()) {
             assertThat(title).isEqualTo("The Way of Kings")
@@ -56,6 +57,8 @@ class GoogleBooksMetadataProviderTest {
     
     @Test
     fun `when api returns error, findBook should throw InternalException`() {
+        val query = BookDomainFactory.createBookSearchQuery()
+        
         stubFor(
             get(urlPathEqualTo("/volumes"))
                 .willReturn(
@@ -66,7 +69,7 @@ class GoogleBooksMetadataProviderTest {
         )
         
         val exception = assertThrows(InternalException::class.java) {
-            provider.findBook(BookSearchQuery("isbn"))
+            provider.findBook(query)
         }
         
         assertThat(exception.message).contains("API error")
