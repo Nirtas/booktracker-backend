@@ -51,14 +51,14 @@ class GenreRepositoryImplTest {
     
     @Test
     fun `findAllById should return set of existing genres`() {
-        jpaGenreRepository.saveAll(
+        val savedGenres = jpaGenreRepository.saveAll(
             listOf(
                 GenreEntityFactory.createGenreEntity(name = "Genre 1"),
                 GenreEntityFactory.createGenreEntity(name = "Genre 2"),
                 GenreEntityFactory.createGenreEntity(name = "Genre 3")
             )
         )
-        val genreIds = setOf(1, 2, 5555)
+        val genreIds = setOf(savedGenres[0].id, savedGenres[1].id, 5555)
         
         val result = genreRepository.findAllById(genreIds)
         
