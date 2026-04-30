@@ -52,6 +52,7 @@
         <mockk-jvm.version>1.14.9</mockk-jvm.version>
         <springmockk.version>5.0.1</springmockk.version>
         <wiremock-spring-boot.version>4.2.1</wiremock-spring-boot.version>
+        <bucket4j_jdk17-core.version>8.18.0</bucket4j_jdk17-core.version>
     </properties>
     <dependencies>
 
@@ -144,6 +145,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+            <version>${bucket4j_jdk17-core.version}</version>
             <scope>compile</scope>
         </dependency>
 
