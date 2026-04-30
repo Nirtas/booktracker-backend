@@ -67,4 +67,23 @@ class GenreRepositoryImplTest {
             assertThat(this).extracting("name").containsExactlyInAnyOrder("Genre 1", "Genre 2")
         }
     }
+    
+    @Test
+    fun `findAllByNames should return set of existing genres`() {
+        jpaGenreRepository.saveAll(
+            listOf(
+                GenreEntityFactory.createGenreEntity(name = "Genre 1"),
+                GenreEntityFactory.createGenreEntity(name = "Genre 2"),
+                GenreEntityFactory.createGenreEntity(name = "Genre 3")
+            )
+        )
+        val genreNames = setOf("genre 1", "genre 2", "unknown genre")
+        
+        val result = genreRepository.findAllByNames(genreNames)
+        
+        with(result) {
+            assertThat(size).isEqualTo(2)
+            assertThat(this).extracting("name").containsExactlyInAnyOrder("Genre 1", "Genre 2")
+        }
+    }
 }
