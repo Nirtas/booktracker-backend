@@ -1,19 +1,16 @@
 package ru.jerael.booktracker.backend.web.mapper;
 
 import lombok.RequiredArgsConstructor;
-import ru.jerael.booktracker.backend.domain.model.book.Book;
-import ru.jerael.booktracker.backend.domain.model.book.BookCreation;
-import ru.jerael.booktracker.backend.domain.model.book.BookDetailsUpdate;
-import ru.jerael.booktracker.backend.domain.model.book.BookStatus;
+import ru.jerael.booktracker.backend.domain.model.book.*;
 import ru.jerael.booktracker.backend.domain.util.StringNormalizer;
 import ru.jerael.booktracker.backend.web.annotation.WebMapper;
 import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest;
 import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest;
+import ru.jerael.booktracker.backend.web.dto.book.BookMetadataResponse;
 import ru.jerael.booktracker.backend.web.dto.book.BookResponse;
 import ru.jerael.booktracker.backend.web.util.LinkBuilder;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @WebMapper
 @RequiredArgsConstructor
@@ -41,7 +38,7 @@ public class BookWebMapper {
             book.status().getValue(),
             book.createdAt(),
             genreWebMapper.toResponses(book.genres()),
-            book.authors().stream().map(authorWebMapper::toResponse).collect(Collectors.toSet()),
+            authorWebMapper.toResponses(book.authors()),
             book.description(),
             publisherWebMapper.toResponse(book.publisher()),
             languageWebMapper.toResponse(book.language()),
@@ -96,6 +93,24 @@ public class BookWebMapper {
             request.totalPages(),
             cleanUpIsbn(request.isbn10()),
             cleanUpIsbn(request.isbn13())
+        );
+    }
+
+    public BookMetadataResponse toResponse(BookMetadata metadata) {
+        if (metadata == null) return null;
+
+        return new BookMetadataResponse(
+            metadata.title(),
+            metadata.cover(),
+            genreWebMapper.toResponses(metadata.genres()),
+            authorWebMapper.toResponses(metadata.authors()),
+            metadata.description(),
+            publisherWebMapper.toResponse(metadata.publisher()),
+            languageWebMapper.toResponse(metadata.language()),
+            metadata.publishedOn(),
+            metadata.totalPages(),
+            metadata.isbn10(),
+            metadata.isbn13()
         );
     }
 
