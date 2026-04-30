@@ -18,6 +18,7 @@ import ru.jerael.booktracker.backend.domain.usecase.genre.GetGenresUseCase
 import ru.jerael.booktracker.backend.factory.auth.AuthWebFactory
 import ru.jerael.booktracker.backend.factory.genre.GenreDomainFactory
 import ru.jerael.booktracker.backend.factory.genre.GenreWebFactory
+import ru.jerael.booktracker.backend.web.config.RateLimitProperties
 import ru.jerael.booktracker.backend.web.config.WebProperties
 import ru.jerael.booktracker.backend.web.dto.genre.GenreResponse
 import ru.jerael.booktracker.backend.web.exception.handler.GlobalExceptionHandler
@@ -33,6 +34,9 @@ class GenreControllerTest {
     
     @MockkBean
     private lateinit var webProperties: WebProperties
+    
+    @MockkBean
+    private lateinit var rateLimitProperties: RateLimitProperties
     
     @MockkBean
     private lateinit var getGenresUseCase: GetGenresUseCase

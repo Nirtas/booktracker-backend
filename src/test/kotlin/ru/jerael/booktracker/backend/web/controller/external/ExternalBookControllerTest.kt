@@ -4,6 +4,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
@@ -17,11 +18,13 @@ import ru.jerael.booktracker.backend.domain.usecase.external.book.GetBookMetadat
 import ru.jerael.booktracker.backend.factory.auth.AuthWebFactory
 import ru.jerael.booktracker.backend.factory.book.BookDomainFactory
 import ru.jerael.booktracker.backend.factory.book.BookWebFactory
+import ru.jerael.booktracker.backend.web.config.RateLimitProperties
 import ru.jerael.booktracker.backend.web.config.WebProperties
 import ru.jerael.booktracker.backend.web.dto.book.BookMetadataResponse
 import ru.jerael.booktracker.backend.web.exception.handler.GlobalExceptionHandler
 import ru.jerael.booktracker.backend.web.mapper.BookWebMapper
 import ru.jerael.booktracker.backend.web.security.SecurityConfig
+import java.time.Duration
 
 @WebMvcTest(ExternalBookController::class)
 @Import(GlobalExceptionHandler::class, SecurityConfig::class)
@@ -34,6 +37,9 @@ class ExternalBookControllerTest {
     private lateinit var webProperties: WebProperties
     
     @MockkBean
+    private lateinit var rateLimitProperties: RateLimitProperties
+    
+    @MockkBean
     private lateinit var authTokenService: AuthTokenService
     
     @MockkBean
@@ -41,6 +47,13 @@ class ExternalBookControllerTest {
     
     @MockkBean
     private lateinit var bookWebMapper: BookWebMapper
+    
+    @BeforeEach
+    fun setUp() {
+        every { rateLimitProperties.capacity } returns 10
+        every { rateLimitProperties.refillAmount } returns 10
+        every { rateLimitProperties.refillDuration } returns Duration.ofMinutes(1)
+    }
     
     @Test
     fun `findBookMetadata should return 200 OK and book metadata`() {

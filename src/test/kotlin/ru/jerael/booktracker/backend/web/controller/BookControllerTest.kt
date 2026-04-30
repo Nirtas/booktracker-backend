@@ -26,6 +26,7 @@ import ru.jerael.booktracker.backend.factory.book.BookDomainFactory
 import ru.jerael.booktracker.backend.factory.book.BookWebFactory
 import ru.jerael.booktracker.backend.factory.file.FileFactory
 import ru.jerael.booktracker.backend.factory.image.ImageDomainFactory
+import ru.jerael.booktracker.backend.web.config.RateLimitProperties
 import ru.jerael.booktracker.backend.web.config.WebProperties
 import ru.jerael.booktracker.backend.web.dto.book.BookResponse
 import ru.jerael.booktracker.backend.web.exception.handler.GlobalExceptionHandler
@@ -45,6 +46,9 @@ class BookControllerTest {
     
     @MockkBean
     private lateinit var webProperties: WebProperties
+    
+    @MockkBean
+    private lateinit var rateLimitProperties: RateLimitProperties
     
     @Autowired
     private lateinit var objectMapper: ObjectMapper
