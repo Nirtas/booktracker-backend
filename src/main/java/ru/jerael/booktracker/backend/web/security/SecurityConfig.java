@@ -11,6 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import ru.jerael.booktracker.backend.domain.service.token.AuthTokenService;
+import ru.jerael.booktracker.backend.web.config.RateLimitProperties;
 
 @Configuration
 @EnableWebSecurity
@@ -27,7 +28,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthTokenFilter authTokenFilter) {
+    public RateLimitFilter rateLimitFilter(RateLimitProperties properties) {
+        return new RateLimitFilter(properties, resolver);
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+        HttpSecurity httpSecurity,
+        AuthTokenFilter authTokenFilter,
+        RateLimitFilter rateLimitFilter
+    ) {
         return httpSecurity
             .httpBasic(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
@@ -45,6 +55,7 @@ public class SecurityConfig {
                 )
             )
             .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 }
