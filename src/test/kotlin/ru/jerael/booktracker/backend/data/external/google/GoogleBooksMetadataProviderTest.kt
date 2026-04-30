@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.wiremock.spring.ConfigureWireMock
 import org.wiremock.spring.EnableWireMock
 import ru.jerael.booktracker.backend.data.exception.code.ExternalApiErrorCode
@@ -18,6 +19,7 @@ import ru.jerael.booktracker.backend.factory.book.BookDomainFactory
 
 @SpringBootTest(properties = ["app.external.google-books.api-key=test-api-key"])
 @EnableWireMock(ConfigureWireMock(baseUrlProperties = ["app.external.google-books.base-url"]))
+@ActiveProfiles("test")
 class GoogleBooksMetadataProviderTest {
     
     @MockkBean

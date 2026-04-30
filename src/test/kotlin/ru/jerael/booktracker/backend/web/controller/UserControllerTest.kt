@@ -14,6 +14,7 @@ import ru.jerael.booktracker.backend.domain.service.token.AuthTokenService
 import ru.jerael.booktracker.backend.domain.usecase.user.GetUserUseCase
 import ru.jerael.booktracker.backend.factory.auth.AuthWebFactory
 import ru.jerael.booktracker.backend.factory.user.UserDomainFactory
+import ru.jerael.booktracker.backend.web.config.RateLimitProperties
 import ru.jerael.booktracker.backend.web.config.WebProperties
 import ru.jerael.booktracker.backend.web.exception.handler.GlobalExceptionHandler
 import ru.jerael.booktracker.backend.web.mapper.UserWebMapper
@@ -28,6 +29,9 @@ class UserControllerTest {
     
     @MockkBean
     private lateinit var webProperties: WebProperties
+    
+    @MockkBean
+    private lateinit var rateLimitProperties: RateLimitProperties
     
     @MockkBean
     private lateinit var authTokenService: AuthTokenService

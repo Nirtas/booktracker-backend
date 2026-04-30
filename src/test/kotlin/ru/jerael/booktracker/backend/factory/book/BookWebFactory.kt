@@ -4,6 +4,7 @@ import ru.jerael.booktracker.backend.domain.model.book.BookStatus
 import ru.jerael.booktracker.backend.web.dto.author.AuthorResponse
 import ru.jerael.booktracker.backend.web.dto.book.BookCreationRequest
 import ru.jerael.booktracker.backend.web.dto.book.BookDetailsUpdateRequest
+import ru.jerael.booktracker.backend.web.dto.book.BookMetadataResponse
 import ru.jerael.booktracker.backend.web.dto.book.BookResponse
 import ru.jerael.booktracker.backend.web.dto.genre.GenreResponse
 import ru.jerael.booktracker.backend.web.dto.language.LanguageResponse
@@ -84,6 +85,25 @@ object BookWebFactory {
         return BookResponse(
             id, title, coverUrl, status, createdAt, genres, authors, description,
             publisher, language, publishedOn, totalPages, isbn10, isbn13, attempts, notes
+        )
+    }
+    
+    fun createBookMetadataResponse(
+        title: String? = "Title",
+        cover: String? = null,
+        genres: Set<GenreResponse> = emptySet(),
+        authors: Set<AuthorResponse> = emptySet(),
+        description: String? = null,
+        publisher: PublisherResponse? = null,
+        language: LanguageResponse? = null,
+        publishedOn: Int? = 2025,
+        totalPages: Int? = 300,
+        isbn10: String? = null,
+        isbn13: String? = null
+    ): BookMetadataResponse {
+        return BookMetadataResponse(
+            title, cover, genres, authors, description,
+            publisher, language, publishedOn, totalPages, isbn10, isbn13
         )
     }
 }

@@ -5,7 +5,7 @@ import ru.jerael.booktracker.backend.domain.model.language.Language
 object LanguageDomainFactory {
     fun createLanguage(
         code: String = "en",
-        name: String = "English"
+        name: String? = "English"
     ): Language {
         return Language(code, name)
     }

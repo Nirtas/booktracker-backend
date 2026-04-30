@@ -142,4 +142,35 @@ class BookWebMapperTest {
             assertEquals("1234567890123", isbn13)
         }
     }
+    
+    @Test
+    fun `toResponse should map BookMetadata to BookMetadataResponse`() {
+        val metadata = BookDomainFactory.createBookMetadata()
+        
+        val result = mapper.toResponse(metadata)
+        
+        with(result) {
+            assertThat(title).isEqualTo(metadata.title)
+            assertThat(coverUrl).isEqualTo(metadata.cover)
+            
+            val expectedGenres = genreWebMapper.toResponses(metadata.genres)
+            assertThat(genres).isEqualTo(expectedGenres)
+            
+            val expectedAuthors = metadata.authors.map { authorWebMapper.toResponse(it) }.toSet()
+            assertThat(authors).isEqualTo(expectedAuthors)
+            
+            assertThat(description).isEqualTo(metadata.description)
+            
+            val expectedPublisher = publisherWebMapper.toResponse(metadata.publisher)
+            assertThat(publisher).isEqualTo(expectedPublisher)
+            
+            val expectedLanguage = languageWebMapper.toResponse(metadata.language)
+            assertThat(language).isEqualTo(expectedLanguage)
+            
+            assertThat(publishedOn).isEqualTo(metadata.publishedOn)
+            assertThat(totalPages).isEqualTo(metadata.totalPages)
+            assertThat(isbn10).isEqualTo(metadata.isbn10)
+            assertThat(isbn13).isEqualTo(metadata.isbn13)
+        }
+    }
 }

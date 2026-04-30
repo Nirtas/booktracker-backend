@@ -94,3 +94,7 @@ app:
     google-books:
       base-url: ${GOOGLE_BOOKS_BASE_URL:https://www.googleapis.com/books/v1}
       api-key: ${GOOGLE_BOOKS_API_KEY}
+  rate-limit:
+    capacity: ${RATE_LIMIT_CAPACITY:10}
+    refill-amount: ${RATE_LIMIT_REFILL_AMOUNT:10}
+    refill-duration: ${RATE_LIMIT_REFILL_DURATION:1m}

@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.JacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import ru.jerael.booktracker.backend.domain.model.book.BookMetadata;
 import ru.jerael.booktracker.backend.domain.model.genre.Genre;
 import ru.jerael.booktracker.backend.domain.model.language.Language;
 import tools.jackson.databind.JavaType;
@@ -20,6 +22,7 @@ import java.util.*;
 @Configuration
 @EnableCaching
 @RequiredArgsConstructor
+@Profile("!test")
 public class RedisConfig {
     private final RedisProperties properties;
 
@@ -35,6 +38,8 @@ public class RedisConfig {
 
         configs.put("genres", collectionConfig(objectMapper, LinkedHashSet.class, Genre.class));
         configs.put("genre", singleConfig(objectMapper, Genre.class));
+
+        configs.put("external-books", singleConfig(objectMapper, BookMetadata.class));
 
         return RedisCacheManager.builder(factory)
             .cacheDefaults(defaultConfig)

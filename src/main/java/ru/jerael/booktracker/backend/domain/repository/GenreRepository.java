@@ -10,4 +10,6 @@ public interface GenreRepository {
     Optional<Genre> findById(Integer id);
 
     Set<Genre> findAllById(Set<Integer> ids);
+
+    Set<Genre> findAllByNames(Set<String> names);
 }

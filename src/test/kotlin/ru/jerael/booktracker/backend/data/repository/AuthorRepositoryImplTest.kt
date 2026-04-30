@@ -1,5 +1,6 @@
 package ru.jerael.booktracker.backend.data.repository
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -58,5 +59,24 @@ class AuthorRepositoryImplTest {
         
         assertEquals(savedId, result.id)
         assertEquals("Author B", result.fullName)
+    }
+    
+    @Test
+    fun `findAllByNames should return set of existing authors`() {
+        jpaAuthorRepository.saveAll(
+            listOf(
+                AuthorEntityFactory.createAuthorEntity(id = null, fullName = "Author A"),
+                AuthorEntityFactory.createAuthorEntity(id = null, fullName = "Author B"),
+                AuthorEntityFactory.createAuthorEntity(id = null, fullName = "Author C")
+            )
+        )
+        val authorNames = setOf("author a", "author b", "new author")
+        
+        val result = authorRepository.findAllByNames(authorNames)
+        
+        with(result) {
+            assertThat(size).isEqualTo(2)
+            assertThat(this).extracting("fullName").containsExactlyInAnyOrder("Author A", "Author B")
+        }
     }
 }
