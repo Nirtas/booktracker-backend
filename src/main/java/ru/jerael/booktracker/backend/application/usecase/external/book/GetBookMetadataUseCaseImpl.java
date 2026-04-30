@@ -31,7 +31,10 @@ public class GetBookMetadataUseCaseImpl implements GetBookMetadataUseCase {
     @Override
     @Transactional(readOnly = true)
     public BookMetadata execute(BookSearchQuery query) {
-        BookMetadata metadata = bookMetadataProvider.findBook(query)
+        String cleanedIsbn = query.isbn().replaceAll("[^0-9]", "");
+        BookSearchQuery cleanedQuery = new BookSearchQuery(cleanedIsbn);
+
+        BookMetadata metadata = bookMetadataProvider.findBook(cleanedQuery)
             .orElseThrow(BookExceptionFactory::bookMetadataNotFound);
 
         Set<String> genreNames = metadata.genres().stream()
