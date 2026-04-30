@@ -8,6 +8,8 @@ import ru.jerael.booktracker.backend.data.mapper.AuthorDataMapper;
 import ru.jerael.booktracker.backend.domain.model.author.Author;
 import ru.jerael.booktracker.backend.domain.repository.AuthorRepository;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,5 +27,12 @@ public class AuthorRepositoryImpl implements AuthorRepository {
         AuthorEntity entity = authorDataMapper.toEntity(author);
         AuthorEntity savedEntity = jpaAuthorRepository.save(entity);
         return authorDataMapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public Set<Author> findAllByNames(Set<String> names) {
+        return jpaAuthorRepository.findAllByFullNameInIgnoreCase(names).stream()
+            .map(authorDataMapper::toDomain)
+            .collect(Collectors.toSet());
     }
 }
