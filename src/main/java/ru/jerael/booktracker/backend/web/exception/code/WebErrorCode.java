@@ -10,5 +10,6 @@ public enum WebErrorCode implements ErrorCode {
     MALFORMED_REQUEST,
     ENDPOINT_NOT_FOUND,
     INTERNAL_SERVER_ERROR,
-    MISSING_TOKEN
+    MISSING_TOKEN,
+    RATE_LIMIT_EXCEEDED
 }
