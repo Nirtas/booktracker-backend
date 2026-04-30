@@ -1,6 +1,7 @@
 package ru.jerael.booktracker.backend.data.external.google;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.jerael.booktracker.backend.data.external.google.config.GoogleBooksProperties;
 import ru.jerael.booktracker.backend.data.external.google.dto.GoogleBooksResponse;
@@ -18,6 +19,11 @@ public class GoogleBooksMetadataProvider implements BookMetadataProvider {
     private final GoogleBooksProperties properties;
     private final GoogleBooksMapper googleBooksMapper;
 
+    @Cacheable(
+        value = "external-books",
+        key = "#query.isbn()",
+        unless = "#result == null"
+    )
     @Override
     public Optional<BookMetadata> findBook(BookSearchQuery query) {
         String q = "isbn:" + query.isbn();
