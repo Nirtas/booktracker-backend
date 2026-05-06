@@ -51,3 +51,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/32__change-published_on-type-in-books.yaml
   - include:
       file: classpath:/db/changelog/changes/33__rename-read-status-to-completed.yaml
+  - include:
+      file: classpath:/db/changelog/changes/34__enable-pg_trgm.yaml
