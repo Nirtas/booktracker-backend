@@ -10,6 +10,8 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
 import org.springframework.context.annotation.Import
 import ru.jerael.booktracker.backend.data.db.repository.JpaAuthorRepository
 import ru.jerael.booktracker.backend.data.mapper.AuthorDataMapper
+import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery
+import ru.jerael.booktracker.backend.domain.model.pagination.SortDirection
 import ru.jerael.booktracker.backend.factory.author.AuthorDomainFactory
 import ru.jerael.booktracker.backend.factory.author.AuthorEntityFactory
 
@@ -77,6 +79,31 @@ class AuthorRepositoryImplTest {
         with(result) {
             assertThat(size).isEqualTo(2)
             assertThat(this).extracting("fullName").containsExactlyInAnyOrder("Author A", "Author B")
+        }
+    }
+    
+    @Test
+    fun `searchByFullName should return list of found authors by similarity`() {
+        jpaAuthorRepository.saveAll(
+            listOf(
+                AuthorEntityFactory.createAuthorEntity(id = null, fullName = "Author A"),
+                AuthorEntityFactory.createAuthorEntity(id = null, fullName = "Brandon Sanderson"),
+                AuthorEntityFactory.createAuthorEntity(id = null, fullName = "Robert Jordan")
+            )
+        )
+        val query = "er"
+        val pageQuery = PageQuery(0, 5, "fullName", SortDirection.ASC)
+        
+        val result = authorRepository.searchByFullName(pageQuery, query)
+        
+        with(result) {
+            assertThat(content).hasSize(2)
+            
+            val authorNames = content.map { it.fullName }
+            assertThat(authorNames).containsExactlyInAnyOrder("Brandon Sanderson", "Robert Jordan")
+            assertThat(authorNames).doesNotContain("Author A")
+            
+            assertThat(totalElements).isEqualTo(2)
         }
     }
 }
