@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 35__add-gin-index-to-authors
+      author: Jerael
+      comment: add gin index to authors
+      changes:
+        - sql:
+            sql: |
+              CREATE INDEX IF NOT EXISTS idx_authors_full_name ON authors USING gin (full_name gin_trgm_ops);

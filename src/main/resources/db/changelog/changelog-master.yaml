@@ -67,3 +67,7 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/33__rename-read-status-to-completed.yaml
   - include:
       file: classpath:/db/changelog/changes/34__enable-pg_trgm.yaml
+  - include:
+      file: classpath:/db/changelog/changes/35__add-gin-index-to-authors.yaml
+  - include:
+      file: classpath:/db/changelog/changes/36__add-gin-index-to-publishers.yaml
