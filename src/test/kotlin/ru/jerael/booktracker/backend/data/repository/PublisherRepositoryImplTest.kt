@@ -1,5 +1,6 @@
 package ru.jerael.booktracker.backend.data.repository
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
@@ -8,6 +9,8 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
 import org.springframework.context.annotation.Import
 import ru.jerael.booktracker.backend.data.db.repository.JpaPublisherRepository
 import ru.jerael.booktracker.backend.data.mapper.PublisherDataMapper
+import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery
+import ru.jerael.booktracker.backend.domain.model.pagination.SortDirection
 import ru.jerael.booktracker.backend.factory.publisher.PublisherDomainFactory
 import ru.jerael.booktracker.backend.factory.publisher.PublisherEntityFactory
 
@@ -52,5 +55,30 @@ class PublisherRepositoryImplTest {
         
         assertEquals(savedPublisher.id, result.id)
         assertEquals(updatedPublisher.name, result.name)
+    }
+    
+    @Test
+    fun `searchByName should return list of found publishers by similarity`() {
+        jpaPublisherRepository.saveAll(
+            listOf(
+                PublisherEntityFactory.createPublisherEntity(name = "Publisher A"),
+                PublisherEntityFactory.createPublisherEntity(name = "Tor Books"),
+                PublisherEntityFactory.createPublisherEntity(name = "Aboba Books")
+            )
+        )
+        val query = "book"
+        val pageQuery = PageQuery(0, 5, "name", SortDirection.ASC)
+        
+        val result = publisherRepository.searchByName(pageQuery, query)
+        
+        with(result) {
+            assertThat(content).hasSize(2)
+            
+            val publisherNames = content.map { it.name }
+            assertThat(publisherNames).containsExactlyInAnyOrder("Tor Books", "Aboba Books")
+            assertThat(publisherNames).doesNotContain("Publisher A")
+            
+            assertThat(totalElements).isEqualTo(2)
+        }
     }
 }

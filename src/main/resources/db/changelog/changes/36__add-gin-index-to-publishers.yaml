@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 36__add-gin-index-to-publishers
+      author: Jerael
+      comment: add gin index to publishers
+      changes:
+        - sql:
+            sql: |
+              CREATE INDEX IF NOT EXISTS idx_publishers_name ON publishers USING gin (name gin_trgm_ops);
