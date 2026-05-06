@@ -1,4 +1,9 @@
 spring:
+  datasource:
+    url: jdbc:tc:postgresql:17.4-alpine:///test
+    hikari:
+      maximum-pool-size: 2
+
   liquibase:
     change-log: classpath:/db/changelog/test-changelog-master.yaml
 
