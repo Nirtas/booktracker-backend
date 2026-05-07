@@ -1,8 +1,10 @@
 package ru.jerael.booktracker.backend.web.mapper;
 
 import ru.jerael.booktracker.backend.domain.model.author.Author;
+import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
 import ru.jerael.booktracker.backend.web.annotation.WebMapper;
 import ru.jerael.booktracker.backend.web.dto.author.AuthorResponse;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,5 +23,11 @@ public class AuthorWebMapper {
         if (authors == null) return Set.of();
 
         return authors.stream().map(this::toResponse).collect(Collectors.toSet());
+    }
+
+    public List<AuthorResponse> toResponses(PageResult<Author> authors) {
+        if (authors == null) return List.of();
+
+        return authors.content().stream().map(this::toResponse).toList();
     }
 }

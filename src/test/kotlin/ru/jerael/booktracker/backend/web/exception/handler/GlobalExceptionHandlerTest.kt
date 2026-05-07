@@ -107,6 +107,10 @@ class GlobalExceptionHandlerTest {
         fun missingServletRequestPart(@RequestPart("cover") cover: MultipartFile) {
         }
         
+        @GetMapping("/test/missing-servlet-request-parameter")
+        fun missingServletRequestParameter(@RequestParam("query") query: String) {
+        }
+        
         @GetMapping("/test/multipart")
         fun multipart() {
             throw MultipartException("Multipart error")
@@ -267,6 +271,17 @@ class GlobalExceptionHandlerTest {
         json.extractingPath("$.detail").isEqualTo("Required part 'cover' is not present.")
         json.extractingPath("$.title").isEqualTo("Missing request part")
         json.extractingPath("$.code").isEqualTo(WebErrorCode.INVALID_MULTIPART_REQUEST.name)
+    }
+    
+    @Test
+    fun handleMissingServletRequestParameterException() {
+        val response = mockMvcTester.get().uri("/test/missing-servlet-request-parameter")
+        assertThat(response).hasStatus(HttpStatus.BAD_REQUEST)
+        val json = assertThat(response).bodyJson()
+        json.extractingPath("$.detail")
+            .isEqualTo("Required request parameter 'query' for method parameter type String is not present")
+        json.extractingPath("$.title").isEqualTo("Missing request parameter")
+        json.extractingPath("$.code").isEqualTo(WebErrorCode.INVALID_PARAMETER.name)
     }
     
     @Test

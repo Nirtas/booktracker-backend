@@ -11,6 +11,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -174,6 +175,16 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             "Missing request part",
             WebErrorCode.INVALID_MULTIPART_REQUEST
+        );
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ProblemDetail handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        return buildProblemDetail(
+            HttpStatus.BAD_REQUEST,
+            ex.getMessage(),
+            "Missing request parameter",
+            WebErrorCode.INVALID_PARAMETER
         );
     }
 
