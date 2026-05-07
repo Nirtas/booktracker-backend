@@ -1,6 +1,7 @@
 package ru.jerael.booktracker.backend.application.usecase.publisher;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import ru.jerael.booktracker.backend.application.annotation.UseCase;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageQuery;
 import ru.jerael.booktracker.backend.domain.model.pagination.PageResult;
@@ -15,6 +16,7 @@ public class SearchPublishersUseCaseImpl implements SearchPublishersUseCase {
     private final PublisherRepository publisherRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public PageResult<Publisher> execute(PageQuery pageQuery, String query) {
         String cleanedQuery = query != null ? query.trim() : null;
         if (cleanedQuery == null || cleanedQuery.length() < 3) {
